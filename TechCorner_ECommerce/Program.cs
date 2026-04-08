@@ -1,3 +1,6 @@
+using Microsoft.EntityFrameworkCore;
+using TechCorner_ECommerce.Data;
+
 namespace TechCorner_ECommerce {
     public class Program {
         public static void Main(string[] args) {
@@ -5,6 +8,9 @@ namespace TechCorner_ECommerce {
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+
+            builder.Services.AddDbContext<AppDbContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             var app = builder.Build();
 
