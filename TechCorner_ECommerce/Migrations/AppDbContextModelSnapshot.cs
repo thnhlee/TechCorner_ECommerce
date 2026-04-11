@@ -36,7 +36,7 @@ namespace TechCorner_ECommerce.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Category");
+                    b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("TechCorner_ECommerce.Data.Order", b =>
@@ -104,6 +104,10 @@ namespace TechCorner_ECommerce.Migrations
                     b.Property<int>("CategoryId")
                         .HasColumnType("int");
 
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("ImageUrl")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -118,11 +122,38 @@ namespace TechCorner_ECommerce.Migrations
                     b.Property<int>("Stock")
                         .HasColumnType("int");
 
+                    b.Property<int>("SubCategoryId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
 
+                    b.HasIndex("SubCategoryId");
+
                     b.ToTable("Products");
+                });
+
+            modelBuilder.Entity("TechCorner_ECommerce.Data.SubCategory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.ToTable("SubCategories");
                 });
 
             modelBuilder.Entity("TechCorner_ECommerce.Data.User", b =>
@@ -188,6 +219,25 @@ namespace TechCorner_ECommerce.Migrations
                     b.HasOne("TechCorner_ECommerce.Data.Category", "Category")
                         .WithMany("Products")
                         .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("TechCorner_ECommerce.Data.SubCategory", "SubCategory")
+                        .WithMany("Products")
+                        .HasForeignKey("SubCategoryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+
+                    b.Navigation("SubCategory");
+                });
+
+            modelBuilder.Entity("TechCorner_ECommerce.Data.SubCategory", b =>
+                {
+                    b.HasOne("TechCorner_ECommerce.Data.Category", "Category")
+                        .WithMany("SubCategories")
+                        .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -197,11 +247,18 @@ namespace TechCorner_ECommerce.Migrations
             modelBuilder.Entity("TechCorner_ECommerce.Data.Category", b =>
                 {
                     b.Navigation("Products");
+
+                    b.Navigation("SubCategories");
                 });
 
             modelBuilder.Entity("TechCorner_ECommerce.Data.Order", b =>
                 {
                     b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("TechCorner_ECommerce.Data.SubCategory", b =>
+                {
+                    b.Navigation("Products");
                 });
 
             modelBuilder.Entity("TechCorner_ECommerce.Data.User", b =>

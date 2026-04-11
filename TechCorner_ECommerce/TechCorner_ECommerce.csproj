@@ -7,11 +7,38 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="wwwroot\minishop-master\**" />
+    <Content Remove="wwwroot\minishop-master\**" />
+    <EmbeddedResource Remove="wwwroot\minishop-master\**" />
+    <None Remove="wwwroot\minishop-master\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\.DS_Store" />
+    <None Include="wwwroot\css\.DS_Store" />
+    <None Include="wwwroot\css\bootstrap\.DS_Store" />
+    <None Include="wwwroot\css\css\.DS_Store" />
+    <None Include="wwwroot\css\css\mixins\.DS_Store" />
+    <None Include="wwwroot\fonts\.DS_Store" />
+    <None Include="wwwroot\fonts\flaticon\.DS_Store" />
+    <None Include="wwwroot\fonts\ionicons\fonts\.DS_Store" />
+    <None Include="wwwroot\images\.DS_Store" />
+    <None Include="wwwroot\js\.DS_Store" />
+    <None Include="wwwroot\scss\.DS_Store" />
+    <None Include="wwwroot\scss\bootstrap\.DS_Store" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.5" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.5">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="10.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Migrations\" />
   </ItemGroup>
 
 </Project>
