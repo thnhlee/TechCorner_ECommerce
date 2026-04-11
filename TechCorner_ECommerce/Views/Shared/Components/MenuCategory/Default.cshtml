@@ -13,12 +13,7 @@
                         <div class="panel panel-default">
                             <div class="panel-heading" role="tab" id="@headingId">
                                 <h4 class="panel-title">
-                                    <a class="collapsed"
-                                           data-toggle="collapse"
-                                           data-parent="#accordion"
-                                           href="#@collapseId"
-                                           aria-expanded="false"
-                                           aria-controls="@collapseId">
+                                    <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#@collapseId" aria-expanded="false" aria-controls="@collapseId">
                                         @item.Name
                                     </a>
                                 </h4>
@@ -33,7 +28,7 @@
                                     <ul>
                                         @foreach (var subItem in item.SubCategories) {
                                             <li>
-                                                <a href="#">@subItem.Name (@subItem.Quantity)</a>
+                                                <a asp-controller="Product" asp-action="Index" asp-route-cate="@subItem.Id" >@subItem.Name (@subItem.Quantity)</a>
                                             </li>
                                         }
                                     </ul>
