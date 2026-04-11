@@ -10452,45 +10452,52 @@ textarea.form-control {
   -ms-border-radius: 0;
   border-radius: 0; }
 
+/* Mặc định: đóng */
 .panel-heading a {
-  padding: 10px 0;
-  display: block;
-  width: 100%;
-  font-size: 12px;
-  text-transform: uppercase;
-  background: transparent;
-  color: #dbcc8f;
-  position: relative;
-  -webkit-box-shadow: none !important;
-  -moz-box-shadow: none !important;
-  -ms-box-shadow: none !important;
-  -o-box-shadow: none !important;
-  box-shadow: none !important; }
+    padding: 10px 0;
+    display: block;
+    width: 100%;
+    font-size: 12px;
+    text-transform: uppercase;
+    background: transparent;
+    color: #333; /* đổi lại */
+    position: relative;
+    box-shadow: none !important;
+}
 
+    /* Khi mở */
+    .panel-heading a:not(.collapsed) {
+        color: #dbcc8f !important;
+        /*font-weight: bold;*/
+    }
+
+    /* Icon */
+    .panel-heading a:after {
+        font-family: "ionicons";
+        content: "\f102"; /* đóng */
+        position: absolute;
+        right: 20px;
+        font-size: 11px;
+        top: 50%;
+        margin-top: -8px;
+    }
+
+    /* Khi mở thì đổi icon */
+    .panel-heading a:not(.collapsed):after {
+        content: "\f3d0";
+    }
+
+    /* Fix focus (tránh auto màu khi load) */
+    .panel-heading a:focus {
+        outline: none;
+        color: inherit;
+    }
+
+/* Panel */
 .panel {
-  -webkit-box-shadow: none !important;
-  -moz-box-shadow: none !important;
-  -ms-box-shadow: none !important;
-  -o-box-shadow: none !important;
-  box-shadow: none !important;
-  border: none; }
-
-.panel-heading a:after {
-  font-family: "ionicons";
-  content: "\f3d0";
-  position: absolute;
-  right: 20px;
-  font-size: 11px;
-  font-weight: 400;
-  top: 50%;
-  line-height: 1;
-  margin-top: -8px; }
-
-.panel-heading a.collapsed:after {
-  content: "\f102"; }
-
-.panel-heading a.collapsed {
-  color: #333333; }
+    box-shadow: none !important;
+    border: none;
+}
 
 .panel-body {
   padding: 5px; }
