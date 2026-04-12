@@ -8533,14 +8533,16 @@ h1, h2, h3, h4, h5,
       @media (max-width: 1199.98px) {
         .owl-carousel.home-slider .slider-item {
           background-position: center center !important; } }
-      .owl-carousel.home-slider .slider-item .overlay {
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        opacity: 1;
-        z-index: -1; }
+.owl-carousel.home-slider .slider-item .overlay {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    opacity: 1;
+    z-index: -1;
+    background: #fff   /*đổi màu nền Index*/
+}
       .owl-carousel.home-slider .slider-item .slider-text {
         height: 750px;
         z-index: 0; }
@@ -8568,6 +8570,11 @@ h1, h2, h3, h4, h5,
                 opacity: .3; }
               .owl-carousel.home-slider .slider-item .slider-text .one-third:after {
                 opacity: 0; } }
+.owl-carousel.home-slider .slider-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
         .owl-carousel.home-slider .slider-item .slider-text .one-forth {
           position: relative;
           height: 750px; }
@@ -8583,6 +8590,7 @@ h1, h2, h3, h4, h5,
           @media (max-width: 1199.98px) {
             .owl-carousel.home-slider .slider-item .slider-text .one-forth {
               width: 100%;
+              margin: 0;
               position: absolute;
               top: 0;
               left: 0;
@@ -8593,17 +8601,15 @@ h1, h2, h3, h4, h5,
           .owl-carousel.home-slider .slider-item .slider-text .one-forth .text {
             position: relative; }
             @media (min-width: 992px) {
-              .owl-carousel.home-slider .slider-item .slider-text .one-forth .text {
-                position: absolute;
-                top: 50%;
-                left: 0;
-                -webkit-transform: translateY(-50%);
-                -ms-transform: translateY(-50%);
-                transform: translateY(-50%);
-                right: 0;
-                max-width: 50%;
-                padding-left: 45px;
-                padding-right: 3em; } }
+                .owl-carousel.home-slider .slider-item .slider-text .one-forth .text {
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    max-width: 100%;
+                    text-align: center;
+                    padding: 0;
+                } }
         .owl-carousel.home-slider .slider-item .slider-text .subheading {
           color: #000000;
           font-weight: 300;
@@ -8624,11 +8630,13 @@ h1, h2, h3, h4, h5,
         .owl-carousel.home-slider .slider-item .slider-text .horizontal {
           position: relative; }
         .owl-carousel.home-slider .slider-item .slider-text h1 {
-          font-size: 44px;
-          color: #000000;
+          font-size: 52px;
+          color: #fff;
           line-height: 1.3;
-          font-weight: 300;
-          text-transform: uppercase; }
+          font-weight: 1000;
+          text-transform: uppercase; 
+          
+        }
           .owl-carousel.home-slider .slider-item .slider-text h1 span {
             font-weight: 900; }
           @media (max-width: 991.98px) {
@@ -8637,10 +8645,14 @@ h1, h2, h3, h4, h5,
               font-size: 50px; } }
           @media (max-width: 767.98px) {
             .owl-carousel.home-slider .slider-item .slider-text h1 {
-              font-size: 40px; } }
+                font-size: 40px;
+                font-size: 18px;
+            } }
         .owl-carousel.home-slider .slider-item .slider-text p {
-          color: rgba(0, 0, 0, 0.8);
-          font-weight: 400; }
+          color: rgba(255, 255, 255, 1);
+          font-weight: 700; 
+          
+        }
           @media (max-width: 991.98px) {
             .owl-carousel.home-slider .slider-item .slider-text p {
               color: rgba(255, 255, 255, 0.7);
@@ -10451,6 +10463,135 @@ textarea.form-control {
   -moz-border-radius: 0;
   -ms-border-radius: 0;
   border-radius: 0; }
+
+/*HEADER */
+.navbar-nav .nav-link:hover {
+    color: #fff !important;
+}
+
+.navbar-nav .nav-link:not(.dropdown-toggle)::after {
+    content: "";
+    display: block;
+    width: 0;
+    height: 2px;
+    background: #fff;
+    transition: 0.3s;
+}
+
+.navbar-nav .nav-link:not(.dropdown-toggle):hover::after {
+    width: 100%;
+}
+
+
+
+
+/*GAMING GEAR DROPDOWN*/
+
+.mega-menu {
+    position: relative;
+}
+
+/* FULL WIDTH DROPDOWN */
+.mega-menu-content {
+    position: fixed;
+    top: 70px;
+    left: 0;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(50px);
+    z-index: 9999;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-20px);
+    transition: all 0.35s ease;
+}
+
+/* container căn giữa nội dung */
+.mega-container {
+    max-width: 1200px;
+    margin: auto;
+    display: flex;
+    gap: 40px;
+    padding: 30px;
+}
+
+/* cột */
+.mega-col {
+    flex: 0.5; /*Chỗ này để sửa khoảng cách giữa các cột trong GAMING GEAR HEADER*/
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.4s ease;
+    transition: all 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+    /* tiêu đề */
+    .mega-col h6 {
+        font-weight: 600;
+        color: #000;
+        margin-bottom: 10px;
+    }
+
+    /* link */
+    .mega-col a {
+        display: block;
+        color: #333;
+        text-decoration: none;
+        margin-bottom: 8px;
+        transition: 0.2s;
+    }
+
+        /* hover đổi màu */
+        .mega-col a:hover {
+            color: #dbcc8f;
+            transform: translateX(5px);
+        }
+.mega-menu:hover .mega-col {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* hover mở menu */
+.mega-menu:hover .mega-menu-content {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+
+
+.mega-menu-content {
+    opacity: 0;
+    transform: translateY(10px);
+    transition: 0.25s;
+    transition: all 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.mega-menu:hover .mega-menu-content {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+
+
+.mega-menu:hover .mega-col:nth-child(1) {
+    transition-delay: 0.05s;
+}
+
+.mega-menu:hover .mega-col:nth-child(2) {
+    transition-delay: 0.1s;
+}
+
+.mega-menu:hover .mega-col:nth-child(3) {
+    transition-delay: 0.15s;
+}
+
+.mega-menu:hover .mega-col:nth-child(4) {
+    transition-delay: 0.2s;
+}
+
+
+
 
 /* Mặc định: đóng */
 .panel-heading a {
