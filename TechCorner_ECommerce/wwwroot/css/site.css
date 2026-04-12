@@ -29,3 +29,70 @@ body {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
 }
+
+/*MENU CATEGORY*/
+.sidebar-search {
+    max-width: 180px;
+}
+
+
+.sidebar-search .input-group {
+    height: 60px;
+    display: flex;
+}
+
+/* INPUT */
+.sidebar-search .form-control {
+    height: 34px;
+    font-size: 13px;
+    padding: 4px 8px;
+    border-radius: 14px 0 0 14px;
+}
+
+/* BUTTON */
+.sidebar-search .btn {
+    height: 52px;
+    padding: 0 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0 14px 14px 0;
+}
+
+
+/*SEARCH*/
+.nav-search {
+    display: flex;
+    align-items: center;
+}
+
+.search-box {
+    position: relative;
+    width: 280px;
+}
+
+.search-box input {
+    width: 100%;
+    padding: 5px 10px 5px 41px; /* chừa chỗ icon */
+    border-radius: 20px;
+    border: none;
+    outline: none;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(8px);
+    font-size: 14px;
+}
+
+/* icon search */
+.search-box i {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #999;
+    font-size: 14px;
+}
+/* icon user */
+.nav-link .icon-user {
+    font-size: 20px;
+    margin-left: 10px;
+}

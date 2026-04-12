@@ -5,7 +5,8 @@ using TechCorner_ECommerce.Models;
 namespace TechCorner_ECommerce.Controllers {
     public class HomeController : Controller {
         public IActionResult Index() {
-            return RedirectToAction("Index", "Product");
+            return View();
+            //return RedirectToAction("Index", "Product");
         }
 
         public IActionResult Privacy() {

@@ -1,80 +1,110 @@
 ﻿@model IEnumerable<TechCorner_ECommerce.ViewModels.MenuCategoryVM>
-
+<link rel="stylesheet" href="~/css/site.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <div class="col-md-4 col-lg-2">
-    <div class="sidebar">
-        <div class="sidebar-box-2">
-            <h2 class="heading">Categories</h2>
-            <div class="fancy-collapse-panel">
-                <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
-                    @foreach (var item in Model) {
-                        var collapseId = "collapse" + item.Id;
-                        var headingId = "heading" + item.Id;
+	<div class="sidebar">
+		<div class="sidebar-box-2">
+			<h2 class="heading">Categories</h2>
+			<div class="fancy-collapse-panel">
+				<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
 
-                        <div class="panel panel-default">
-                            <div class="panel-heading" role="tab" id="@headingId">
-                                <h4 class="panel-title">
-                                    <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#@collapseId" aria-expanded="false" aria-controls="@collapseId">
-                                        @item.Name
-                                    </a>
-                                </h4>
-                            </div>
+@* 						<form method="get" asp-controller="Product" asp-action="Index"
+							  class="sidebar-search">
 
-                            <div id="@collapseId"
-                                 class="panel-collapse collapse"
-                                 role="tabpanel"
-                                 aria-labelledby="@headingId">
+							<div class="input-group ">
+								<input type="text" name="keyword" class="form-control" placeholder="Search..." value="@Context.Request.Query["keyword"]" />
 
-                                <div class="panel-body">
-                                    <ul>
-                                        @foreach (var subItem in item.SubCategories) {
-                                            <li>
-                                                <a asp-controller="Product" asp-action="Index" asp-route-cate="@subItem.Id" >@subItem.Name (@subItem.Quantity)</a>
-                                            </li>
-                                        }
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    }
-                </div>
-            </div>
-        </div>
-        <div class="sidebar-box-2">
-            <h2 class="heading">Price Range</h2>
-            <form method="post" class="colorlib-form-2">
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <label for="guests">Price from:</label>
-                            <div class="form-field">
-                                <i class="icon icon-arrow-down3"></i>
-                                <select name="people" id="people" class="form-control">
-                                    <option value="#">1</option>
-                                    <option value="#">200</option>
-                                    <option value="#">300</option>
-                                    <option value="#">400</option>
-                                    <option value="#">1000</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <label for="guests">Price to:</label>
-                            <div class="form-field">
-                                <i class="icon icon-arrow-down3"></i>
-                                <select name="people" id="people" class="form-control">
-                                    <option value="#">2000</option>
-                                    <option value="#">4000</option>
-                                    <option value="#">6000</option>
-                                    <option value="#">8000</option>
-                                    <option value="#">10000</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
+								<input type="hidden" name="cate" value="@Context.Request.Query["cate"]" />
+
+								<button type="submit" class="btn btn-primary">
+									<i class="fa fa-search"></i>
+								</button>
+							</div>
+						</form> *@
+
+					@foreach (var item in Model) {
+						var collapseId = "collapse" + item.Id;
+						var headingId = "heading" + item.Id;
+
+						<div class="panel panel-default">
+							<div class="panel-heading" role="tab" id="@headingId">
+								<h4 class="panel-title">
+									<a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#@collapseId" aria-expanded="false" aria-controls="@collapseId">
+										@item.Name
+									</a>
+								</h4>
+							</div>
+
+							<div id="@collapseId" class="panel-collapse collapse" role="tabpanel" aria-labelledby="@headingId">
+								<div class="panel-body">
+									<ul>
+										@foreach (var subItem in item.SubCategories) {
+											<li>
+												<a asp-controller="Product" asp-action="Index" asp-route-cate="@subItem.Id">@subItem.Name (@subItem.Quantity)</a>
+											</li>
+										}
+									</ul>
+								</div>
+							</div>
+						</div>
+					}
+				</div>
+			</div>
+		</div>
+		<div class="sidebar-box-2">
+			<h2 class="heading">Price Range</h2>
+			<form method="post" class="colorlib-form-2">
+				<div class="row">
+					<div class="col-md-12">
+						<div class="form-group">
+							<label for="guests">Price from:</label>
+							<div class="form-field">
+								<i class="icon icon-arrow-down3"></i>
+								<select name="people" id="people" class="form-control">
+									<option value="#">1</option>
+									<option value="#">200</option>
+									<option value="#">300</option>
+									<option value="#">400</option>
+									<option value="#">1000</option>
+								</select>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-12">
+						<div class="form-group">
+							<label for="guests">Price to:</label>
+							<div class="form-field">
+								<i class="icon icon-arrow-down3"></i>
+								<select name="people" id="people" class="form-control">
+									<option value="#">2000</option>
+									<option value="#">4000</option>
+									<option value="#">6000</option>
+									<option value="#">8000</option>
+									<option value="#">10000</option>
+								</select>
+							</div>
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
 </div>
+
+<script>
+	function filterCategories() {
+		var input = document.getElementById("categorySearch");
+		var filter = input.value.toLowerCase();
+		var items = document.getElementsByClassName("category-item");
+
+		for (var i = 0; i < items.length; i++) {
+			var name = items[i].querySelector(".category-name").innerText.toLowerCase();
+
+			if (name.includes(filter)) {
+				items[i].style.display = "";
+			} else {
+				items[i].style.display = "none";
+			}
+	}
+	}
+</script>
