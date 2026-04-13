@@ -8196,7 +8196,7 @@ h1, h2, h3, h4, h5,
     position: relative;
     top: 0; }
   .ftco-navbar-light .navbar-brand {
-    color: #000000; }
+    color: #fff; }
     .ftco-navbar-light .navbar-brand span {
       color: #fff; }
     .ftco-navbar-light .navbar-brand:hover, .ftco-navbar-light .navbar-brand:focus {
@@ -8214,7 +8214,7 @@ h1, h2, h3, h4, h5,
     padding-left: 20px;
     padding-right: 20px;
     font-weight: 400;
-    color: #000000;
+    color: #fff;
     text-transform: uppercase;
     letter-spacing: 2px;
     opacity: 1 !important; }
@@ -8265,7 +8265,7 @@ h1, h2, h3, h4, h5,
         .ftco-navbar-light .navbar-nav > .nav-item.ftco-seperator:before {
           display: none; } }
   .ftco-navbar-light .navbar-nav > .nav-item.cta > a {
-    color: #000000; }
+    color: #fff; }
     @media (max-width: 767.98px) {
       .ftco-navbar-light .navbar-nav > .nav-item.cta > a {
         padding-left: 15px;
@@ -8275,7 +8275,7 @@ h1, h2, h3, h4, h5,
         color: #000000;
         background: #dbcc8f; } }
   .ftco-navbar-light .navbar-nav > .nav-item.active > a {
-    color: #000000; }
+    color: #dbcc8f; }
     @media (max-width: 991.98px) {
       .ftco-navbar-light .navbar-nav > .nav-item.active > a {
         color: #fff; } }
@@ -8301,9 +8301,10 @@ h1, h2, h3, h4, h5,
     .ftco-navbar-light.scrolled .nav-item.active > a {
       color: #dbcc8f !important; }
     .ftco-navbar-light.scrolled .nav-item.cta > a {
-      color: #000000 !important;
-      background: #dbcc8f;
-      border: none !important; }
+        color: #000000 !important;
+        
+        border: none !important;
+    }
       .ftco-navbar-light.scrolled .nav-item.cta > a span {
         display: inline-block;
         color: #000000 !important; }
@@ -8395,12 +8396,12 @@ h1, h2, h3, h4, h5,
       z-index: 99;
       font-weight: 300; }
       .hero-wrap .slider-text .breadcrumbs span {
-        color: black; }
+        color: #ffffff; }
         .hero-wrap .slider-text .breadcrumbs span a {
-          color: #000000; }
+          color: #ffffff; }
     .hero-wrap .slider-text .bread {
       font-weight: 800;
-      color: #000000;
+      color: #ffffff;
       font-size: 30px;
       font-family: "Open Sans", Arial, sans-serif;
       letter-spacing: 3px;
@@ -8414,8 +8415,10 @@ h1, h2, h3, h4, h5,
       .hero-wrap .slider-text .btn-primary:hover, .hero-wrap .slider-text .btn-primary:focus {
         background: #fff !important;
         color: #000000; }
-  .hero-wrap.hero-bread {
-    padding: 12em 0; }
+    .hero-wrap.hero-bread {
+        padding: 12em 0;
+        filter: brightness(90%)
+    }
 
 .mouse {
   position: absolute;
@@ -8485,12 +8488,7 @@ h1, h2, h3, h4, h5,
     margin-top: 20px;
     opacity: 0; } }
 
-.owl-carousel {
-  position: relative; }
-  .owl-carousel .owl-item {
-    opacity: .4; }
-    .owl-carousel .owl-item.active {
-      opacity: 1; }
+
   .owl-carousel .owl-dots {
     text-align: center; }
     .owl-carousel .owl-dots .owl-dot {
@@ -8522,7 +8520,7 @@ h1, h2, h3, h4, h5,
     position: relative;
     height: 750px;
     z-index: 0;
-    background: #dbcc8f; }
+    background: #000; }
     .owl-carousel.home-slider .slider-item {
       background-size: cover;
       background-repeat: no-repeat;
@@ -8541,7 +8539,7 @@ h1, h2, h3, h4, h5,
     right: 0;
     opacity: 1;
     z-index: -1;
-    background: #fff   /*đổi màu nền Index*/
+    background: #fff  /*đổi màu nền Index*/
 }
       .owl-carousel.home-slider .slider-item .slider-text {
         height: 750px;
@@ -8574,6 +8572,7 @@ h1, h2, h3, h4, h5,
     width: 100%;
     height: 100%;
     object-fit: cover;
+    filter: brightness(70%)
 }
         .owl-carousel.home-slider .slider-item .slider-text .one-forth {
           position: relative;
@@ -10466,7 +10465,7 @@ textarea.form-control {
 
 /*HEADER */
 .navbar-nav .nav-link:hover {
-    color: #fff !important;
+    color: #dbcc8f !important;
 }
 
 .navbar-nav .nav-link:not(.dropdown-toggle)::after {
@@ -10474,7 +10473,7 @@ textarea.form-control {
     display: block;
     width: 0;
     height: 2px;
-    background: #fff;
+    background: #dbcc8f;
     transition: 0.3s;
 }
 
@@ -10526,15 +10525,15 @@ textarea.form-control {
 
     /* tiêu đề */
     .mega-col h6 {
-        font-weight: 600;
-        color: #000;
+        font-weight: 800;
+        color: #fff;
         margin-bottom: 10px;
     }
 
     /* link */
     .mega-col a {
         display: block;
-        color: #333;
+        color: #fff;
         text-decoration: none;
         margin-bottom: 8px;
         transition: 0.2s;

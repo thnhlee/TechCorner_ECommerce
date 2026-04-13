@@ -73,12 +73,25 @@ body {
 
 .search-box input {
     width: 100%;
-    padding: 5px 10px 5px 41px; /* chừa chỗ icon */
+    padding: 5px 10px 5px 41px;
     border-radius: 20px;
     border: none;
     outline: none;
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(8px);
+    font-size: 14px;
+}
+
+/* Nút search đè lên input */
+.search-btn {
+    position: absolute;
+    left: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: none;
+    background: transparent;
+    color: white;
+    cursor: pointer;
     font-size: 14px;
 }
 

@@ -1,0 +1,65 @@
+﻿
+@{
+    ViewData["Title"] = "PageNotFound";
+    Layout = "_LayoutCustomer";
+}
+
+<style>
+    body {
+        background: #000; /* nền đen */
+        margin: 0;
+    }
+
+    .notfound-container {
+        height: 80vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+    }
+
+    .notfound-box h1 {
+        font-size: 120px;
+        margin: 0;
+        color: #dbcc8f; 
+    }
+
+    .notfound-box h2 {
+        margin: 10px 0;
+        font-size: 28px;
+        color: #fff; 
+    }
+
+    .notfound-box p {
+        color: #fff; 
+    }
+
+    .notfound-box a {
+        display: inline-block;
+        margin-top: 20px;
+        padding: 12px 24px;
+        background: transparent; 
+        color: #fff; 
+        text-decoration: none;
+        border: 2px solid #fff; 
+        border-radius: 8px;
+        font-weight: bold;
+        transition: 0.3s;
+    }
+
+    .notfound-box a:hover {
+        background: #dbcc8f;
+        color: #000;
+        border-color: #dbcc8f;
+    }
+</style>
+
+<div class="notfound-container">
+    <div class="notfound-box">
+        <h1>404</h1>
+        <h2>Oops! Không tìm thấy trang</h2>
+        <p>Trang bạn đang tìm có thể đã bị xóa hoặc không tồn tại.</p>
+        <a asp-controller="Home" asp-action="Index">Quay về trang chủ</a>
+    </div>
+</div>
+

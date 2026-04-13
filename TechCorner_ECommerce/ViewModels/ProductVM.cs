@@ -6,5 +6,8 @@
         public double price { get; set; }   
         public string ImageUrl { get; set; }
         public string CategoryName { get; set; }
+        public int Stock { get; set; }
     }
+
+
 }

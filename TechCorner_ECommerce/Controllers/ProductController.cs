@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using TechCorner_ECommerce.Data;
 using TechCorner_ECommerce.ViewModels;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace TechCorner_ECommerce.Controllers {
     public class ProductController : Controller {
@@ -29,6 +30,9 @@ namespace TechCorner_ECommerce.Controllers {
 
                 //// ép kiểu collation để search không phân biệt chữ hoa chữ thường và dấu tiếng Việt
                 products = products.Where(p => EF.Functions.Like(EF.Functions.Collate(p.Name, "SQL_Latin1_General_CP1_CI_AI"), $"%{keyword}%"));
+
+
+                ViewBag.SearchQuery = keyword;
             }
 
 
@@ -40,6 +44,23 @@ namespace TechCorner_ECommerce.Controllers {
                 ImageUrl = p.ImageUrl ?? "",
                 CategoryName = p.Category.Name
             });
+            return View(result);
+        }
+
+        public IActionResult Detail(int id) {
+            var product = db.Products.Include(p => p.Category).SingleOrDefault(p => p.Id == id);
+            if (product == null) {
+                return Redirect("/404");
+            }
+            var result = new ProductVM {
+                Id = product.Id,
+                Name = product.Name,
+                Description = product.Description,
+                price = product.Price,
+                ImageUrl = product.ImageUrl ?? "",
+                CategoryName = product.Category.Name,
+                Stock = product.Stock
+            };
             return View(result);
         }
     }

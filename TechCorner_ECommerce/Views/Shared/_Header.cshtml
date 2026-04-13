@@ -1,4 +1,5 @@
-﻿<!-- START nav -->
+﻿@using TechCorner_ECommerce.Helpers
+<!-- START nav -->
 <div class="py-1 bg-black">
     <div class="container">
         <div class="row no-gutters d-flex align-items-start align-items-center px-md-0">
@@ -22,14 +23,14 @@
 </div>
 <nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
     <div class="container">
-        <a class="navbar-brand" href="index.html">Minishop</a>
+        <a class="navbar-brand" asp-controller="Home" asp-action="Index">Minishop</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="oi oi-menu"></span> Menu
         </button>
 
         <div class="collapse navbar-collapse" id="ftco-nav">
             <ul class="navbar-nav ml-auto">
-                <li class="nav-item active"><a asp-controller="Product" asp-action="Index" class="nav-link">All Products</a></li>
+                <li class="nav-item @Html.IsActive("Product", "Index")"><a asp-controller="Product" asp-action="Index" class="nav-link">All Products</a></li>
 
 
         <li class="nav-item dropdown mega-menu">
@@ -76,15 +77,22 @@
         </li>
 
 
-                <li class="nav-item"><a href="about.html" class="nav-link">About</a></li>
-                <li class="nav-item"><a href="blog.html" class="nav-link">Blog</a></li>
-                <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
+                <li class="nav-item @Html.IsActive("Home", "About")"><a asp-controller="Home" asp-action="About" class="nav-link">About</a></li>
+                <li class="nav-item @Html.IsActive("Home", "Blog")"><a asp-controller="Home" asp-action="Blog" class="nav-link">Blog</a></li>
+                <li class="nav-item @Html.IsActive("Home", "Contact")"><a asp-controller="Home" asp-action="Contact" class="nav-link">Contact</a></li>
 
                 <li class="nav-item nav-search">
-                    <div class="search-box">
-                        <input type="text" placeholder="Tìm chuột, bàn phím, tai nghe..." />
-                    <i class="fa fa-search"></i>
-                    </div>
+                    <form method="get" asp-controller="Product" asp-action="Index">
+                        <div class="search-box">
+                            <input type="text" name="keyword" placeholder="Tìm chuột, bàn phím, tai nghe..." value="@Context.Request.Query["keyword"]"/>
+
+                            <input type="hidden" name="cate" value="@Context.Request.Query["cate"]" />
+
+                            <button type="submit" class="search-btn">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </div>
+                    </form>
                 </li>
 
                 <li class="nav-item">
@@ -100,3 +108,28 @@
     </div>
 </nav>
 <!-- END nav -->
+                    
+
+
+
+
+
+
+
+    <script>
+    function filterCategories() {
+        var input = document.getElementById("categorySearch");
+        var filter = input.value.toLowerCase();
+        var items = document.getElementsByClassName("category-item");
+
+        for (var i = 0; i < items.length; i++) {
+            var name = items[i].querySelector(".category-name").innerText.toLowerCase();
+
+            if (name.includes(filter)) {
+                items[i].style.display = "";
+            } else {
+                items[i].style.display = "none";
+            }
+    }
+}
+</script>
