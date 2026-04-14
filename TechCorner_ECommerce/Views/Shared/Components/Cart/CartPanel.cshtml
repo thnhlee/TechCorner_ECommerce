@@ -1,0 +1,8 @@
+﻿@model TechCorner_ECommerce.ViewModels.CartItemVM
+
+<li class="nav-item cta cta-colored">
+	<a asp-controller="Cart" asp-action="Index" class="nav-link">
+		<span class="icon-shopping_cart"></span>
+		[<span id="cart-qty">@Model.Quantity</span>]
+	</a>
+</li>

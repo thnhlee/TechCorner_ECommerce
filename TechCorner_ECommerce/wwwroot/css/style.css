@@ -8200,7 +8200,7 @@ h1, h2, h3, h4, h5,
     .ftco-navbar-light .navbar-brand span {
       color: #fff; }
     .ftco-navbar-light .navbar-brand:hover, .ftco-navbar-light .navbar-brand:focus {
-      color: #000000; }
+      color: #dbcc8f; }
     @media (max-width: 991.98px) {
       .ftco-navbar-light .navbar-brand {
         color: #fff; } }
@@ -8752,54 +8752,95 @@ h1, h2, h3, h4, h5,
   box-shadow: 0px 24px 36px -11px rgba(0, 0, 0, 0.09); }
   .btn:hover, .btn:active, .btn:focus {
     outline: none; }
-  .btn.btn-primary {
-    background: #dbcc8f;
-    border: 1px solid #dbcc8f;
-    color: #fff; }
-    .btn.btn-primary:hover {
-      border: 1px solid #dbcc8f;
-      background: transparent;
-      color: #dbcc8f; }
-    .btn.btn-primary.btn-outline-primary {
-      border: 1px solid #dbcc8f;
-      background: transparent;
-      color: #dbcc8f; }
-      .btn.btn-primary.btn-outline-primary:hover {
-        border: 1px solid transparent;
-        background: #dbcc8f;
-        color: #fff; }
-  .btn.btn-white {
-    background: #fff;
-    border: 1px solid #fff;
-    color: #000000; }
-    .btn.btn-white:hover {
-      background: #dbcc8f;
-      border: 1px solid #dbcc8f;
-      color: #fff; }
-    .btn.btn-white.btn-outline-white {
-      border: 1px solid #fff;
-      background: transparent;
-      color: #fff; }
-      .btn.btn-white.btn-outline-white:hover {
-        border: 1px solid transparent;
-        background: #dbcc8f;
-        color: #fff; }
-  .btn.btn-black {
-    background: #000000;
-    border: 1px solid #000000;
-    color: #fff; }
-    .btn.btn-black:hover {
-      background: #dbcc8f;
-      border: 1px solid #dbcc8f;
-      color: #fff; }
-    .btn.btn-black.btn-outline-white {
-      border: 1px solid #000000;
-      background: transparent;
-      color: #000000; }
-      .btn.btn-black.btn-outline-white:hover {
-        border: 1px solid transparent;
-        background: #000000;
-        color: #fff; }
+    .btn.btn-primary {
+        background: #dbcc8f !important;
+        border: 1px solid #dbcc8f !important;
+        color: #fff !important;
+        font-size: 12px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        cursor: pointer;
+        -webkit-border-radius: 30px;
+        -moz-border-radius: 30px;
+        -ms-border-radius: 30px;
+        border-radius: 30px;
+        -webkit-box-shadow: 0px 24px 36px -11px rgba(0, 0, 0, 0.09);
+        -moz-box-shadow: 0px 24px 36px -11px rgba(0, 0, 0, 0.09);
+        box-shadow: 0px 24px 36px -11px rgba(0, 0, 0, 0.09);
+        padding: 25px 45px !important;
+    }
+        .btn.btn-primary:hover {
+            border: 1px solid #dbcc8f !important;
+            background: transparent !important;
+            color: #dbcc8f !important;
+        }
+        .btn.btn-primary.btn-outline-primary {
+            border: 1px solid #dbcc8f !important;
+            background: transparent !important;
+            color: #dbcc8f !important;
+        }
+            .btn.btn-primary.btn-outline-primary:hover {
+                border: 1px solid transparent !important;
+                background: #dbcc8f !important;
+                color: #fff !important;
+            }
+    .btn.btn-white {
+        background: #fff !important;
+        border: 1px solid #fff !important;
+        color: #000000 !important;
+    }
+        .btn.btn-white:hover {
+            background: #dbcc8f !important;
+            border: 1px solid #dbcc8f !important;
+            color: #fff !important;
+        }
+        .btn.btn-white.btn-outline-white {
+            border: 1px solid #fff !important;
+            background: transparent !important;
+            color: #fff !important;
+        }
+            .btn.btn-white.btn-outline-white:hover {
+                border: 1px solid transparent !important;
+                background: #dbcc8f !important;
+                color: #fff !important;
+            }
+    .btn.btn-black {
+        background: #000000 !important;
+        border: 1px solid #000000 !important;
+        color: #fff !important;
+        padding: 25px 45px !important;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        font-size: 12px;
+        cursor: pointer;
+        -webkit-border-radius: 30px;
+        -moz-border-radius: 30px;
+        -ms-border-radius: 30px;
+        border-radius: 30px;
+        -webkit-box-shadow: 0px 24px 36px -11px rgba(0, 0, 0, 0.09);
+        -moz-box-shadow: 0px 24px 36px -11px rgba(0, 0, 0, 0.09);
+        box-shadow: 0px 24px 36px -11px rgba(0, 0, 0, 0.09);
+    }
+        .btn.btn-black:hover {
+            background: #dbcc8f !important;
+            border: 1px solid #dbcc8f !important;
+            color: #fff;
+            !important
+        }
+        .btn.btn-black.btn-outline-white {
+            border: 1px solid #000000 !important;
+            background: transparent !important;
+            color: #000000 !important;
+        }
+            .btn.btn-black.btn-outline-white:hover {
+                border: 1px solid transparent !important;
+                background: #000000 !important;
+                color: #fff !important;
+            }
 
 .img-2 {
   position: relative; }
@@ -8970,40 +9011,52 @@ h1, h2, h3, h4, h5,
       letter-spacing: 1px;
       color: rgba(0, 0, 0, 0.3); }
     .product .text .bottom-area {
-      position: absolute;
-      top: -65px;
-      left: 0;
-      right: 0;
-      opacity: 0;
-      -moz-transition: all 0.3s ease;
-      -o-transition: all 0.3s ease;
-      -webkit-transition: all 0.3s ease;
-      -ms-transition: all 0.3s ease;
-      transition: all 0.3s ease;
-      z-index: 1; }
+        position: absolute;
+        top: -65px;
+        left: 0;
+        right: 0;
+        opacity: 0;
+        -moz-transition: all 0.3s ease;
+        -o-transition: all 0.3s ease;
+        -webkit-transition: all 0.3s ease;
+        -ms-transition: all 0.3s ease;
+        transition: all 0.3s ease;
+        z-index: 1;
+        justify-content: center; /* 👈 căn giữa ngang */
+        align-items: center;
+        gap: 10px;
+
+    }
       .product .text .bottom-area a {
         color: #000000;
         width: 100%;
         background: #fff; }
-      .product .text .bottom-area a.add-to-cart, .product .text .bottom-area a.buy-now {
+      .product .text .bottom-area button.add-to-cart, .product .text .bottom-area button.buy-now {
         font-size: 13px;
         color: #000000;
         text-transform: uppercase;
-        font-weight: 300; }
-        .product .text .bottom-area a.add-to-cart i, .product .text .bottom-area a.buy-now i {
+        font-weight: 500; }
+        .product .text .bottom-area button.add-to-cart i, .product .text .bottom-area button.buy-now i {
           font-size: 16px; }
-      .product .text .bottom-area a.add-to-cart {
-        background: #000000;
-        color: #fff; }
-        .product .text .bottom-area a.add-to-cart:hover {
+        .product .text .bottom-area button.add-to-cart {
+            background: #000000;
+            color: #fff;
+            border: none;
+            flex: 1;
+        }
+        .product .text .bottom-area button.add-to-cart:hover {
           background: #dbcc8f;
           color: #fff; }
-      .product .text .bottom-area a.buy-now {
-        background: #fff;
-        color: #000000; }
-        .product .text .bottom-area a.buy-now:hover {
+        .product .text .bottom-area button.buy-now {
+            background: #fff;
+            color: #000000;
+            border: none;
+            flex: 1;
+        }
+        .product .text .bottom-area button.buy-now:hover {
           background: #dbcc8f;
-          color: #fff; }
+          color: #fff;
+        }
       @media (max-width: 991.98px) {
         .product .text .bottom-area {
           opacity: 1; } }
@@ -10813,3 +10866,37 @@ textarea.form-control {
   100% {
     stroke-dasharray: 89, 200;
     stroke-dashoffset: -136px; } }
+
+
+
+
+.cart-qty-group {
+    max-width: 120px;
+    margin: auto;
+}
+
+    .cart-qty-group .form-control {
+        border-left: 0;
+        border-right: 0;
+        box-shadow: none;
+    }
+
+    .cart-qty-group .btn {
+        width: 36px;
+        font-weight: bold;
+        padding: 0;
+    }
+
+        .cart-qty-group .btn:focus {
+            box-shadow: none;
+        }
+
+    .cart-qty-group .qty-minus {
+        border-top-left-radius: 6px;
+        border-bottom-left-radius: 6px;
+    }
+
+    .cart-qty-group .qty-plus {
+        border-top-right-radius: 6px;
+        border-bottom-right-radius: 6px;
+    }

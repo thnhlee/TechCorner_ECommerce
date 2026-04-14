@@ -1,0 +1,247 @@
+﻿@model IEnumerable<TechCorner_ECommerce.ViewModels.CartItemVM>
+@{
+	ViewData["Title"] = "Cart";
+}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>  
+<div class="hero-wrap hero-bread" style="background-image: url('images/bg_6.jpg');">
+    <div class="container">
+    <div class="row no-gutters slider-text align-items-center justify-content-center">
+        <div class="col-md-9 ftco-animate text-center">
+        <p class="breadcrumbs"><span class="mr-2"><a href="index.html">Home</a></span> <span>Cart</span></p>
+        <h1 class="mb-0 bread">My Wishlist</h1>
+        </div>
+    </div>
+    </div>
+</div>
+
+<section class="ftco-section ftco-cart">
+		<div class="container">
+			<div class="row">
+    		<div class="col-md-12 ftco-animate">
+    			<div class="cart-list">
+	    			<table class="table">
+						<thead class="thead-primary">
+						    <tr class="text-center">
+						    <th>&nbsp;</th>
+						    <th>&nbsp;</th>
+						    <th>Product</th>
+						    <th>Price</th>
+						    <th>Quantity</th>
+						    <th>Total</th>
+						    </tr>
+						</thead>
+						<tbody>
+						@foreach (var item in Model)
+						{
+							<tr class="text-center">
+						    <td class="product-remove">
+								<a href="#" class="js-remove-cart" data-id="@item.ProductId">
+									<span class="ion-ios-close"></span>
+								</a>
+							</td>
+						        
+						    <td class="image-prod"><div class="img" style="background-image:url(images/product-3.jpg);"></div></td>
+						        
+						    <td class="product-name">
+						        <h3>@item.ProductName</h3>
+						        	
+						    </td>
+						        
+						    <td class="price">$@item.Price</td>
+						        
+						    <td class="quantity">
+						        <div class="input-group mb-3">
+                                    <div class="input-group js-cart-qty cart-qty-group">
+    
+                                        <div class="input-group-prepend">
+                                            <button type="button"
+                                                    class="qty-minus btn btn-sm btn-outline-secondary rounded-left"
+                                                    data-id="@item.ProductId">
+                                                −
+                                            </button>
+                                        </div>
+
+                                        <input type="text"
+                                               class="quantity form-control form-control-sm text-center"
+                                               value="@item.Quantity"
+                                               readonly />
+
+                                        <div class="input-group-append">
+                                            <button type="button"
+                                                    class="qty-plus btn btn-sm btn-outline-secondary rounded-right"
+                                                    data-id="@item.ProductId">
+                                                +
+                                            </button>
+                                        </div>
+
+                                    </div>
+					        </div>
+					        </td>
+						        
+						    <td class="total" data-price="@item.Price">
+                                $@item.TotalPrice
+                            </td>
+						    </tr><!-- END TR-->
+						}
+
+
+						</tbody>
+						</table>
+					</div>
+    		</div>
+    	</div>
+    	<div class="row justify-content-start">
+    		<div class="col col-lg-5 col-md-6 mt-5 cart-wrap ftco-animate">
+    			<div class="cart-total mb-3">
+    				<h3>Cart Totals</h3>
+    				<p class="d-flex">
+    					<span>Subtotal</span>
+    					<span id="cart-subtotal">$@Model.Sum(p => p.TotalPrice)</span>
+    				</p>
+    				<p class="d-flex">
+    					<span>Delivery</span>
+    					<span>$0.00</span>
+    				</p>
+    				<p class="d-flex">
+    					<span>Discount</span>
+    					<span>$3.00</span>
+    				</p>
+    				<hr>
+    				<p class="d-flex total-price">
+    					<span>Total</span>
+    					<span>$17.60</span>
+    				</p>
+    			</div>
+    			<p class="text-center"><a href="checkout.html" class="btn btn-primary py-3 px-4">Proceed to Checkout</a></p>
+    		</div>
+    	</div>
+		</div>
+	</section>
+
+
+<script>
+document.addEventListener("click", function (e) {
+
+    const cartQtyEl = document.getElementById("cart-qty");
+
+    // ================= UPDATE CART =================
+    function updateCart(id, qty, input, row) {
+        fetch(`/Cart/UpdateQuantity?id=${id}&quantity=${qty}`)
+            .then(res => res.json())
+            .then(data => {
+                if (!data.success) return;
+
+                // update input
+                if (input) input.value = qty;
+
+                // update row total (if exists)
+                if (row) {
+                    const priceText = row.querySelector(".price")?.innerText || "0";
+                    const price = parseFloat(priceText.replace("$", "")) || 0;
+
+                    const totalCell = row.querySelector(".total");
+                    if (totalCell) {
+                        const newTotal = price * qty;
+                        totalCell.innerText = "$" + newTotal.toLocaleString("en-US", {
+                            minimumFractionDigits: 0,
+                            maximumFractionDigits: 2
+                        });
+                    }
+                }
+
+                // update cart quantity
+                if (cartQtyEl) cartQtyEl.innerText = data.quantity;
+
+                // update subtotal
+                const subtotalEl = document.getElementById("cart-subtotal");
+                if (subtotalEl) {
+                    subtotalEl.innerText = "$" + data.totalPrice.toLocaleString("en-US", {
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 2
+                    });
+                }
+                toastr.success("Đã cập nhật giỏ hàng");
+            });
+    }
+
+    // ================= REMOVE ITEM =================
+    const removeBtn = e.target.closest(".js-remove-cart");
+    if (removeBtn) {
+        e.preventDefault();
+
+        const id = removeBtn.dataset.id;
+        const row = removeBtn.closest("tr");
+
+        fetch(`/Cart/RemoveCart?id=${id}`)
+            .then(res => res.json())
+            .then(data => {
+                if (!data.success) return;
+
+                row?.remove();
+                if (cartQtyEl) cartQtyEl.innerText = data.quantity;
+
+                const subtotalEl = document.getElementById("cart-subtotal");
+                if (subtotalEl) {
+                    subtotalEl.innerText = "$" + data.totalPrice.toLocaleString("en-US");
+                }
+
+                toastr.success("Đã xóa sản phẩm");
+            });
+
+        return;
+    }
+
+    // ================= PLUS =================
+    const plusBtn = e.target.closest(".qty-plus");
+    if (plusBtn) {
+        const id = plusBtn.dataset.id;
+
+        const wrapper = plusBtn.closest(".js-cart-qty");
+        const input = wrapper?.querySelector("input");
+        const row = plusBtn.closest("tr");
+
+        let qty = parseInt(input?.value || "1") + 1;
+
+        updateCart(id, qty, input, row);
+        return;
+    }
+
+    // ================= MINUS =================
+    const minusBtn = e.target.closest(".qty-minus");
+    if (minusBtn) {
+        const id = minusBtn.dataset.id;
+
+        const row = minusBtn.closest("tr");
+        const input = row?.querySelector("input");
+
+        let qty = parseInt(input?.value || "1");
+
+        if (qty <= 1) {
+            fetch(`/Cart/RemoveCart?id=${id}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (!data.success) return;
+
+                    row?.remove();
+                    if (cartQtyEl) cartQtyEl.innerText = data.quantity;
+
+                    toastr.success("Đã xóa sản phẩm");
+                });
+
+            return;
+        }
+
+        qty--;
+        updateCart(id, qty, input, row);
+        return;
+    }
+});
+</script>
+
+
+
+
+
+
