@@ -28,12 +28,12 @@
 @if (ViewBag.SearchQuery != null) {
 	<div class="col-12 mb-4">
 		<h1>Search</h1>
-		<h6>Có @Model.Count() sản phẩm cho từ khóa "@ViewBag.SearchQuery"</h6>
+		<h6>@Model.Count() items found for "@ViewBag.SearchQuery"</h6>
 	</div>
 }
 else {
 	<div class="col-12 mb-4">
-		<h6>Có @Model.Count() sản phẩm</h6>
+		<h6>@Model.Count() items</h6>
 	</div>
 }
 
@@ -70,7 +70,7 @@ else {
                     </div>
                     <p class="bottom-area d-flex px-3">
                         <button class="add-to-cart text-center py-2 mr-1" data-id="@item.Id"><span>Add to cart <i class="ion-ios-add ml-1"></i></span></button>
-                        <button href="#" class="buy-now text-center py-2">Buy now<span><i class="ion-ios-cart ml-1"></i></span></button>
+                        <button class="buy-now text-center py-2" data-id="@item.Id">Buy now<span><i class="ion-ios-cart ml-1"></i></span></button>
                     </p>
                 </div>
             </div>
@@ -90,11 +90,26 @@ else {
                 .then(res => res.json())
                 .then(data => {
                     if (data.success) {
-                        toastr.success("Đã thêm vào giỏ hàng!");
+                        toastr.success("Added to cart!");
                         // Update mini cart
                         document.getElementById("cart-qty").innerText = data.quantity;
                     } else {
-                        toastr.error("Có lỗi xảy ra!");
+                        toastr.error("Eror!");
+                    }
+                });
+            });
+        });
+        document.querySelectorAll(".buy-now").forEach(btn => {
+            btn.addEventListener("click", function () {
+                const id = this.getAttribute("data-id");
+
+                fetch(`/Cart/AddToCart?id=${id}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.href = "/Cart"; 
+                    } else {
+                        toastr.error("Error!");
                     }
                 });
             });

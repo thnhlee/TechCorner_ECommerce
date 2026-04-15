@@ -54,10 +54,12 @@ namespace TechCorner_ECommerce.Controllers {
                 HttpContext.Session.Set(MySetting.CART_KEY, cart);
             }
             int totalQty = cart.Sum(p => p.Quantity);
+            double subTotal = cart.Sum(p => p.SubTotal);
 
             return Json(new {
                 success = true,
-                quantity = totalQty
+                quantity = totalQty,
+                subTotal = subTotal
             });
         }
 
@@ -71,7 +73,7 @@ namespace TechCorner_ECommerce.Controllers {
             }
 
             int totalQty = cart.Sum(x => x.Quantity);
-            double totalPrice = cart.Sum(x => x.TotalPrice);
+            double totalPrice = cart.Sum(x => x.SubTotal);
 
             return Json(new {
                 success = true,

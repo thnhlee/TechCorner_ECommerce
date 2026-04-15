@@ -467,8 +467,8 @@ pre {
 
 .container-fluid {
   width: 100%;
-  padding-right: 15px;
-  padding-left: 15px;
+  padding-right: 200px;
+  padding-left: 200px;
   margin-right: auto;
   margin-left: auto; }
 
@@ -9347,7 +9347,9 @@ h1, h2, h3, h4, h5,
     .table .thead-primary tr th {
       padding: 20px 10px;
       color: #fff !important;
-      border: 1px solid transparent !important; }
+      border: 1px solid transparent !important;
+      font-weight
+    }
   .table tbody tr td {
     text-align: center !important;
     vertical-align: middle;
@@ -9385,14 +9387,44 @@ h1, h2, h3, h4, h5,
       color: #000000; }
 
 .cart-wrap .btn-primary {
-  display: block;
-  width: 100%; }
+    display: block;
+    width: 100%;
+    font-size: 15px;
+    font-weight: 700;
+}
+.cart-wrap {
+    align-self: flex-start;
+    position: sticky;
+    top: 120px;
+}
 
+
+.cart-total .btn {
+    padding: 20px 30px !important;
+    margin-top: auto;
+}
+.cart-list table th,
+.cart-list table td {
+    padding: 15px 10px;
+    font-size: 14px;
+}
+.image-prod .img {
+    width: 80px;
+    height: 80px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    margin: auto;
+}
 .cart-total {
-  width: 100%;
-  display: block;
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  padding: 20px; }
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: 20px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
   .cart-total h3 {
     font-size: 18px;
     text-transform: uppercase;

@@ -17,108 +17,113 @@
 </div>
 
 <section class="ftco-section ftco-cart">
-		<div class="container">
-			<div class="row">
-    		<div class="col-md-12 ftco-animate">
-    			<div class="cart-list">
-	    			<table class="table">
-						<thead class="thead-primary">
-						    <tr class="text-center">
-						    <th>&nbsp;</th>
-						    <th>&nbsp;</th>
-						    <th>Product</th>
-						    <th>Price</th>
-						    <th>Quantity</th>
-						    <th>Total</th>
-						    </tr>
-						</thead>
-						<tbody>
-						@foreach (var item in Model)
-						{
-							<tr class="text-center">
-						    <td class="product-remove">
-								<a href="#" class="js-remove-cart" data-id="@item.ProductId">
-									<span class="ion-ios-close"></span>
-								</a>
-							</td>
-						        
-						    <td class="image-prod"><div class="img" style="background-image:url(images/product-3.jpg);"></div></td>
-						        
-						    <td class="product-name">
-						        <h3>@item.ProductName</h3>
-						        	
-						    </td>
-						        
-						    <td class="price">$@item.Price</td>
-						        
-						    <td class="quantity">
-						        <div class="input-group mb-3">
-                                    <div class="input-group js-cart-qty cart-qty-group">
-    
-                                        <div class="input-group-prepend">
-                                            <button type="button"
-                                                    class="qty-minus btn btn-sm btn-outline-secondary rounded-left"
-                                                    data-id="@item.ProductId">
-                                                −
-                                            </button>
+    <div class="container" style="max-width: 1500px;"> 
+        <div class="row cart-wrapper">
+
+            <!--PRODUCT TABLE-->
+            <div class="col-lg-9 ftco-animate d-flex">
+                <div class="cart-list w-100">
+                    <table class="table">
+                        <thead class="thead-primary">
+                            <tr class="text-center">
+                                <th>&nbsp;</th>
+                                <th>&nbsp;</th>
+                                <th>Product</th>
+                                <th>Price</th>
+                                <th>Quantity</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr class="text-center">
+                                    <td class="product-remove">
+                                        <a href="#" class="js-remove-cart" data-id="@item.ProductId">
+                                            <span class="ion-ios-close"></span>
+                                        </a>
+                                    </td>
+
+                                    <td class="image-prod">
+                                        <div class="img" style="background-image:url(images/product-3.jpg);"></div>
+                                    </td>
+
+                                    <td class="product-name">
+                                        <h3>@item.ProductName</h3>
+                                    </td>
+
+                                    <td class="price">$@item.Price</td>
+
+                                    <td class="quantity">
+                                        <div class="input-group mb-3">
+                                            <div class="input-group js-cart-qty cart-qty-group">
+
+                                                <div class="input-group-prepend">
+                                                    <button type="button"
+                                                            class="qty-minus btn btn-sm btn-outline-secondary"
+                                                            data-id="@item.ProductId">−</button>
+                                                </div>
+
+                                                <input type="text"
+                                                       class="quantity form-control form-control-sm text-center"
+                                                       value="@item.Quantity"
+                                                       readonly />
+
+                                                <div class="input-group-append">
+                                                    <button type="button"
+                                                            class="qty-plus btn btn-sm btn-outline-secondary"
+                                                            data-id="@item.ProductId">+</button>
+                                                </div>
+
+                                            </div>
                                         </div>
+                                    </td>
 
-                                        <input type="text"
-                                               class="quantity form-control form-control-sm text-center"
-                                               value="@item.Quantity"
-                                               readonly />
+                                    <td class="total">$@item.SubTotal</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
-                                        <div class="input-group-append">
-                                            <button type="button"
-                                                    class="qty-plus btn btn-sm btn-outline-secondary rounded-right"
-                                                    data-id="@item.ProductId">
-                                                +
-                                            </button>
-                                        </div>
+            <!--CART TOTAL-->
+            <div class="col-lg-3 cart-wrap ftco-animate">
+               
+                    <div class="cart-total  w-100">
+                        <h3>Cart Totals</h3>
 
-                                    </div>
-					        </div>
-					        </td>
-						        
-						    <td class="total" data-price="@item.Price">
-                                $@item.TotalPrice
-                            </td>
-						    </tr><!-- END TR-->
-						}
+                        <p class="d-flex">
+                            <span>Subtotal</span>
+                            <span id="cart-subtotal" data-value="@Model.Sum(p => p.SubTotal)">
+                                $@Model.Sum(p => p.SubTotal)
+                            </span>
+                        </p>
+
+                        <p class="d-flex">
+                            <span>Delivery</span>
+                            <span>0.00</span>
+                        </p>
 
 
-						</tbody>
-						</table>
-					</div>
-    		</div>
-    	</div>
-    	<div class="row justify-content-start">
-    		<div class="col col-lg-5 col-md-6 mt-5 cart-wrap ftco-animate">
-    			<div class="cart-total mb-3">
-    				<h3>Cart Totals</h3>
-    				<p class="d-flex">
-    					<span>Subtotal</span>
-    					<span id="cart-subtotal">$@Model.Sum(p => p.TotalPrice)</span>
-    				</p>
-    				<p class="d-flex">
-    					<span>Delivery</span>
-    					<span>$0.00</span>
-    				</p>
-    				<p class="d-flex">
-    					<span>Discount</span>
-    					<span>$3.00</span>
-    				</p>
-    				<hr>
-    				<p class="d-flex total-price">
-    					<span>Total</span>
-    					<span>$17.60</span>
-    				</p>
-    			</div>
-    			<p class="text-center"><a href="checkout.html" class="btn btn-primary py-3 px-4">Proceed to Checkout</a></p>
-    		</div>
-    	</div>
-		</div>
-	</section>
+                        <hr>
+
+                        <p class="d-flex total-price">
+                            <span>Total</span>
+                            <span>$17.60</span>
+                        </p>
+
+                        <a href="checkout.html" class="btn btn-primary py-1 px-2 mt-auto">
+                            Proceed to Checkout
+                        </a>
+                    </div>
+                
+
+            </div>
+
+        </div>
+    </div>
+</section>
 
 
 <script>
@@ -126,7 +131,22 @@ document.addEventListener("click", function (e) {
 
     const cartQtyEl = document.getElementById("cart-qty");
 
-    // ================= UPDATE CART =================
+    // =================FORMAT SUBTOTAL=================
+    function updateSubtotal(data) {
+        const subtotalEl = document.getElementById("cart-subtotal");
+        if (!subtotalEl) return;
+
+        if (!data || data.totalPrice === undefined || data.totalPrice === null) return;
+
+        const total = Number(data.totalPrice);
+
+        subtotalEl.innerText = "$" + total.toLocaleString("en-US", {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 2
+        });
+    }
+
+    // =================UPDATE CART=================
     function updateCart(id, qty, input, row) {
         fetch(`/Cart/UpdateQuantity?id=${id}&quantity=${qty}`)
             .then(res => res.json())
@@ -136,7 +156,7 @@ document.addEventListener("click", function (e) {
                 // update input
                 if (input) input.value = qty;
 
-                // update row total (if exists)
+                // update row total
                 if (row) {
                     const priceText = row.querySelector(".price")?.innerText || "0";
                     const price = parseFloat(priceText.replace("$", "")) || 0;
@@ -144,6 +164,7 @@ document.addEventListener("click", function (e) {
                     const totalCell = row.querySelector(".total");
                     if (totalCell) {
                         const newTotal = price * qty;
+
                         totalCell.innerText = "$" + newTotal.toLocaleString("en-US", {
                             minimumFractionDigits: 0,
                             maximumFractionDigits: 2
@@ -154,19 +175,14 @@ document.addEventListener("click", function (e) {
                 // update cart quantity
                 if (cartQtyEl) cartQtyEl.innerText = data.quantity;
 
-                // update subtotal
-                const subtotalEl = document.getElementById("cart-subtotal");
-                if (subtotalEl) {
-                    subtotalEl.innerText = "$" + data.totalPrice.toLocaleString("en-US", {
-                        minimumFractionDigits: 0,
-                        maximumFractionDigits: 2
-                    });
-                }
+                // update subtotal 
+                updateSubtotal(data);
+
                 toastr.success("Đã cập nhật giỏ hàng");
             });
     }
 
-    // ================= REMOVE ITEM =================
+    // =================REMOVE ITEM=================
     const removeBtn = e.target.closest(".js-remove-cart");
     if (removeBtn) {
         e.preventDefault();
@@ -180,20 +196,34 @@ document.addEventListener("click", function (e) {
                 if (!data.success) return;
 
                 row?.remove();
+
+                if (document.querySelectorAll("tbody tr").length === 0) {
+                    location.reload();
+                    return;
+                }
+
                 if (cartQtyEl) cartQtyEl.innerText = data.quantity;
+
+                //TÍNH LẠI SUBTOTAL TỪ DOM
+                let subtotal = 0;
+
+                document.querySelectorAll(".total").forEach(el => {
+                    const val = parseFloat(el.innerText.replace("$", "")) || 0;
+                    subtotal += val;
+                });
 
                 const subtotalEl = document.getElementById("cart-subtotal");
                 if (subtotalEl) {
-                    subtotalEl.innerText = "$" + data.totalPrice.toLocaleString("en-US");
+                    subtotalEl.innerText = "$" + subtotal.toLocaleString("en-US");
                 }
 
-                toastr.success("Đã xóa sản phẩm");
+                toastr.success("Item Deleted");
             });
 
         return;
     }
 
-    // ================= PLUS =================
+    // =================PLUS=================
     const plusBtn = e.target.closest(".qty-plus");
     if (plusBtn) {
         const id = plusBtn.dataset.id;
@@ -208,7 +238,7 @@ document.addEventListener("click", function (e) {
         return;
     }
 
-    // ================= MINUS =================
+    // =================MINUS=================
     const minusBtn = e.target.closest(".qty-minus");
     if (minusBtn) {
         const id = minusBtn.dataset.id;
@@ -225,9 +255,27 @@ document.addEventListener("click", function (e) {
                     if (!data.success) return;
 
                     row?.remove();
+
+                    if (document.querySelectorAll("tbody tr").length === 0) {
+                        location.reload();
+                        return;
+                    }
+
+                    let subtotal = 0;
+
+                    document.querySelectorAll(".total").forEach(el => {
+                        const val = parseFloat(el.innerText.replace("$", "")) || 0;
+                        subtotal += val;
+                    });
+
+                    document.getElementById("cart-subtotal").innerText =
+                        "$" + subtotal.toLocaleString("en-US");
+
                     if (cartQtyEl) cartQtyEl.innerText = data.quantity;
 
-                    toastr.success("Đã xóa sản phẩm");
+                    updateSubtotal(data);
+
+                    toastr.success("Item Deleted");
                 });
 
             return;
@@ -237,7 +285,16 @@ document.addEventListener("click", function (e) {
         updateCart(id, qty, input, row);
         return;
     }
+
 });
+
+// =================TOAST CONFIG=================
+toastr.options = {
+    closeButton: true,
+    progressBar: true,
+    positionClass: "toast-top-right",
+    timeOut: "500"
+};
 </script>
 
 

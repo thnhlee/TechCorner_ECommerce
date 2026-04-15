@@ -62,7 +62,7 @@
                             <p style="color: #000;">@Model.Stock available</p>
                         </div>
                     </div>
-                    <p><button class="btn btn-black py-3 px-5 mr-2" data-id="@Model.Id">Add to Cart</button><button href="cart.html" class="btn btn-primary py-3 px-5">Buy now</button></p> 
+                    <p><button class="btn btn-black py-3 px-5 mr-2" data-id="@Model.Id">Add to Cart</button><button class="btn btn-primary py-3 px-5 " data-id="@Model.Id">Buy now</button></p> 
                 
                 </div>
             </div>
@@ -205,7 +205,7 @@
             e.preventDefault(); 
 
             const id = btn.dataset.id;
-            const qtyInput = document.querySelector(".quantity");
+            const qtyInput = btn.closest(".product-details")?.querySelector(".quantity");
             const qty = qtyInput ? qtyInput.value : 1;
 
             fetch(`/Cart/AddToCart?id=${id}&quantity=${qty}`, {
@@ -227,7 +227,30 @@
             });
 
         });
-    
+        document.querySelectorAll(".btn.btn-primary").forEach(btn => {
+            btn.addEventListener("click", function () {
+                const id = this.getAttribute("data-id");
+
+                const qtyInput = btn.closest(".product-details")?.querySelector(".quantity");
+                const qty = qtyInput ? parseInt(qtyInput.value || "1") : 1;
+
+                fetch(`/Cart/AddToCart?id=${id}&quantity=${qty}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+
+                        const cartQty = document.getElementById("cart-qty");
+                        if (cartQty) {
+                            cartQty.innerText = data.quantity;
+                        }
+
+                        window.location.href = "/Cart";
+                    } else {
+                        toastr.error("Error!");
+                    }
+                });
+            });
+        });
 
     toastr.options = {
         closeButton: true,
