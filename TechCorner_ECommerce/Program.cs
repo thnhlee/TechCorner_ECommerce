@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using TechCorner_ECommerce.Data;
 
@@ -18,6 +19,12 @@ namespace TechCorner_ECommerce {
                     options.LoginPath = "/Auth/Login";
                     options.AccessDeniedPath = "/Auth/AccessDenied";
                 });
+            // Add Identity services
+            builder.Services.AddDefaultIdentity<IdentityUser>(options =>
+                options.SignIn.RequireConfirmedAccount = false)
+                .AddEntityFrameworkStores<AppDbContext>();
+            builder.Services.AddRazorPages();
+
             // Add session services
             builder.Services.AddDistributedMemoryCache();
 

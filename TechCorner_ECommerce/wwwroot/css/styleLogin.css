@@ -1,0 +1,38 @@
+﻿
+body {
+    height: 100vh;
+    background: linear-gradient(135deg, #ff8c42, #dbcc8f,#ffffff);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 420px;
+    border-radius: 18px;
+    border: none;
+}
+
+.btn-gold {
+    background-color: #dbcc8f;
+    border: none;
+    color: #2c2c2c;
+    font-weight: 600;
+}
+
+    .btn-gold:hover {
+        background-color: #cbb97a;
+        color: #000;
+    }
+
+.input-group-text {
+    background: #fff;
+}
+
+.form-control:focus {
+    border-color: #dbcc8f;
+    box-shadow: 0 0 0 0.15rem rgba(219, 204, 143, 0.3);
+}
+
+
