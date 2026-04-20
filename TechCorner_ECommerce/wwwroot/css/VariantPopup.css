@@ -1,0 +1,55 @@
+﻿.variant-popup {
+    position: fixed;
+    inset: 0;
+    display: none;
+    z-index: 9999;
+}
+
+/* overlay mờ */
+.popup-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+}
+
+/* modal box */
+.popup-container {
+    position: relative;
+    width: 800px;
+    max-width: 95%;
+    background: #fff;
+    margin: 5% auto;
+    border-radius: 10px;
+    z-index: 2;
+    animation: fadeIn 0.25s ease;
+}
+
+/* content */
+.popup-body {
+    display: flex;
+    padding: 20px;
+}
+
+/* close button */
+.popup-close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 22px;
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+
+/* animation */
+@keyframes fadeIn {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
