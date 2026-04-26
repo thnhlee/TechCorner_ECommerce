@@ -32,7 +32,7 @@ namespace TechCorner_ECommerce.Controllers {
 
             if (result.Succeeded) {
 
-                TempData["SuccessMessage"] = "Login successful!";
+                //TempData["SuccessMessage"] = "Login successful!";
                 return RedirectToAction("Index", "Home");
             }
 

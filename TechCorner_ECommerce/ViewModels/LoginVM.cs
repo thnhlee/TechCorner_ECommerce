@@ -11,9 +11,6 @@ namespace TechCorner_ECommerce.ViewModels {
         public string Password { get; set; }
         public bool RememberMe { get; set; }
 
-        //[Required(ErrorMessage = "Confirm Password is required")]
-        //[DataType(DataType.Password)]
-        //[Compare("Password", ErrorMessage = "Passwords do not match")]
-        //public string ConfirmPassword { get; set; }
+
     }
 }
