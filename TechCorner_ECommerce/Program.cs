@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using TechCorner_ECommerce.Data;
+using TechCorner_ECommerce.Models;
+using TechCorner_ECommerce.Helpers;
 
 namespace TechCorner_ECommerce {
     public class Program {
@@ -13,17 +15,24 @@ namespace TechCorner_ECommerce {
             // Add DbContext
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-            //Add authentication services
-            builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-                .AddCookie(options => {
-                    options.LoginPath = "/Auth/Login";
-                    options.AccessDeniedPath = "/Auth/AccessDenied";
-                });
+
             // Add Identity services
-            builder.Services.AddDefaultIdentity<IdentityUser>(options =>
-                options.SignIn.RequireConfirmedAccount = false)
-                .AddEntityFrameworkStores<AppDbContext>();
+            builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
+                .AddEntityFrameworkStores<AppDbContext>()
+                .AddErrorDescriber<CustomIdentityErrorDescriber>();
             builder.Services.AddRazorPages();
+
+            builder.Services.Configure<IdentityOptions>(options =>
+            {
+                // Default Password settings.
+                options.Password.RequireDigit = true;
+                options.Password.RequireLowercase = true;
+                options.Password.RequireNonAlphanumeric = true;
+                options.Password.RequireUppercase = true;
+                options.Password.RequiredLength = 5;
+                options.Password.RequiredUniqueChars = 1;
+            });
+
 
             // Add session services
             builder.Services.AddDistributedMemoryCache();
@@ -51,8 +60,9 @@ namespace TechCorner_ECommerce {
 
             app.UseSession();
 
-            app.UseAuthorization();
             app.UseAuthentication();
+            app.UseAuthorization();
+
 
             app.MapStaticAssets();
             app.MapControllerRoute(

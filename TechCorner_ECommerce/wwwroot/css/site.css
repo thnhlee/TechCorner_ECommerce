@@ -68,6 +68,7 @@ body {
 
 .search-box {
     position: relative;
+      padding-right: 10px;
     width: 280px;
 }
 

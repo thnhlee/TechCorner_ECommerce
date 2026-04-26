@@ -82,7 +82,7 @@
                 `$${selectedVariant.price || selectedVariant.Price}`;
 
             document.getElementById("dynamic-stock").innerText =
-                `Stock: ${state.selectedVariant.stockQuantity || state.selectedVariant.StockQuantity}`;
+                `Stock: ${selectedVariant.stock || selectedVariant.Stock}`;
 
         }
     }
@@ -136,6 +136,7 @@
 
         updateAvailableOptions();
         findVariant();
+
     }
 
     autoSelect();
@@ -161,7 +162,9 @@
             if (cartQty) cartQty.innerText = data.quantity;
 
             toastr.success("Đã thêm vào giỏ hàng!");
+            document.getElementById("quantity").value = 1;
         }
+
     });
 
     // ================= BUY =================
@@ -185,7 +188,7 @@
         closeButton: true,
         progressBar: true,
         positionClass: "toast-top-right",
-        timeOut: "1000"
+        timeOut: "800"
     };
 
 });
