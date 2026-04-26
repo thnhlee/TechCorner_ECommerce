@@ -5,9 +5,16 @@
 }
 
 @section lib{
+    
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet"/>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script> 
+    <link rel="stylesheet" href="~/css/StyleProdPage.css">
+    <script src="~/js/addToCart.js"></script>
+    <script src="~/js/variantManager.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 }
 
 @section breadcrumbs {
@@ -66,59 +73,17 @@ else {
                     </div>
                     <h3><a href="#">@item.Name</a></h3>
                     <div class="pricing">
-                        <p class="price"><span>$@item.price</span></p>
+                        <p class="price"><span>$@item.Price</span></p>
                     </div>
                     <p class="bottom-area d-flex px-3">
-                        <button class="add-to-cart text-center py-2 mr-1" data-id="@item.Id"><span>Add to cart <i class="ion-ios-add ml-1"></i></span></button>
-                        <button class="buy-now text-center py-2" data-id="@item.Id">Buy now<span><i class="ion-ios-cart ml-1"></i></span></button>
+                        <button class="add-to-cart text-center py-2 mr-1" onclick="PopupProduct.open(@item.Id)"><span>Add to cart <i class="ion-ios-add ml-1"></i></span></button>
+                        @* <button class="buy-now text-center py-2" data-id="@item.Id">Buy now<span><i class="ion-ios-cart ml-1"></i></span></button> *@
                     </p>
                 </div>
             </div>
         </div>
     }
-</div>               
+</div>
+@await Html.PartialAsync("_VariantPopup")
 
-@section Scripts{
-    <script>
-        document.querySelectorAll(".add-to-cart").forEach(btn => {
-            btn.addEventListener("click", function () {
-                const id = this.getAttribute("data-id");
 
-                fetch(`/Cart/AddToCart?id=${id}`, {
-                    method: 'GET'
-                })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success) {
-                        toastr.success("Added to cart!");
-                        // Update mini cart
-                        document.getElementById("cart-qty").innerText = data.quantity;
-                    } else {
-                        toastr.error("Eror!");
-                    }
-                });
-            });
-        });
-        document.querySelectorAll(".buy-now").forEach(btn => {
-            btn.addEventListener("click", function () {
-                const id = this.getAttribute("data-id");
-
-                fetch(`/Cart/AddToCart?id=${id}`)
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success) {
-                        window.location.href = "/Cart"; 
-                    } else {
-                        toastr.error("Error!");
-                    }
-                });
-            });
-        });
-        toastr.options = {
-        closeButton: true,
-        progressBar: true,
-        positionClass: "toast-top-right",
-        timeOut: "1000"
-    };
-    </script>
-}

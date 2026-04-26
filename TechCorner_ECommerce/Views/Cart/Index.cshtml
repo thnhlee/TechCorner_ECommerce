@@ -39,7 +39,7 @@
                             {
                                 <tr class="text-center">
                                     <td class="product-remove">
-                                        <a href="#" class="js-remove-cart" data-id="@item.ProductId">
+                                        <a href="#" class="js-remove-cart" data-id="@item.ProductVariantId">
                                             <span class="ion-ios-close"></span>
                                         </a>
                                     </td>
@@ -61,7 +61,7 @@
                                                 <div class="input-group-prepend">
                                                     <button type="button"
                                                             class="qty-minus btn btn-sm btn-outline-secondary"
-                                                            data-id="@item.ProductId">−</button>
+                                                            data-id="@item.ProductVariantId">−</button>
                                                 </div>
 
                                                 <input type="text"
@@ -72,7 +72,7 @@
                                                 <div class="input-group-append">
                                                     <button type="button"
                                                             class="qty-plus btn btn-sm btn-outline-secondary"
-                                                            data-id="@item.ProductId">+</button>
+                                                            data-id="@item.ProductVariantId">+</button>
                                                 </div>
 
                                             </div>
@@ -131,26 +131,27 @@ document.addEventListener("click", function (e) {
 
     const cartQtyEl = document.getElementById("cart-qty");
 
-    // =================FORMAT SUBTOTAL=================
+    // ================= FORMAT SUBTOTAL =================
     function updateSubtotal(data) {
         const subtotalEl = document.getElementById("cart-subtotal");
-        if (!subtotalEl) return;
+        if (!subtotalEl || !data) return;
 
-        if (!data || data.totalPrice === undefined || data.totalPrice === null) return;
+        const total = data.totalPrice ?? data.subTotal;
+        if (total === undefined || total === null) return;
 
-        const total = Number(data.totalPrice);
-
-        subtotalEl.innerText = "$" + total.toLocaleString("en-US", {
+        subtotalEl.innerText = "$" + Number(total).toLocaleString("en-US", {
             minimumFractionDigits: 0,
             maximumFractionDigits: 2
         });
     }
 
-    // =================UPDATE CART=================
-    function updateCart(id, qty, input, row) {
-        fetch(`/Cart/UpdateQuantity?id=${id}&quantity=${qty}`)
+    // ================= UPDATE CART =================
+    function updateCart(variantId, qty, input, row) {
+
+        fetch(`/Cart/UpdateQuantity?variantId=${variantId}&quantity=${qty}`)
             .then(res => res.json())
             .then(data => {
+
                 if (!data.success) return;
 
                 // update input
@@ -162,6 +163,7 @@ document.addEventListener("click", function (e) {
                     const price = parseFloat(priceText.replace("$", "")) || 0;
 
                     const totalCell = row.querySelector(".total");
+
                     if (totalCell) {
                         const newTotal = price * qty;
 
@@ -175,28 +177,30 @@ document.addEventListener("click", function (e) {
                 // update cart quantity
                 if (cartQtyEl) cartQtyEl.innerText = data.quantity;
 
-                // update subtotal 
+                // update subtotal
                 updateSubtotal(data);
 
-                toastr.success("Đã cập nhật giỏ hàng");
+                toastr.success("Cart Updated!!");
             });
     }
 
-    // =================REMOVE ITEM=================
+    // ================= REMOVE ITEM =================
     const removeBtn = e.target.closest(".js-remove-cart");
     if (removeBtn) {
         e.preventDefault();
 
-        const id = removeBtn.dataset.id;
+        const variantId = removeBtn.dataset.id;
         const row = removeBtn.closest("tr");
 
-        fetch(`/Cart/RemoveCart?id=${id}`)
+        fetch(`/Cart/RemoveCart?variantId=${variantId}`)
             .then(res => res.json())
             .then(data => {
+
                 if (!data.success) return;
 
                 row?.remove();
 
+                // nếu rỗng cart
                 if (document.querySelectorAll("tbody tr").length === 0) {
                     location.reload();
                     return;
@@ -204,7 +208,7 @@ document.addEventListener("click", function (e) {
 
                 if (cartQtyEl) cartQtyEl.innerText = data.quantity;
 
-                //TÍNH LẠI SUBTOTAL TỪ DOM
+                // tính lại subtotal từ DOM
                 let subtotal = 0;
 
                 document.querySelectorAll(".total").forEach(el => {
@@ -223,10 +227,11 @@ document.addEventListener("click", function (e) {
         return;
     }
 
-    // =================PLUS=================
+    // ================= PLUS =================
     const plusBtn = e.target.closest(".qty-plus");
     if (plusBtn) {
-        const id = plusBtn.dataset.id;
+
+        const variantId = plusBtn.dataset.id;
 
         const wrapper = plusBtn.closest(".js-cart-qty");
         const input = wrapper?.querySelector("input");
@@ -234,24 +239,27 @@ document.addEventListener("click", function (e) {
 
         let qty = parseInt(input?.value || "1") + 1;
 
-        updateCart(id, qty, input, row);
+        updateCart(variantId, qty, input, row);
         return;
     }
 
-    // =================MINUS=================
+    // ================= MINUS =================
     const minusBtn = e.target.closest(".qty-minus");
     if (minusBtn) {
-        const id = minusBtn.dataset.id;
+
+        const variantId = minusBtn.dataset.id;
 
         const row = minusBtn.closest("tr");
         const input = row?.querySelector("input");
 
         let qty = parseInt(input?.value || "1");
 
+        // nếu <= 1 thì remove luôn
         if (qty <= 1) {
-            fetch(`/Cart/RemoveCart?id=${id}`)
+            fetch(`/Cart/RemoveCart?variantId=${variantId}`)
                 .then(res => res.json())
                 .then(data => {
+
                     if (!data.success) return;
 
                     row?.remove();
@@ -260,6 +268,8 @@ document.addEventListener("click", function (e) {
                         location.reload();
                         return;
                     }
+
+                    if (cartQtyEl) cartQtyEl.innerText = data.quantity;
 
                     let subtotal = 0;
 
@@ -271,8 +281,6 @@ document.addEventListener("click", function (e) {
                     document.getElementById("cart-subtotal").innerText =
                         "$" + subtotal.toLocaleString("en-US");
 
-                    if (cartQtyEl) cartQtyEl.innerText = data.quantity;
-
                     updateSubtotal(data);
 
                     toastr.success("Item Deleted");
@@ -282,18 +290,19 @@ document.addEventListener("click", function (e) {
         }
 
         qty--;
-        updateCart(id, qty, input, row);
+        updateCart(variantId, qty, input, row);
         return;
     }
 
 });
 
-// =================TOAST CONFIG=================
+
+// ================= TOAST CONFIG =================
 toastr.options = {
     closeButton: true,
     progressBar: true,
     positionClass: "toast-top-right",
-    timeOut: "500"
+    timeOut: "300"
 };
 </script>
 

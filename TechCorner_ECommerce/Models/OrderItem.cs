@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace TechCorner_ECommerce.Data {
+namespace TechCorner_ECommerce.Models {
     public class OrderItem {
         public int Id { get; set; }
 

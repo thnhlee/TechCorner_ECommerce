@@ -95,11 +95,34 @@
                     </form>
                 </li>
 
-                <li class="nav-item">
-                    <a href="login.html" class="nav-link">
-                    <i class="fa fa-user"></i>
-                    </a>
+
+                <li class="nav-item dropdown">
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fa fa-user"></i>
+                        </a>
+
+                        <ul class="dropdown-menu dropdown-menu-end custom-dropdown">
+                            <li class="dropdown-item text-muted">
+                                Hi, @User.Identity.Name
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item" asp-controller="Account" asp-action="Logout">
+                                    Logout
+                                </a>
+                            </li>
+                        </ul>
+                    }
+                    else
+                    {
+                        <a asp-controller="Account" asp-action="Login" class="nav-link">
+                            <i class="fa fa-user"></i>
+                        </a>
+                    }
                 </li>
+
 
                 @await Component.InvokeAsync("Cart")
 

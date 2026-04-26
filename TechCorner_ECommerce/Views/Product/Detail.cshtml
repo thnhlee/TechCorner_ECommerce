@@ -1,4 +1,5 @@
-﻿@model TechCorner_ECommerce.ViewModels.ProductVM
+﻿@using System.Text.Json
+@model TechCorner_ECommerce.ViewModels.ProductVM
 @{
     ViewData["Title"] = "Detail";
 }
@@ -6,7 +7,11 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script> 
+<script>
+    window.productVariants = @Html.Raw(JsonSerializer.Serialize(Model.Variants));
+</script>
 
+<script src="~/js/DetailProd.js"></script>
 
 <div class="hero-wrap hero-bread" style="background-image: url('/Hinh/Pulsar-FS1-2800px.webp');">
 
@@ -36,7 +41,8 @@
                             <a href="#" class="mr-2" style="color: #000;">500 <span style="color: #bbb;">Sold</span></a>
                         </p>
                     </div>
-                    <p class="price"><span>$@Model.price</span></p>
+                    <div id="attribute-container"></div>
+                    <p class="price" id="dynamic-price"><span>$@Model.Price</span></p>
                     <p>@Model.Description</p>
                     
                         <div class="row mt-4">
@@ -59,7 +65,7 @@
                        
                         <div class="w-100"></div>
                         <div class="col-md-12">
-                            <p style="color: #000;">@Model.Stock available</p>
+                         <p style="color: #000;" id="dynamic-stock">@Model.Stock available</p>
                         </div>
                     </div>
                     <p><button class="btn btn-black py-3 px-5 mr-2" data-id="@Model.Id">Add to Cart</button><button class="btn btn-primary py-3 px-5 " data-id="@Model.Id">Buy now</button></p> 
@@ -169,7 +175,6 @@
 
 
 
-@section Scripts {
 @* Add or decrease items *@
 <script>
     $(document).on('click', '.qty-plus', function (e) {
@@ -197,104 +202,7 @@
     });
 </script>
 
-@* Add to cart *@
-<script>
-    document.addEventListener("click", function (e) {
-        const btn = e.target.closest(".btn-black");
-            if (!btn) return;
-            e.preventDefault(); 
 
-            const id = btn.dataset.id;
-            const qtyInput = btn.closest(".product-details")?.querySelector(".quantity");
-            const qty = qtyInput ? qtyInput.value : 1;
 
-            fetch(`/Cart/AddToCart?id=${id}&quantity=${qty}`, {
-                method: 'GET'
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    toastr.success("Đã thêm vào giỏ hàng!");
 
-                    const cartQty = document.getElementById("cart-qty");
-                    if (cartQty) {
-                        cartQty.innerText = data.quantity;
-                    }
 
-                } else {
-                    toastr.error("Có lỗi xảy ra!");
-                }
-            });
-
-        });
-        document.querySelectorAll(".btn.btn-primary").forEach(btn => {
-            btn.addEventListener("click", function () {
-                const id = this.getAttribute("data-id");
-
-                const qtyInput = btn.closest(".product-details")?.querySelector(".quantity");
-                const qty = qtyInput ? parseInt(qtyInput.value || "1") : 1;
-
-                fetch(`/Cart/AddToCart?id=${id}&quantity=${qty}`)
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success) {
-
-                        const cartQty = document.getElementById("cart-qty");
-                        if (cartQty) {
-                            cartQty.innerText = data.quantity;
-                        }
-
-                        window.location.href = "/Cart";
-                    } else {
-                        toastr.error("Error!");
-                    }
-                });
-            });
-        });
-
-    toastr.options = {
-        closeButton: true,
-        progressBar: true,
-        positionClass: "toast-top-right",
-        timeOut: "1000"
-    };
-</script>
-}
-
-@* <script>
-    document.querySelectorAll(".btn-black").forEach(btn => {
-        btn.addEventListener("click", function (e) {
-            e.preventDefault(); 
-
-            const id = this.getAttribute("data-id");
-            const qtyInput = document.querySelector(".quantity");
-            const qty = qtyInput ? qtyInput.value : 1;
-
-            fetch(`/Cart/AddToCart?id=${id}&quantity=${qty}`, {
-                method: 'GET'
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    toastr.success("Đã thêm vào giỏ hàng!");
-
-                    const cartQty = document.getElementById("cart-qty");
-                    if (cartQty) {
-                        cartQty.innerText = data.quantity;
-                    }
-
-                } else {
-                    toastr.error("Có lỗi xảy ra!");
-                }
-            });
-
-        });
-    });
-
-    toastr.options = {
-        closeButton: true,
-        progressBar: true,
-        positionClass: "toast-top-right",
-        timeOut: "1000"
-    };
-</script> *@

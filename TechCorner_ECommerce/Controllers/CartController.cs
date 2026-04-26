@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using TechCorner_ECommerce.Data;
 using TechCorner_ECommerce.ViewModels;
 using TechCorner_ECommerce.Helpers;
@@ -8,64 +9,85 @@ namespace TechCorner_ECommerce.Controllers {
         private readonly AppDbContext db;
 
         public CartController(AppDbContext context) {
-           db = context;
+            db = context;
         }
-        
-        public List<CartItemVM> Cart => HttpContext.Session.Get<List<CartItemVM>>(MySetting.CART_KEY) ?? new List<CartItemVM>();
+
+        public List<CartItemVM> Cart =>
+            HttpContext.Session.Get<List<CartItemVM>>(MySetting.CART_KEY)
+            ?? new List<CartItemVM>();
 
         public IActionResult Index() {
             return View(Cart);
         }
-        public IActionResult AddToCart(int id, int quantity = 1) {
+
+        public IActionResult AddToCart(int variantId, int quantity = 1) {
             var cart = Cart;
-            var item = cart.SingleOrDefault(i => i.ProductId == id);
-            if (item == null) { 
-                var product = db.Products.SingleOrDefault(p => p.Id == id);
-                if (product == null) {
+
+            var item = cart.SingleOrDefault(i => i.ProductVariantId == variantId);
+
+            if (item == null) {
+                var variant = db.ProductVariants
+                    .Include(v => v.Product)
+                        .ThenInclude(p => p.Images)
+                    .FirstOrDefault(v => v.Id == variantId);
+
+                if (variant == null) {
                     return Redirect("/404");
                 }
-                item  = new CartItemVM {
-                    ProductId = product.Id,
-                    ProductName = product.Name,
-                    Price = product.Price,
-                    Quantity = quantity
+
+                var image = variant.Product.Images
+                    .FirstOrDefault(i => i.IsPrimary)?.ImageUrl
+                    ?? variant.Product.Images.FirstOrDefault()?.ImageUrl
+                    ?? "";
+
+                item = new CartItemVM {
+                    ProductVariantId = variant.Id,
+                    ProductName = variant.Product.Name,
+                    Price = variant.Price,
+                    Quantity = quantity,
+                    ImageUrl = image
                 };
+
                 cart.Add(item);
             }
             else {
                 item.Quantity += quantity;
             }
+
             HttpContext.Session.Set(MySetting.CART_KEY, cart);
 
-            // Quantity của minicart
             int totalQty = cart.Sum(p => p.Quantity);
 
-            return Json(new { 
+            return Json(new {
                 success = true,
                 quantity = totalQty
             });
         }
 
-        public IActionResult RemoveCart(int id) {
+        public IActionResult RemoveCart(int variantId) {
             var cart = Cart;
-            var item = cart.SingleOrDefault(p => p.ProductId == id);
+
+            var item = cart.SingleOrDefault(p => p.ProductVariantId == variantId);
+
             if (item != null) {
                 cart.Remove(item);
                 HttpContext.Session.Set(MySetting.CART_KEY, cart);
             }
+
             int totalQty = cart.Sum(p => p.Quantity);
-            double subTotal = cart.Sum(p => p.SubTotal);
+            decimal subTotal = cart.Sum(p => p.SubTotal);
 
             return Json(new {
                 success = true,
                 quantity = totalQty,
-                subTotal = subTotal
+                subTotal
             });
         }
 
-        public IActionResult UpdateQuantity(int id, int quantity) {
+        public IActionResult UpdateQuantity(int variantId, int quantity) {
             var cart = Cart;
-            var item = cart.SingleOrDefault(p => p.ProductId == id);
+
+            var item = cart.SingleOrDefault(p => p.ProductVariantId == variantId);
 
             if (item != null) {
                 item.Quantity = quantity;
@@ -73,7 +95,7 @@ namespace TechCorner_ECommerce.Controllers {
             }
 
             int totalQty = cart.Sum(x => x.Quantity);
-            double totalPrice = cart.Sum(x => x.SubTotal);
+            decimal totalPrice = cart.Sum(x => x.SubTotal);
 
             return Json(new {
                 success = true,

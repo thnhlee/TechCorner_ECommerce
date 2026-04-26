@@ -8355,18 +8355,23 @@ h1, h2, h3, h4, h5,
       padding-bottom: 0.9rem !important;
       color: #000000 !important; }
       .ftco-navbar-light.scrolled .nav-link.active {
-        color: #dbcc8f !important; }
+        color: #dbcc8f !important; 
+
+      }
     .ftco-navbar-light.scrolled.awake {
       margin-top: 0px;
       -webkit-transition: .3s all ease-out;
       -o-transition: .3s all ease-out;
-      transition: .3s all ease-out; }
+      transition: .3s all ease-out; 
+
+    }
     .ftco-navbar-light.scrolled.sleep {
       -webkit-transition: .3s all ease-out;
       -o-transition: .3s all ease-out;
       transition: .3s all ease-out; }
     .ftco-navbar-light.scrolled .navbar-brand {
-      color: #000000; }
+      color: #000000;
+    }
 
 .navbar-brand {
   font-weight: 800;
@@ -10931,4 +10936,33 @@ textarea.form-control {
     .cart-qty-group .qty-plus {
         border-top-right-radius: 6px;
         border-bottom-right-radius: 6px;
+    }
+
+
+
+
+
+
+
+
+
+.custom-dropdown {
+    background: rgba(255, 255, 255, 0.15); /* trong suốt */
+    backdrop-filter: blur(10px); /* hiệu ứng blur */
+    -webkit-backdrop-filter: blur(10px); /* safari */
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    min-width: 180px;
+}
+
+    .custom-dropdown .dropdown-item {
+        color: #fff;
+    }
+
+        .custom-dropdown .dropdown-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+    .custom-dropdown .text-muted {
+        color: #ddd !important;
     }

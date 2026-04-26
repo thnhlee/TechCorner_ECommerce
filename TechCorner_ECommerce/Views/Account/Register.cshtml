@@ -1,4 +1,4 @@
-﻿@model RegisterViewModel
+﻿@model TechCorner_ECommerce.ViewModels.RegisterVM
 @{
     Layout = null;
 }
@@ -24,35 +24,57 @@
             <p class="text-muted">Join our system</p>
         </div>
 
-        <form asp-action="Register" method="post">
+@*         @if (TempData["ErrorMessage"] != null) {
+            <div class="alert alert-danger">
+                @TempData["ErrorMessage"]
+            </div>
+        }
+        else if (TempData["SuccessMessage"] != null) {
+            <div class="alert alert-success">
+                @TempData["SuccessMessage"]
+            </div>
+        } *@
 
-            <!-- Full Name -->
+        <form asp-controller="Account" asp-action="Register" method="post">
+             @Html.AntiForgeryToken()
+
+@*             <!-- Full Name -->
             <div class="mb-3">
                 <label class="form-label">Full Name</label>
                 <input asp-for="FullName" class="form-control" placeholder="Your name" />
                 <span asp-validation-for="FullName" class="text-danger small"></span>
-            </div>
+            </div> *@
+
+
 
             <!-- Email -->
             <div class="mb-3">
                 <label class="form-label">Email</label>
-                <input asp-for="Email" class="form-control" placeholder="Email" />
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                    <input asp-for="Email" class="form-control" placeholder="Enter email" />
+                </div>
                 <span asp-validation-for="Email" class="text-danger small"></span>
             </div>
 
             <!-- Password -->
             <div class="mb-3">
                 <label class="form-label">Password</label>
-                <input asp-for="Password" type="password" class="form-control" />
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                    <input asp-for="Password" type="password" class="form-control" placeholder="Enter password" />
+                </div>
                 <span asp-validation-for="Password" class="text-danger small"></span>
             </div>
 
-            <!-- Confirm -->
+@*             <!-- Confirm -->
             <div class="mb-3">
                 <label class="form-label">Confirm Password</label>
-                <input asp-for="ConfirmPassword" type="password" class="form-control" />
-                <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
-            </div>
+                <input  type="password" class="form-control" />
+                <span  class="text-danger small"></span>
+            </div> *@
+
+            <div asp-validation-summary="All" class="text-danger"></div>
 
             <!-- Button -->
             <button type="submit" class="btn btn-gold w-100 py-2">
@@ -69,6 +91,7 @@
         </form>
 
     </div>
-
-</body>
+    </body>
 </html>
+
+<partial name ="_ValidationScriptsPartial" />

@@ -1,0 +1,51 @@
+﻿<div class="modal fade" id="variantModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+
+            <!-- HEADER -->
+            <div class="modal-header">
+                <h5 class="modal-title" id="popup-name"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <!-- BODY -->
+            <div class="modal-body">
+
+                <div class="row">
+
+                    <!-- IMAGE -->
+                    <div class="col-md-5">
+                        <img id="popup-img" class="img-fluid" />
+                    </div>
+
+                    <!-- INFO -->
+                    <div class="col-md-7">
+
+                        <!-- ATTRIBUTES -->
+                        <div id="attribute-container"></div>
+
+                        <!-- PRICE -->
+                        <h4 id="popup-price">$0</h4>
+
+                        <!-- STOCK -->
+                        <p id="popup-stock"></p>
+
+                        <!-- QTY -->
+                        <div class="input-group mb-3" style="width:150px;">
+                            <button class="btn btn-outline-secondary" id="minus">-</button>
+                            <input id="qty" class="form-control text-center" value="1">
+                            <button class="btn btn-outline-secondary" id="plus">+</button>
+                        </div>
+
+                        <!-- ACTION -->
+                        <button class="btn btn-dark" id="addToCartBtn">Add to cart</button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
