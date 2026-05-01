@@ -10,7 +10,7 @@
         public string CategoryName { get; set; }
 
         public int Stock { get; set; }
-        public List<VariantVM> Variants { get; set; }
+        public List<VariantVM> Variants { get; set; } = new List<VariantVM>();
     }
 
 

@@ -33,7 +33,7 @@ namespace TechCorner_ECommerce.Controllers {
             if (result.Succeeded) {
 
                 //TempData["SuccessMessage"] = "Login successful!";
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Index", "Admin");
             }
 
             ModelState.AddModelError(string.Empty, "Email or Password is incorrect");
