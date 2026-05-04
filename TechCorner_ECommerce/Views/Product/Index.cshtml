@@ -35,12 +35,12 @@
 @if (ViewBag.SearchQuery != null) {
 	<div class="col-12 mb-4">
 		<h1>Search</h1>
-		<h6>@Model.Count() items found for "@ViewBag.SearchQuery"</h6>
+		<h6>@ViewBag.Count items found for "@ViewBag.SearchQuery"</h6>
 	</div>
 }
 else {
 	<div class="col-12 mb-4">
-		<h6>@Model.Count() items</h6>
+		<h6>@ViewBag.Count items</h6>
 	</div>
 }
 

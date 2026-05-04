@@ -8999,10 +8999,14 @@ h1, h2, h3, h4, h5,
       text-transform: uppercase; }
       .product .text h3 a {
         color: #000000; }
-    .product .text p.price {
-      margin-bottom: 0;
-      color: #000000;
-      font-weight: 400; }
+    /*Màu cho Price trong Detail*/
+    .product-details p.price {
+        font-size: 20px;
+        
+        margin-bottom: 0;
+        margin-left: 15px;
+        font-weight: 400;
+    }
       .product .text p.price span.price-dc {
         text-decoration: line-through;
         color: #b3b3b3; }

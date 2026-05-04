@@ -1,11 +1,18 @@
 ﻿
 .attr-btn {
-    border: 1px solid #ddd;
-    padding: 6px 12px;
-    margin: 4px;
-    border-radius: 6px;
-    background: white;
+    background: #dbcc8f !important;
+    border: 1px solid #dbcc8f !important;
+    color: #dbcc8f !important;
+    font-size: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
     cursor: pointer;
+    border-radius: 10px !important;
+    -webkit-box-shadow: 0px 24px 36px -11px rgba(0, 0, 0, 0.09);
+    -moz-box-shadow: 0px 24px 36px -11px rgba(0, 0, 0, 0.09);
+    box-shadow: 0px 24px 36px -11px rgba(0, 0, 0, 0.09);
 }
 
     .attr-btn.active {
@@ -27,8 +34,9 @@
 
     }
 
-    .attr-btn:disabled {
+    .attr-btn.disabled {
         opacity: 0.3;
+        pointer-events: none;
         cursor: not-allowed;
     }
 

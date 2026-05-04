@@ -1,24 +1,27 @@
 ﻿const PopupProduct = (() => {
 
     let state = {
-        variants: [],
+        variants: [],        
         selected: {},
-        selectedVariant: null,
+        selectedVariant: null, 
         product: null
     };
 
+    let modal;
 
-
-    // ================= OPEN POPUP =================
+    /* ================= OPEN ================= */
     async function open(productId) {
         try {
-            const qty = document.getElementById("qty");
-            if (qty) qty.value = 1;
             const res = await fetch(`/Product/GetVariants?productId=${productId}`);
             const data = await res.json();
 
+            if (!data || !data.variants || data.variants.length === 0) {
+                toastr.error("Sản phẩm hết hàng!");
+                return;
+            }
+
             state.product = data;
-            state.variants = data.variants || [];
+            state.variants = data.variants;
             state.selected = {};
             state.selectedVariant = null;
 
@@ -33,24 +36,25 @@
         }
     }
 
-    // ================= BASE UI =================
+    /* ================= BASE UI ================= */
     function renderBaseUI() {
-
         document.getElementById("popup-name").innerText = state.product.name || "";
 
         const img = document.getElementById("popup-img");
         img.src = state.product.image || "/images/no-image.png";
+
+        document.getElementById("popup-price").innerText = "";
+        document.getElementById("popup-stock").innerText = "";
+
+        toggleAddButton(false);
     }
 
-    // ================= BUILD ATTRIBUTE MAP =================
+    /* ================= ATTRIBUTE MAP ================= */
     function getAttrMap() {
-
         const map = {};
 
         state.variants.forEach(v => {
-            const attrs = v.attributes || [];
-
-            attrs.forEach(a => {
+            (v.attributes || []).forEach(a => {
                 const name = a.name || a.Name;
                 const value = a.value || a.Value;
 
@@ -62,9 +66,8 @@
         return map;
     }
 
-    // ================= RENDER ATTRIBUTES =================
+    /* ================= RENDER ATTR ================= */
     function renderAttributes() {
-
         const container = document.getElementById("attribute-container");
         container.innerHTML = "";
 
@@ -90,7 +93,7 @@
         bindEvents();
     }
 
-    // ================= BIND EVENTS =================
+    /* ================= EVENTS ================= */
     function bindEvents() {
 
         document.querySelectorAll(".attr-btn").forEach(btn => {
@@ -113,7 +116,8 @@
         });
 
         document.getElementById("plus").onclick = () => {
-            document.getElementById("qty").value++;
+            let q = document.getElementById("qty");
+            q.value++;
         };
 
         document.getElementById("minus").onclick = () => {
@@ -124,7 +128,7 @@
         document.getElementById("addToCartBtn").onclick = addToCart;
     }
 
-    // ================= AUTO SELECT =================
+    /* ================= AUTO SELECT ================= */
     function autoSelectFirst() {
 
         const v = state.variants[0];
@@ -151,7 +155,7 @@
         updateAvailable();
     }
 
-    // ================= FIND VARIANT =================
+    /* ================= FIND SKU ================= */
     function findVariant() {
 
         state.selectedVariant = state.variants.find(v => {
@@ -164,16 +168,21 @@
             });
         });
 
-        if (!state.selectedVariant) return;
+        if (!state.selectedVariant) {
+            toggleAddButton(false);
+            return;
+        }
 
         document.getElementById("popup-price").innerText =
             `$${state.selectedVariant.price}`;
 
         document.getElementById("popup-stock").innerText =
             `Stock: ${state.selectedVariant.stockQuantity}`;
+
+        toggleAddButton(true);
     }
 
-    // ================= UPDATE VALID OPTIONS =================
+    /* ================= VALID OPTIONS ================= */
     function updateAvailable() {
 
         document.querySelectorAll(".attr-btn").forEach(btn => {
@@ -195,7 +204,7 @@
         });
     }
 
-    // ================= ADD TO CART =================
+    /* ================= ADD TO CART ================= */
     async function addToCart() {
 
         if (!state.selectedVariant) {
@@ -203,12 +212,23 @@
             return;
         }
 
-        const qty = document.getElementById("qty").value;
+        const qty = parseInt(document.getElementById("qty").value);
+
+        if (qty <= 0) {
+            toastr.error("Số lượng không hợp lệ");
+            return;
+        }
+
+        if (qty > state.selectedVariant.stockQuantity) {
+            toastr.error("Vượt quá tồn kho!");
+            return;
+        }
 
         const id = state.selectedVariant.id || state.selectedVariant.Id;
 
         try {
-            const res = await fetch(`/Cart/AddToCart?variantId=${id}&quantity=${qty}`);
+            // 🔥 FIX: dùng productId
+            const res = await fetch(`/Cart/AddToCart?productId=${id}&quantity=${qty}`);
             const data = await res.json();
 
             if (data.success) {
@@ -223,15 +243,19 @@
         }
     }
 
-    // ================= CART UI =================
+    /* ================= CART UI ================= */
     function updateCart(qty) {
         const el = document.getElementById("cart-qty");
         if (el) el.innerText = qty;
     }
 
-    // ================= SHOW =================
-    let modal;
+    /* ================= BUTTON STATE ================= */
+    function toggleAddButton(enable) {
+        const btn = document.getElementById("addToCartBtn");
+        if (btn) btn.disabled = !enable;
+    }
 
+    /* ================= MODAL ================= */
     function show() {
         const el = document.getElementById("variantModal");
 
@@ -242,15 +266,11 @@
         modal.show();
     }
 
-    // ================= CLOSE =================
     function close() {
         if (modal) modal.hide();
     }
 
-
-    // click nút X
-    document.getElementById("popup-close")?.addEventListener("click", close);
-
+    /* ================= RESET ================= */
     document.addEventListener("DOMContentLoaded", function () {
 
         const modalEl = document.getElementById("variantModal");
@@ -258,32 +278,27 @@
 
         modalEl.addEventListener("hidden.bs.modal", () => {
 
-            // reset state
             state.selected = {};
             state.selectedVariant = null;
 
-            // clear attribute UI
             const container = document.getElementById("attribute-container");
             if (container) container.innerHTML = "";
 
-            // reset quantity
             const qty = document.getElementById("qty");
             if (qty) qty.value = 1;
-            
         });
-
     });
 
+    document.getElementById("popup-close")?.addEventListener("click", close);
 
-    // ================= PUBLIC API =================
     return {
         open,
         close
     };
 
-
-
 })();
+
+/* ================= TOAST ================= */
 toastr.options = {
     closeButton: true,
     progressBar: true,

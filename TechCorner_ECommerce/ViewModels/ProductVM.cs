@@ -1,4 +1,6 @@
-﻿namespace TechCorner_ECommerce.ViewModels {
+﻿using TechCorner_ECommerce.Models;
+
+namespace TechCorner_ECommerce.ViewModels {
     public class ProductVM {
         public int Id { get; set; }
         public string Name { get; set; }

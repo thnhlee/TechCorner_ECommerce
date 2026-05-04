@@ -2,7 +2,7 @@
 
 namespace TechCorner_ECommerce.Models {
     public class Category {
-        public int Id { get; set; }
+        public int CategoryId { get; set; }
 
         [Required]
         [StringLength(100)]

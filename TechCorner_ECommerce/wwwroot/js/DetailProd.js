@@ -43,23 +43,30 @@
     });
 
     // ================= CLICK =================
-    document.addEventListener("click", function (e) {
+    document.querySelectorAll(".attr-btn").forEach(btn => {
+        btn.addEventListener("click", function () {
 
-        const btn = e.target.closest(".attr-btn");
-        if (!btn) return;
+            const name = btn.dataset.name;
+            const value = btn.dataset.value;
 
-        const name = btn.dataset.name;
-        const value = btn.dataset.value;
+            // toggle chọn
+            if (selected[name] === value) {
+                delete selected[name];
+                this.classList.remove("active");
+            } else {
+                selected[name] = value;
 
-        selected[name] = value;
+                // remove active cùng group
+                document.querySelectorAll(`[data-name="${name}"]`)
+                    .forEach(b => b.classList.remove("active"));
 
-        document.querySelectorAll(`[data-name="${name}"]`)
-            .forEach(b => b.classList.remove("active"));
+                this.classList.add("active");
+            }
 
-        btn.classList.add("active");
 
-        updateAvailableOptions();
-        findVariant();
+            updateAvailableOptions();
+            findVariant();
+        })
     });
 
     // ================= FIND VARIANT =================
@@ -82,7 +89,7 @@
                 `$${selectedVariant.price || selectedVariant.Price}`;
 
             document.getElementById("dynamic-stock").innerText =
-                `Stock: ${selectedVariant.stock || selectedVariant.Stock}`;
+                `${selectedVariant.stock || selectedVariant.Stock} available`;
 
         }
     }
@@ -92,54 +99,82 @@
 
         document.querySelectorAll(".attr-btn").forEach(btn => {
 
-            const temp = { ...selected };
-            temp[btn.dataset.name] = btn.dataset.value;
+            const name = btn.dataset.name;
+            const value = btn.dataset.value;
 
-            const valid = variants.some(v => {
+            // check xem option này có tồn tại trong bất kỳ variant hợp lệ nào không
+            const isAvailable = variants.some(v => {
 
                 const attrs = v.attributes || v.Attributes || [];
 
                 return attrs.every(a => {
-                    const name = a.Name || a.name;
-                    const value = a.Value || a.value;
+                    const n = a.Name || a.name;
+                    const val = a.Value || a.value;
 
-                    return temp[name] === value;
+                    // bỏ qua attribute đang check
+                    if (n === name) return val === value;
+
+                    // nếu user đã chọn attribute khác → phải match
+                    if (selected[n] && selected[n] !== val) return false;
+
+                    return true;
+                }) && attrs.some(a => {
+                    const n = a.Name || a.name;
+                    const val = a.Value || a.value;
+                    return n === name && val === value;
                 });
+
             });
 
-            btn.disabled = !valid;
+            // UI: làm mờ nhưng KHÔNG disable click
+            if (isAvailable) {
+                btn.classList.remove("disabled");
+            } else {
+                btn.classList.add("disabled");
+            }
+
         });
     }
 
     // ================= AUTO SELECT =================
-    function autoSelect() {
+    //function autoSelect() {
 
-        const v = variants[0];
-        if (!v) return;
+    //    const v = variants[0];
+    //    if (!v) return;
 
-        selectedVariant = v;
+    //    selectedVariant = v;
 
-        const attrs = v.attributes || v.Attributes || [];
+    //    const attrs = v.attributes || v.Attributes || [];
 
-        attrs.forEach(a => {
-            const name = a.Name || a.name;
-            const value = a.Value || a.value;
+    //    attrs.forEach(a => {
+    //        const name = a.Name || a.name;
+    //        const value = a.Value || a.value;
 
-            selected[name] = value;
+    //        selected[name] = value;
 
-            document.querySelectorAll(`[data-name="${name}"]`)
-                .forEach(btn => {
-                    if (btn.dataset.value === value)
-                        btn.classList.add("active");
-                });
-        });
+    //        document.querySelectorAll(`[data-name="${name}"]`)
+    //            .forEach(btn => {
+    //                if (btn.dataset.value === value)
+    //                    btn.classList.add("active");
+    //            });
+    //    });
 
-        updateAvailableOptions();
-        findVariant();
+    //    updateAvailableOptions();
+    //    findVariant();
 
-    }
+    //}
 
-    autoSelect();
+    //autoSelect();
+    // ================= AUTO SELECT Cách 2 =================
+    //function autoSelect() {
+    //    if (!variants.length) return;
+
+    //    selected = {};
+    //    selectedVariant = null;
+
+    //    updateAvailableOptions();
+    //}
+    //autoSelect();
 
     // ================= ADD TO CART =================
     document.querySelector(".btn-black")?.addEventListener("click", async function () {
@@ -153,16 +188,22 @@
 
         const id = selectedVariant.id || selectedVariant.Id;
 
-        const res = await fetch(`/Cart/AddToCart?variantId=${id}&quantity=${qty}`);
-        const data = await res.json();
 
-        if (data.success) {
+        try {
+            const res = await fetch(`/Cart/AddToCart?variantId=${id}&quantity=${qty}`);
+            const data = await res.json();
 
-            const cartQty = document.getElementById("cart-qty");
-            if (cartQty) cartQty.innerText = data.quantity;
+            if (data.success) {
 
-            toastr.success("Đã thêm vào giỏ hàng!");
-            document.getElementById("quantity").value = 1;
+                const cartQty = document.getElementById("cart-qty");
+                if (cartQty) cartQty.innerText = data.quantity;
+
+                toastr.success("Đã thêm vào giỏ hàng!");
+            }
+
+        } catch (err) {
+            console.error(err);
+            toastr.error("Lỗi server!");
         }
 
     });
@@ -172,6 +213,8 @@
 
         if (!selectedVariant) {
             toastr.error("Vui lòng chọn thuộc tính");
+            document.getElementById("dynamic-price").innerText = "$0";
+            document.getElementById("dynamic-stock").innerText = "Out of stock";
             return;
         }
 
