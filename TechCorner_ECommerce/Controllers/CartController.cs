@@ -20,32 +20,42 @@ namespace TechCorner_ECommerce.Controllers {
             return View(Cart);
         }
 
-        public IActionResult AddToCart(int variantId, int quantity = 1) {
+        public IActionResult AddToCart(int productId, int quantity = 1) {
             var cart = Cart;
 
-            var item = cart.SingleOrDefault(i => i.ProductVariantId == variantId);
+            var item = cart.SingleOrDefault(i => i.ProductId == productId);
 
             if (item == null) {
-                var variant = db.ProductVariants
-                    .Include(v => v.Product)
-                        .ThenInclude(p => p.Images)
-                    .FirstOrDefault(v => v.Id == variantId);
+                var product = db.Products
+                    .Include(p => p.ParentProduct)
+                        .ThenInclude(pp => pp.Images)
+                    .Include(p => p.ProductAttributeValues)
+                        .ThenInclude(pav => pav.AttributeValue)
+                            .ThenInclude(av => av.ProductAttribute)
+                    .FirstOrDefault(p => p.Id == productId);
 
-                if (variant == null) {
+                if (product == null) {
                     return Redirect("/404");
                 }
 
-                var image = variant.Product.Images
+                var image = product.ParentProduct.Images
                     .FirstOrDefault(i => i.IsPrimary)?.ImageUrl
-                    ?? variant.Product.Images.FirstOrDefault()?.ImageUrl
+                    ?? product.ParentProduct.Images.FirstOrDefault()?.ImageUrl
                     ?? "";
 
+                var attributes = product.ProductAttributeValues
+                    .Select(a => new AttributeVM {
+                        Name = a.AttributeValue.ProductAttribute.Name,
+                        Value = a.AttributeValue.Value
+                    }).ToList();
+
                 item = new CartItemVM {
-                    ProductVariantId = variant.Id,
-                    ProductName = variant.Product.Name,
-                    Price = variant.Price,
+                    ProductId = product.Id,
+                    ProductName = product.ParentProduct.Name,
+                    Price = product.Price,
                     Quantity = quantity,
-                    ImageUrl = image
+                    ImageUrl = image,
+                    Attributes = attributes
                 };
 
                 cart.Add(item);
@@ -56,18 +66,16 @@ namespace TechCorner_ECommerce.Controllers {
 
             HttpContext.Session.Set(MySetting.CART_KEY, cart);
 
-            int totalQty = cart.Sum(p => p.Quantity);
-
             return Json(new {
                 success = true,
-                quantity = totalQty
+                quantity = cart.Sum(p => p.Quantity)
             });
         }
 
-        public IActionResult RemoveCart(int variantId) {
+        public IActionResult RemoveCart(int productId) {
             var cart = Cart;
 
-            var item = cart.SingleOrDefault(p => p.ProductVariantId == variantId);
+            var item = cart.SingleOrDefault(p => p.ProductId == productId);
 
             if (item != null) {
                 cart.Remove(item);
@@ -84,10 +92,10 @@ namespace TechCorner_ECommerce.Controllers {
             });
         }
 
-        public IActionResult UpdateQuantity(int variantId, int quantity) {
+        public IActionResult UpdateQuantity(int productId, int quantity) {
             var cart = Cart;
 
-            var item = cart.SingleOrDefault(p => p.ProductVariantId == variantId);
+            var item = cart.SingleOrDefault(p => p.ProductId == productId);
 
             if (item != null) {
                 item.Quantity = quantity;

@@ -280,81 +280,18 @@ namespace TechCorner_ECommerce.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("AttributeId")
+                    b.Property<int>("ProductAttributeId")
                         .HasColumnType("int");
 
                     b.Property<string>("Value")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AttributeId");
+                    b.HasIndex("ProductAttributeId");
 
                     b.ToTable("AttributeValues");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            AttributeId = 1,
-                            Value = "Black"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            AttributeId = 1,
-                            Value = "White"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            AttributeId = 1,
-                            Value = "Pink"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            AttributeId = 2,
-                            Value = "800 DPI"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            AttributeId = 2,
-                            Value = "1600 DPI"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            AttributeId = 2,
-                            Value = "3200 DPI"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            AttributeId = 2,
-                            Value = "8000 DPI"
-                        },
-                        new
-                        {
-                            Id = 8,
-                            AttributeId = 3,
-                            Value = "Red Switch"
-                        },
-                        new
-                        {
-                            Id = 9,
-                            AttributeId = 3,
-                            Value = "Blue Switch"
-                        },
-                        new
-                        {
-                            Id = 10,
-                            AttributeId = 3,
-                            Value = "Brown Switch"
-                        });
                 });
 
             modelBuilder.Entity("TechCorner_ECommerce.Models.Cart", b =>
@@ -377,8 +314,7 @@ namespace TechCorner_ECommerce.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId")
-                        .IsUnique();
+                    b.HasIndex("UserId");
 
                     b.ToTable("Carts");
                 });
@@ -397,7 +333,7 @@ namespace TechCorner_ECommerce.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("ProductVariantId")
+                    b.Property<int>("ProductId")
                         .HasColumnType("int");
 
                     b.Property<int>("Quantity")
@@ -410,18 +346,18 @@ namespace TechCorner_ECommerce.Migrations
 
                     b.HasIndex("CartId");
 
-                    b.HasIndex("ProductVariantId");
+                    b.HasIndex("ProductId");
 
                     b.ToTable("CartItems");
                 });
 
             modelBuilder.Entity("TechCorner_ECommerce.Models.Category", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("CategoryId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CategoryId"));
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -434,39 +370,9 @@ namespace TechCorner_ECommerce.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("Id");
+                    b.HasKey("CategoryId");
 
                     b.ToTable("Categories");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Gaming Gear",
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "PC Components",
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 3,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Monitors & Displays",
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 4,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Accessories",
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        });
                 });
 
             modelBuilder.Entity("TechCorner_ECommerce.Models.Order", b =>
@@ -522,7 +428,7 @@ namespace TechCorner_ECommerce.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("ProductVariantId")
+                    b.Property<int>("ProductId")
                         .HasColumnType("int");
 
                     b.Property<int>("Quantity")
@@ -532,9 +438,50 @@ namespace TechCorner_ECommerce.Migrations
 
                     b.HasIndex("OrderId");
 
-                    b.HasIndex("ProductVariantId");
+                    b.HasIndex("ProductId");
 
                     b.ToTable("OrderDetails");
+                });
+
+            modelBuilder.Entity("TechCorner_ECommerce.Models.ParentProduct", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<int>("SubCategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Slug")
+                        .IsUnique();
+
+                    b.HasIndex("SubCategoryId");
+
+                    b.ToTable("ParentProducts");
                 });
 
             modelBuilder.Entity("TechCorner_ECommerce.Models.Payment", b =>
@@ -589,199 +536,25 @@ namespace TechCorner_ECommerce.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
-                    b.Property<int>("SubCategoryId")
+                    b.Property<int>("ParentProductId")
                         .HasColumnType("int");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("StockQuantity")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("SubCategoryId");
+                    b.HasIndex("ParentProductId");
 
                     b.ToTable("Products");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Ultra-light esports mouse",
-                            Name = "Logitech G Pro X Superlight",
-                            SubCategoryId = 1,
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Ergonomic FPS mouse",
-                            Name = "Razer DeathAdder V3",
-                            SubCategoryId = 1,
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 3,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Lightweight honeycomb mouse",
-                            Name = "Glorious Model O Wireless",
-                            SubCategoryId = 1,
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 4,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Wireless mechanical keyboard",
-                            Name = "Keychron K8 Pro",
-                            SubCategoryId = 2,
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 5,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "60% optical keyboard",
-                            Name = "Razer Huntsman Mini",
-                            SubCategoryId = 2,
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 6,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Premium mechanical keyboard",
-                            Name = "Ducky One 3 TKL",
-                            SubCategoryId = 2,
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 7,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "7.1 surround headset",
-                            Name = "HyperX Cloud II",
-                            SubCategoryId = 3,
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 8,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Wireless gaming headset",
-                            Name = "SteelSeries Arctis 7",
-                            SubCategoryId = 3,
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 9,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Official Xbox controller",
-                            Name = "Xbox Wireless Controller",
-                            SubCategoryId = 4,
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 10,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Sony PS5 controller",
-                            Name = "DualSense PS5 Controller",
-                            SubCategoryId = 4,
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 11,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Mid-range GPU",
-                            Name = "RTX 4060 Ti",
-                            SubCategoryId = 5,
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 12,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "High-end gaming GPU",
-                            Name = "RTX 4070 Super",
-                            SubCategoryId = 5,
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 13,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "AMD performance GPU",
-                            Name = "RX 7800 XT",
-                            SubCategoryId = 5,
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 14,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Mid-high gaming CPU",
-                            Name = "Intel i5-13600K",
-                            SubCategoryId = 6,
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 15,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "High-end CPU",
-                            Name = "Intel i7-14700K",
-                            SubCategoryId = 6,
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 16,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "DDR5 RAM kit",
-                            Name = "Corsair Vengeance 16GB",
-                            SubCategoryId = 7,
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 17,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "NVMe SSD",
-                            Name = "Samsung 980 Pro 1TB",
-                            SubCategoryId = 8,
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 18,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "2K 144Hz monitor",
-                            Name = "LG 27GN800",
-                            SubCategoryId = 9,
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 19,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "49-inch ultrawide gaming monitor",
-                            Name = "Samsung Odyssey G9",
-                            SubCategoryId = 10,
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 20,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Pro esports mousepad",
-                            Name = "Artisan Hien Mousepad",
-                            SubCategoryId = 11,
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        });
                 });
 
             modelBuilder.Entity("TechCorner_ECommerce.Models.ProductAttribute", b =>
@@ -794,29 +567,35 @@ namespace TechCorner_ECommerce.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.ToTable("ProductAttributes");
+                });
 
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "Color"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "DPI"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "Switch Type"
-                        });
+            modelBuilder.Entity("TechCorner_ECommerce.Models.ProductAttributeValue", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AttributeValueId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AttributeValueId");
+
+                    b.HasIndex("ProductId", "AttributeValueId")
+                        .IsUnique();
+
+                    b.ToTable("ProductAttributeValues");
                 });
 
             modelBuilder.Entity("TechCorner_ECommerce.Models.ProductImage", b =>
@@ -837,388 +616,14 @@ namespace TechCorner_ECommerce.Migrations
                     b.Property<bool>("IsPrimary")
                         .HasColumnType("bit");
 
-                    b.Property<int>("ProductId")
+                    b.Property<int>("ParentProductId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ProductId");
+                    b.HasIndex("ParentProductId");
 
                     b.ToTable("ProductImages");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ImageUrl = "/img/p1.jpg",
-                            IsPrimary = true,
-                            ProductId = 1
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ImageUrl = "/img/p2.jpg",
-                            IsPrimary = true,
-                            ProductId = 2
-                        },
-                        new
-                        {
-                            Id = 3,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ImageUrl = "/img/p3.jpg",
-                            IsPrimary = true,
-                            ProductId = 3
-                        },
-                        new
-                        {
-                            Id = 4,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ImageUrl = "/img/p4.jpg",
-                            IsPrimary = true,
-                            ProductId = 4
-                        },
-                        new
-                        {
-                            Id = 5,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ImageUrl = "/img/p5.jpg",
-                            IsPrimary = true,
-                            ProductId = 5
-                        },
-                        new
-                        {
-                            Id = 6,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ImageUrl = "/img/p6.jpg",
-                            IsPrimary = true,
-                            ProductId = 6
-                        },
-                        new
-                        {
-                            Id = 7,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ImageUrl = "/img/p7.jpg",
-                            IsPrimary = true,
-                            ProductId = 7
-                        },
-                        new
-                        {
-                            Id = 8,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ImageUrl = "/img/p8.jpg",
-                            IsPrimary = true,
-                            ProductId = 8
-                        },
-                        new
-                        {
-                            Id = 9,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ImageUrl = "/img/p9.jpg",
-                            IsPrimary = true,
-                            ProductId = 9
-                        },
-                        new
-                        {
-                            Id = 10,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ImageUrl = "/img/p10.jpg",
-                            IsPrimary = true,
-                            ProductId = 10
-                        },
-                        new
-                        {
-                            Id = 11,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ImageUrl = "/img/p11.jpg",
-                            IsPrimary = true,
-                            ProductId = 11
-                        },
-                        new
-                        {
-                            Id = 12,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ImageUrl = "/img/p12.jpg",
-                            IsPrimary = true,
-                            ProductId = 12
-                        },
-                        new
-                        {
-                            Id = 13,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ImageUrl = "/img/p13.jpg",
-                            IsPrimary = true,
-                            ProductId = 13
-                        },
-                        new
-                        {
-                            Id = 14,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ImageUrl = "/img/p14.jpg",
-                            IsPrimary = true,
-                            ProductId = 14
-                        },
-                        new
-                        {
-                            Id = 15,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ImageUrl = "/img/p15.jpg",
-                            IsPrimary = true,
-                            ProductId = 15
-                        },
-                        new
-                        {
-                            Id = 16,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ImageUrl = "/img/p16.jpg",
-                            IsPrimary = true,
-                            ProductId = 16
-                        },
-                        new
-                        {
-                            Id = 17,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ImageUrl = "/img/p17.jpg",
-                            IsPrimary = true,
-                            ProductId = 17
-                        },
-                        new
-                        {
-                            Id = 18,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ImageUrl = "/img/p18.jpg",
-                            IsPrimary = true,
-                            ProductId = 18
-                        },
-                        new
-                        {
-                            Id = 19,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ImageUrl = "/img/p19.jpg",
-                            IsPrimary = true,
-                            ProductId = 19
-                        },
-                        new
-                        {
-                            Id = 20,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ImageUrl = "/img/p20.jpg",
-                            IsPrimary = true,
-                            ProductId = 20
-                        });
-                });
-
-            modelBuilder.Entity("TechCorner_ECommerce.Models.ProductVariant", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("StockQuantity")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProductId");
-
-                    b.ToTable("ProductVariants");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Price = 2500000m,
-                            ProductId = 1,
-                            StockQuantity = 50,
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Price = 1800000m,
-                            ProductId = 2,
-                            StockQuantity = 40,
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 3,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Price = 2100000m,
-                            ProductId = 3,
-                            StockQuantity = 35,
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 4,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Price = 2200000m,
-                            ProductId = 4,
-                            StockQuantity = 30,
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 5,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Price = 2400000m,
-                            ProductId = 5,
-                            StockQuantity = 25,
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 6,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Price = 3000000m,
-                            ProductId = 6,
-                            StockQuantity = 20,
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 7,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Price = 1500000m,
-                            ProductId = 7,
-                            StockQuantity = 50,
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 8,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Price = 2800000m,
-                            ProductId = 8,
-                            StockQuantity = 35,
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 9,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Price = 1200000m,
-                            ProductId = 9,
-                            StockQuantity = 60,
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 10,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Price = 2200000m,
-                            ProductId = 10,
-                            StockQuantity = 40,
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 11,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Price = 9000000m,
-                            ProductId = 11,
-                            StockQuantity = 25,
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 12,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Price = 13000000m,
-                            ProductId = 12,
-                            StockQuantity = 20,
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 13,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Price = 12000000m,
-                            ProductId = 13,
-                            StockQuantity = 18,
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 14,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Price = 7500000m,
-                            ProductId = 14,
-                            StockQuantity = 30,
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 15,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Price = 9500000m,
-                            ProductId = 15,
-                            StockQuantity = 22,
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 16,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Price = 2500000m,
-                            ProductId = 16,
-                            StockQuantity = 40,
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 17,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Price = 3000000m,
-                            ProductId = 17,
-                            StockQuantity = 45,
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 18,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Price = 6500000m,
-                            ProductId = 18,
-                            StockQuantity = 15,
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 19,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Price = 18000000m,
-                            ProductId = 19,
-                            StockQuantity = 10,
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 20,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Price = 1600000m,
-                            ProductId = 20,
-                            StockQuantity = 55,
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        });
                 });
 
             modelBuilder.Entity("TechCorner_ECommerce.Models.Review", b =>
@@ -1229,9 +634,6 @@ namespace TechCorner_ECommerce.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("ApplicationUserId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<string>("Comment")
                         .IsRequired()
                         .HasMaxLength(1000)
@@ -1240,7 +642,7 @@ namespace TechCorner_ECommerce.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("ProductId")
+                    b.Property<int>("ParentProductId")
                         .HasColumnType("int");
 
                     b.Property<int>("Rating")
@@ -1248,13 +650,13 @@ namespace TechCorner_ECommerce.Migrations
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ApplicationUserId");
+                    b.HasIndex("ParentProductId");
 
-                    b.HasIndex("ProductId");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Reviews");
                 });
@@ -1286,183 +688,6 @@ namespace TechCorner_ECommerce.Migrations
                     b.HasIndex("CategoryId");
 
                     b.ToTable("SubCategories");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CategoryId = 1,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Mouse",
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CategoryId = 1,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Keyboard",
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 3,
-                            CategoryId = 1,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Headset",
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 4,
-                            CategoryId = 1,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Controller",
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 5,
-                            CategoryId = 2,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "GPU",
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 6,
-                            CategoryId = 2,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "CPU",
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 7,
-                            CategoryId = 2,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "RAM",
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 8,
-                            CategoryId = 2,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "SSD",
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 9,
-                            CategoryId = 3,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Gaming Monitor",
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 10,
-                            CategoryId = 3,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Ultrawide Monitor",
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 11,
-                            CategoryId = 4,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Mousepad",
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 12,
-                            CategoryId = 4,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Cable & Hub",
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        });
-                });
-
-            modelBuilder.Entity("TechCorner_ECommerce.Models.VariantAttributeValue", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("AttributeValueId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ProductVariantId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AttributeValueId");
-
-                    b.HasIndex("ProductVariantId");
-
-                    b.ToTable("VariantAttributeValues");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            AttributeValueId = 1,
-                            ProductVariantId = 1
-                        },
-                        new
-                        {
-                            Id = 2,
-                            AttributeValueId = 4,
-                            ProductVariantId = 1
-                        },
-                        new
-                        {
-                            Id = 3,
-                            AttributeValueId = 2,
-                            ProductVariantId = 2
-                        },
-                        new
-                        {
-                            Id = 4,
-                            AttributeValueId = 5,
-                            ProductVariantId = 2
-                        },
-                        new
-                        {
-                            Id = 5,
-                            AttributeValueId = 1,
-                            ProductVariantId = 3
-                        },
-                        new
-                        {
-                            Id = 6,
-                            AttributeValueId = 6,
-                            ProductVariantId = 3
-                        },
-                        new
-                        {
-                            Id = 7,
-                            AttributeValueId = 8,
-                            ProductVariantId = 4
-                        },
-                        new
-                        {
-                            Id = 8,
-                            AttributeValueId = 9,
-                            ProductVariantId = 5
-                        },
-                        new
-                        {
-                            Id = 9,
-                            AttributeValueId = 10,
-                            ProductVariantId = 6
-                        });
                 });
 
             modelBuilder.Entity("TechCorner_ECommerce.Models.ApplicationUser", b =>
@@ -1547,20 +772,20 @@ namespace TechCorner_ECommerce.Migrations
 
             modelBuilder.Entity("TechCorner_ECommerce.Models.AttributeValue", b =>
                 {
-                    b.HasOne("TechCorner_ECommerce.Models.ProductAttribute", "Attribute")
+                    b.HasOne("TechCorner_ECommerce.Models.ProductAttribute", "ProductAttribute")
                         .WithMany("Values")
-                        .HasForeignKey("AttributeId")
+                        .HasForeignKey("ProductAttributeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Attribute");
+                    b.Navigation("ProductAttribute");
                 });
 
             modelBuilder.Entity("TechCorner_ECommerce.Models.Cart", b =>
                 {
                     b.HasOne("TechCorner_ECommerce.Models.ApplicationUser", "User")
-                        .WithOne("Cart")
-                        .HasForeignKey("TechCorner_ECommerce.Models.Cart", "UserId")
+                        .WithMany("Carts")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1575,15 +800,15 @@ namespace TechCorner_ECommerce.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("TechCorner_ECommerce.Models.ProductVariant", "ProductVariant")
+                    b.HasOne("TechCorner_ECommerce.Models.Product", "Product")
                         .WithMany("CartItems")
-                        .HasForeignKey("ProductVariantId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Cart");
 
-                    b.Navigation("ProductVariant");
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("TechCorner_ECommerce.Models.Order", b =>
@@ -1591,13 +816,13 @@ namespace TechCorner_ECommerce.Migrations
                     b.HasOne("TechCorner_ECommerce.Models.Address", "Address")
                         .WithMany()
                         .HasForeignKey("AddressId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("TechCorner_ECommerce.Models.ApplicationUser", "User")
                         .WithMany("Orders")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Address");
@@ -1610,18 +835,29 @@ namespace TechCorner_ECommerce.Migrations
                     b.HasOne("TechCorner_ECommerce.Models.Order", "Order")
                         .WithMany("OrderDetails")
                         .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("TechCorner_ECommerce.Models.ProductVariant", "ProductVariant")
+                    b.HasOne("TechCorner_ECommerce.Models.Product", "Product")
                         .WithMany("OrderDetails")
-                        .HasForeignKey("ProductVariantId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Order");
 
-                    b.Navigation("ProductVariant");
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("TechCorner_ECommerce.Models.ParentProduct", b =>
+                {
+                    b.HasOne("TechCorner_ECommerce.Models.SubCategory", "SubCategory")
+                        .WithMany("ParentProducts")
+                        .HasForeignKey("SubCategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("SubCategory");
                 });
 
             modelBuilder.Entity("TechCorner_ECommerce.Models.Payment", b =>
@@ -1637,50 +873,62 @@ namespace TechCorner_ECommerce.Migrations
 
             modelBuilder.Entity("TechCorner_ECommerce.Models.Product", b =>
                 {
-                    b.HasOne("TechCorner_ECommerce.Models.SubCategory", "SubCategory")
+                    b.HasOne("TechCorner_ECommerce.Models.ParentProduct", "ParentProduct")
                         .WithMany("Products")
-                        .HasForeignKey("SubCategoryId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasForeignKey("ParentProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("SubCategory");
+                    b.Navigation("ParentProduct");
+                });
+
+            modelBuilder.Entity("TechCorner_ECommerce.Models.ProductAttributeValue", b =>
+                {
+                    b.HasOne("TechCorner_ECommerce.Models.AttributeValue", "AttributeValue")
+                        .WithMany("ProductAttributeValues")
+                        .HasForeignKey("AttributeValueId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TechCorner_ECommerce.Models.Product", "Product")
+                        .WithMany("ProductAttributeValues")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AttributeValue");
+
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("TechCorner_ECommerce.Models.ProductImage", b =>
                 {
-                    b.HasOne("TechCorner_ECommerce.Models.Product", "Product")
+                    b.HasOne("TechCorner_ECommerce.Models.ParentProduct", "ParentProduct")
                         .WithMany("Images")
-                        .HasForeignKey("ProductId")
+                        .HasForeignKey("ParentProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Product");
-                });
-
-            modelBuilder.Entity("TechCorner_ECommerce.Models.ProductVariant", b =>
-                {
-                    b.HasOne("TechCorner_ECommerce.Models.Product", "Product")
-                        .WithMany("Variants")
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Product");
+                    b.Navigation("ParentProduct");
                 });
 
             modelBuilder.Entity("TechCorner_ECommerce.Models.Review", b =>
                 {
-                    b.HasOne("TechCorner_ECommerce.Models.ApplicationUser", null)
+                    b.HasOne("TechCorner_ECommerce.Models.ParentProduct", "ParentProduct")
                         .WithMany("Reviews")
-                        .HasForeignKey("ApplicationUserId");
-
-                    b.HasOne("TechCorner_ECommerce.Models.Product", "Product")
-                        .WithMany("Reviews")
-                        .HasForeignKey("ProductId")
+                        .HasForeignKey("ParentProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Product");
+                    b.HasOne("TechCorner_ECommerce.Models.ApplicationUser", "User")
+                        .WithMany("Reviews")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ParentProduct");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("TechCorner_ECommerce.Models.SubCategory", b =>
@@ -1694,28 +942,9 @@ namespace TechCorner_ECommerce.Migrations
                     b.Navigation("Category");
                 });
 
-            modelBuilder.Entity("TechCorner_ECommerce.Models.VariantAttributeValue", b =>
-                {
-                    b.HasOne("TechCorner_ECommerce.Models.AttributeValue", "AttributeValue")
-                        .WithMany("VariantAttributeValues")
-                        .HasForeignKey("AttributeValueId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("TechCorner_ECommerce.Models.ProductVariant", "ProductVariant")
-                        .WithMany("VariantAttributeValues")
-                        .HasForeignKey("ProductVariantId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("AttributeValue");
-
-                    b.Navigation("ProductVariant");
-                });
-
             modelBuilder.Entity("TechCorner_ECommerce.Models.AttributeValue", b =>
                 {
-                    b.Navigation("VariantAttributeValues");
+                    b.Navigation("ProductAttributeValues");
                 });
 
             modelBuilder.Entity("TechCorner_ECommerce.Models.Cart", b =>
@@ -1735,13 +964,22 @@ namespace TechCorner_ECommerce.Migrations
                     b.Navigation("Payments");
                 });
 
-            modelBuilder.Entity("TechCorner_ECommerce.Models.Product", b =>
+            modelBuilder.Entity("TechCorner_ECommerce.Models.ParentProduct", b =>
                 {
                     b.Navigation("Images");
 
-                    b.Navigation("Reviews");
+                    b.Navigation("Products");
 
-                    b.Navigation("Variants");
+                    b.Navigation("Reviews");
+                });
+
+            modelBuilder.Entity("TechCorner_ECommerce.Models.Product", b =>
+                {
+                    b.Navigation("CartItems");
+
+                    b.Navigation("OrderDetails");
+
+                    b.Navigation("ProductAttributeValues");
                 });
 
             modelBuilder.Entity("TechCorner_ECommerce.Models.ProductAttribute", b =>
@@ -1749,26 +987,16 @@ namespace TechCorner_ECommerce.Migrations
                     b.Navigation("Values");
                 });
 
-            modelBuilder.Entity("TechCorner_ECommerce.Models.ProductVariant", b =>
-                {
-                    b.Navigation("CartItems");
-
-                    b.Navigation("OrderDetails");
-
-                    b.Navigation("VariantAttributeValues");
-                });
-
             modelBuilder.Entity("TechCorner_ECommerce.Models.SubCategory", b =>
                 {
-                    b.Navigation("Products");
+                    b.Navigation("ParentProducts");
                 });
 
             modelBuilder.Entity("TechCorner_ECommerce.Models.ApplicationUser", b =>
                 {
                     b.Navigation("Addresses");
 
-                    b.Navigation("Cart")
-                        .IsRequired();
+                    b.Navigation("Carts");
 
                     b.Navigation("Orders");
 

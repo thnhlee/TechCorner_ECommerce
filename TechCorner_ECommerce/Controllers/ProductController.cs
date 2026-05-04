@@ -12,11 +12,11 @@ namespace TechCorner_ECommerce.Controllers {
         }
 
         public IActionResult Index(int? cate, string keyword) {
-            var products = db.Products
+            var products = db.ParentProducts
                 .Include(p => p.SubCategory)
                     .ThenInclude(sc => sc.Category)
                 .Include(p => p.Images)
-                .Include(p => p.Variants)
+                .Include(p => p.Products)
                 .AsQueryable();
 
             // filter by subcategory
@@ -36,11 +36,12 @@ namespace TechCorner_ECommerce.Controllers {
                 //products = products.Where(p => EF.Functions.Like(p.Name, $"%{keyword}%"));
 
                 //// ép kiểu collation để search không phân biệt chữ hoa chữ thường và dấu tiếng Việt
-                products = products.Where(p => EF.Functions.Like( EF.Functions.Collate(p.Name, "SQL_Latin1_General_CP1_CI_AI"), $"%{keyword}%"
+                products = products.Where(p => EF.Functions.Like(EF.Functions.Collate(p.Name, "SQL_Latin1_General_CP1_CI_AI"), $"%{keyword}%"
                     )
                 );
 
                 ViewBag.SearchQuery = keyword;
+
             }
 
             var result = products.Select(p => new ProductVM {
@@ -48,86 +49,95 @@ namespace TechCorner_ECommerce.Controllers {
                 Name = p.Name,
                 Description = p.Description,
 
-                // lấy giá nhỏ nhất từ ProductVariant
-                Price = p.Variants.Min(v => (decimal?)v.Price) ?? 0,
+                // lấy giá nhỏ nhất từ Product(Variant)
+                Price = p.Products.Min(v => (decimal?)v.Price) ?? 0,
 
                 // lấy ảnh đại diện
                 ImageUrl = p.Images.FirstOrDefault(i => i.IsPrimary).ImageUrl ?? p.Images.FirstOrDefault().ImageUrl ?? "",
 
                 CategoryName = p.SubCategory.Category.Name
-            });
-
+            })
+            .ToList();
+            ViewBag.Count = result.Count;
             return View(result);
         }
 
         public IActionResult Detail(int id) {
-            var product = db.Products
-                .Include(p => p.SubCategory)
-                .ThenInclude(sc => sc.Category)
-                .Include(p => p.Images)
-                .Include(p => p.Variants)
-                .ThenInclude(v => v.VariantAttributeValues)
-                .ThenInclude(vav => vav.AttributeValue)
-                .ThenInclude(av => av.Attribute)
-                .SingleOrDefault(p => p.Id == id);
+            var result = db.ParentProducts
+                .Where(p => p.Id == id)
+                .Select(p => new ProductVM {
+                    Id = p.Id,
+                    Name = p.Name,
+                    Description = p.Description,
 
-            if (product == null) {
-                return Redirect("/404");
-            }
+                    Price = p.Products.Min(v => (decimal?)v.Price) ?? 0,
 
-            var result = new ProductVM {
-                Id = product.Id,
-                Name = product.Name,
-                Description = product.Description,
+                    ImageUrl = p.Images
+                        .Where(i => i.IsPrimary)
+                        .Select(i => i.ImageUrl)
+                        .FirstOrDefault()
+                        ?? p.Images
+                            .Select(i => i.ImageUrl)
+                            .FirstOrDefault()
+                        ?? "",
 
-                Price = product.Variants.Min(v => (decimal?)v.Price) ?? 0,
+                    CategoryName = p.SubCategory.Category.Name,
 
-                ImageUrl = product.Images.FirstOrDefault(i => i.IsPrimary).ImageUrl
-                           ?? product.Images.FirstOrDefault().ImageUrl
-                           ?? "",
+                    Stock = p.Products.Sum(v => v.StockQuantity),
 
-                CategoryName = product.SubCategory.Category.Name,
-                Stock = product.Variants.Sum(v => v.StockQuantity),
+                    // variants list
+                    Variants = p.Products.Select(v => new VariantVM {
+                        Id = v.Id,
+                        Price = v.Price,
+                        Stock = v.StockQuantity,
 
-                Variants = product.Variants.Select(v => new VariantVM {
-                    Id = v.Id,
-                    Price = v.Price,
-                    Stock = v.StockQuantity,
-                    Attributes = v.VariantAttributeValues.Select(a => new AttributeVM {
-                        Name = a.AttributeValue.Attribute.Name,
-                        Value = a.AttributeValue.Value
+                        Attributes = v.ProductAttributeValues
+                            .Select(a => new AttributeVM {
+                                Name = a.AttributeValue.ProductAttribute != null
+                                    ? a.AttributeValue.ProductAttribute.Name
+                                    : "",
+                                Value = a.AttributeValue.Value
+                            })
+                            .ToList()
+
                     }).ToList()
-                }).ToList()
-            };
+
+                })
+                .SingleOrDefault();
+
+            if (result == null) {
+                return Redirect("/404"); 
+            }
 
             return View(result);
         }
 
         [HttpGet]
         public IActionResult GetVariants(int productId) {
-            var product = db.Products
+            var product = db.ParentProducts
                 .Include(p => p.Images)
-                .Include(p => p.Variants)
-                .ThenInclude(v => v.VariantAttributeValues)
-                .ThenInclude(vav => vav.AttributeValue)
-                .ThenInclude(av => av.Attribute)
+                .Include(p => p.Products)
+                    .ThenInclude(sku => sku.ProductAttributeValues)
+                        .ThenInclude(pav => pav.AttributeValue)
+                            .ThenInclude(av => av.ProductAttribute)
                 .FirstOrDefault(p => p.Id == productId);
 
-            if (product == null) return NotFound();
+            if (product == null)
+                return NotFound();
 
             var result = new {
                 product.Id,
                 product.Name,
+
                 Image = product.Images.FirstOrDefault(i => i.IsPrimary)?.ImageUrl,
 
-                Variants = product.Variants.Select(v => new
-                {
+                Variants = product.Products.Select(v => new {
                     v.Id,
                     v.Price,
                     v.StockQuantity,
-                    Attributes = v.VariantAttributeValues.Select(a => new
-                    {
-                        Name = a.AttributeValue.Attribute.Name,
+
+                    Attributes = v.ProductAttributeValues.Select(a => new {
+                        Name = a.AttributeValue.ProductAttribute.Name,
                         Value = a.AttributeValue.Value
                     })
                 })

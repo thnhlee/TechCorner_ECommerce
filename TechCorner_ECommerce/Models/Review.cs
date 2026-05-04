@@ -5,12 +5,13 @@ namespace TechCorner_ECommerce.Models {
         public int Id { get; set; }
 
         [Required]
-        public int ProductId { get; set; }
-        public Product Product { get; set; }
+        public int ParentProductId { get; set; }
+        public ParentProduct ParentProduct { get; set; }
+
 
         [Required]
         public string UserId { get; set; }
-        //public ApplicationUser User { get; set; }
+        public ApplicationUser User { get; set; }
 
         [Range(1, 5)]
         public int Rating { get; set; }

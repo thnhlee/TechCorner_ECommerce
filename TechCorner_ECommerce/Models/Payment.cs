@@ -12,8 +12,6 @@ namespace TechCorner_ECommerce.Models {
         [Required]
         [StringLength(50)]
         public string PaymentMethod { get; set; }
-
-        [Required]
         public PaymentStatus Status { get; set; }
 
         public DateTime? PaidAt { get; set; }

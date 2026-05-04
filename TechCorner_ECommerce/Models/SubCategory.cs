@@ -17,6 +17,6 @@ namespace TechCorner_ECommerce.Models {
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
 
-        public ICollection<Product> Products { get; set; } = new List<Product>();
+        public ICollection<ParentProduct> ParentProducts { get; set; } = new List<ParentProduct>();
     }
 }

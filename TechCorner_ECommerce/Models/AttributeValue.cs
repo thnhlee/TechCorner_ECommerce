@@ -3,16 +3,11 @@
 namespace TechCorner_ECommerce.Models {
     public class AttributeValue {
         public int Id { get; set; }
-
-        [Required]
-        [StringLength(50)]
         public string Value { get; set; }
 
-        [Required]
-        public int AttributeId { get; set; }
+        public int ProductAttributeId { get; set; }
+        public ProductAttribute ProductAttribute { get; set; }
 
-        public ProductAttribute Attribute { get; set; }
-
-        public ICollection<VariantAttributeValue> VariantAttributeValues { get; set; } = new List<VariantAttributeValue>();
+        public ICollection<ProductAttributeValue> ProductAttributeValues { get; set; }
     }
 }

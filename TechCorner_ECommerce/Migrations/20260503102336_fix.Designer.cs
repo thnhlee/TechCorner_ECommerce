@@ -12,8 +12,8 @@ using TechCorner_ECommerce.Data;
 namespace TechCorner_ECommerce.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260418164413_aaa")]
-    partial class aaa
+    [Migration("20260503102336_fix")]
+    partial class fix
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -283,17 +283,16 @@ namespace TechCorner_ECommerce.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("AttributeId")
+                    b.Property<int>("ProductAttributeId")
                         .HasColumnType("int");
 
                     b.Property<string>("Value")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AttributeId");
+                    b.HasIndex("ProductAttributeId");
 
                     b.ToTable("AttributeValues");
                 });
@@ -318,8 +317,7 @@ namespace TechCorner_ECommerce.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId")
-                        .IsUnique();
+                    b.HasIndex("UserId");
 
                     b.ToTable("Carts");
                 });
@@ -338,7 +336,7 @@ namespace TechCorner_ECommerce.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("ProductVariantId")
+                    b.Property<int>("ProductId")
                         .HasColumnType("int");
 
                     b.Property<int>("Quantity")
@@ -351,18 +349,18 @@ namespace TechCorner_ECommerce.Migrations
 
                     b.HasIndex("CartId");
 
-                    b.HasIndex("ProductVariantId");
+                    b.HasIndex("ProductId");
 
                     b.ToTable("CartItems");
                 });
 
             modelBuilder.Entity("TechCorner_ECommerce.Models.Category", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("CategoryId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CategoryId"));
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -375,7 +373,7 @@ namespace TechCorner_ECommerce.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("Id");
+                    b.HasKey("CategoryId");
 
                     b.ToTable("Categories");
                 });
@@ -433,7 +431,7 @@ namespace TechCorner_ECommerce.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("ProductVariantId")
+                    b.Property<int>("ProductId")
                         .HasColumnType("int");
 
                     b.Property<int>("Quantity")
@@ -443,9 +441,50 @@ namespace TechCorner_ECommerce.Migrations
 
                     b.HasIndex("OrderId");
 
-                    b.HasIndex("ProductVariantId");
+                    b.HasIndex("ProductId");
 
                     b.ToTable("OrderDetails");
+                });
+
+            modelBuilder.Entity("TechCorner_ECommerce.Models.ParentProduct", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<int>("SubCategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Slug")
+                        .IsUnique();
+
+                    b.HasIndex("SubCategoryId");
+
+                    b.ToTable("ParentProducts");
                 });
 
             modelBuilder.Entity("TechCorner_ECommerce.Models.Payment", b =>
@@ -491,20 +530,32 @@ namespace TechCorner_ECommerce.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
-                    b.Property<int>("SubCategoryId")
+                    b.Property<int>("ParentProductId")
                         .HasColumnType("int");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("StockQuantity")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("SubCategoryId");
+                    b.HasIndex("ParentProductId");
 
                     b.ToTable("Products");
                 });
@@ -519,12 +570,35 @@ namespace TechCorner_ECommerce.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.ToTable("ProductAttributes");
+                });
+
+            modelBuilder.Entity("TechCorner_ECommerce.Models.ProductAttributeValue", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AttributeValueId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AttributeValueId");
+
+                    b.HasIndex("ProductId", "AttributeValueId")
+                        .IsUnique();
+
+                    b.ToTable("ProductAttributeValues");
                 });
 
             modelBuilder.Entity("TechCorner_ECommerce.Models.ProductImage", b =>
@@ -545,44 +619,14 @@ namespace TechCorner_ECommerce.Migrations
                     b.Property<bool>("IsPrimary")
                         .HasColumnType("bit");
 
-                    b.Property<int>("ProductId")
+                    b.Property<int>("ParentProductId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ProductId");
+                    b.HasIndex("ParentProductId");
 
                     b.ToTable("ProductImages");
-                });
-
-            modelBuilder.Entity("TechCorner_ECommerce.Models.ProductVariant", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("StockQuantity")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProductId");
-
-                    b.ToTable("ProductVariants");
                 });
 
             modelBuilder.Entity("TechCorner_ECommerce.Models.Review", b =>
@@ -593,9 +637,6 @@ namespace TechCorner_ECommerce.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("ApplicationUserId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<string>("Comment")
                         .IsRequired()
                         .HasMaxLength(1000)
@@ -604,7 +645,7 @@ namespace TechCorner_ECommerce.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("ProductId")
+                    b.Property<int>("ParentProductId")
                         .HasColumnType("int");
 
                     b.Property<int>("Rating")
@@ -612,13 +653,13 @@ namespace TechCorner_ECommerce.Migrations
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ApplicationUserId");
+                    b.HasIndex("ParentProductId");
 
-                    b.HasIndex("ProductId");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Reviews");
                 });
@@ -650,29 +691,6 @@ namespace TechCorner_ECommerce.Migrations
                     b.HasIndex("CategoryId");
 
                     b.ToTable("SubCategories");
-                });
-
-            modelBuilder.Entity("TechCorner_ECommerce.Models.VariantAttributeValue", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("AttributeValueId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ProductVariantId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AttributeValueId");
-
-                    b.HasIndex("ProductVariantId");
-
-                    b.ToTable("VariantAttributeValues");
                 });
 
             modelBuilder.Entity("TechCorner_ECommerce.Models.ApplicationUser", b =>
@@ -757,20 +775,20 @@ namespace TechCorner_ECommerce.Migrations
 
             modelBuilder.Entity("TechCorner_ECommerce.Models.AttributeValue", b =>
                 {
-                    b.HasOne("TechCorner_ECommerce.Models.ProductAttribute", "Attribute")
+                    b.HasOne("TechCorner_ECommerce.Models.ProductAttribute", "ProductAttribute")
                         .WithMany("Values")
-                        .HasForeignKey("AttributeId")
+                        .HasForeignKey("ProductAttributeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Attribute");
+                    b.Navigation("ProductAttribute");
                 });
 
             modelBuilder.Entity("TechCorner_ECommerce.Models.Cart", b =>
                 {
                     b.HasOne("TechCorner_ECommerce.Models.ApplicationUser", "User")
-                        .WithOne("Cart")
-                        .HasForeignKey("TechCorner_ECommerce.Models.Cart", "UserId")
+                        .WithMany("Carts")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -785,15 +803,15 @@ namespace TechCorner_ECommerce.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("TechCorner_ECommerce.Models.ProductVariant", "ProductVariant")
+                    b.HasOne("TechCorner_ECommerce.Models.Product", "Product")
                         .WithMany("CartItems")
-                        .HasForeignKey("ProductVariantId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Cart");
 
-                    b.Navigation("ProductVariant");
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("TechCorner_ECommerce.Models.Order", b =>
@@ -801,13 +819,13 @@ namespace TechCorner_ECommerce.Migrations
                     b.HasOne("TechCorner_ECommerce.Models.Address", "Address")
                         .WithMany()
                         .HasForeignKey("AddressId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("TechCorner_ECommerce.Models.ApplicationUser", "User")
                         .WithMany("Orders")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Address");
@@ -820,18 +838,29 @@ namespace TechCorner_ECommerce.Migrations
                     b.HasOne("TechCorner_ECommerce.Models.Order", "Order")
                         .WithMany("OrderDetails")
                         .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("TechCorner_ECommerce.Models.ProductVariant", "ProductVariant")
+                    b.HasOne("TechCorner_ECommerce.Models.Product", "Product")
                         .WithMany("OrderDetails")
-                        .HasForeignKey("ProductVariantId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Order");
 
-                    b.Navigation("ProductVariant");
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("TechCorner_ECommerce.Models.ParentProduct", b =>
+                {
+                    b.HasOne("TechCorner_ECommerce.Models.SubCategory", "SubCategory")
+                        .WithMany("ParentProducts")
+                        .HasForeignKey("SubCategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("SubCategory");
                 });
 
             modelBuilder.Entity("TechCorner_ECommerce.Models.Payment", b =>
@@ -847,50 +876,62 @@ namespace TechCorner_ECommerce.Migrations
 
             modelBuilder.Entity("TechCorner_ECommerce.Models.Product", b =>
                 {
-                    b.HasOne("TechCorner_ECommerce.Models.SubCategory", "SubCategory")
+                    b.HasOne("TechCorner_ECommerce.Models.ParentProduct", "ParentProduct")
                         .WithMany("Products")
-                        .HasForeignKey("SubCategoryId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasForeignKey("ParentProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("SubCategory");
+                    b.Navigation("ParentProduct");
+                });
+
+            modelBuilder.Entity("TechCorner_ECommerce.Models.ProductAttributeValue", b =>
+                {
+                    b.HasOne("TechCorner_ECommerce.Models.AttributeValue", "AttributeValue")
+                        .WithMany("ProductAttributeValues")
+                        .HasForeignKey("AttributeValueId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TechCorner_ECommerce.Models.Product", "Product")
+                        .WithMany("ProductAttributeValues")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AttributeValue");
+
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("TechCorner_ECommerce.Models.ProductImage", b =>
                 {
-                    b.HasOne("TechCorner_ECommerce.Models.Product", "Product")
+                    b.HasOne("TechCorner_ECommerce.Models.ParentProduct", "ParentProduct")
                         .WithMany("Images")
-                        .HasForeignKey("ProductId")
+                        .HasForeignKey("ParentProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Product");
-                });
-
-            modelBuilder.Entity("TechCorner_ECommerce.Models.ProductVariant", b =>
-                {
-                    b.HasOne("TechCorner_ECommerce.Models.Product", "Product")
-                        .WithMany("Variants")
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Product");
+                    b.Navigation("ParentProduct");
                 });
 
             modelBuilder.Entity("TechCorner_ECommerce.Models.Review", b =>
                 {
-                    b.HasOne("TechCorner_ECommerce.Models.ApplicationUser", null)
+                    b.HasOne("TechCorner_ECommerce.Models.ParentProduct", "ParentProduct")
                         .WithMany("Reviews")
-                        .HasForeignKey("ApplicationUserId");
-
-                    b.HasOne("TechCorner_ECommerce.Models.Product", "Product")
-                        .WithMany("Reviews")
-                        .HasForeignKey("ProductId")
+                        .HasForeignKey("ParentProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Product");
+                    b.HasOne("TechCorner_ECommerce.Models.ApplicationUser", "User")
+                        .WithMany("Reviews")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ParentProduct");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("TechCorner_ECommerce.Models.SubCategory", b =>
@@ -904,28 +945,9 @@ namespace TechCorner_ECommerce.Migrations
                     b.Navigation("Category");
                 });
 
-            modelBuilder.Entity("TechCorner_ECommerce.Models.VariantAttributeValue", b =>
-                {
-                    b.HasOne("TechCorner_ECommerce.Models.AttributeValue", "AttributeValue")
-                        .WithMany("VariantAttributeValues")
-                        .HasForeignKey("AttributeValueId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("TechCorner_ECommerce.Models.ProductVariant", "ProductVariant")
-                        .WithMany("VariantAttributeValues")
-                        .HasForeignKey("ProductVariantId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("AttributeValue");
-
-                    b.Navigation("ProductVariant");
-                });
-
             modelBuilder.Entity("TechCorner_ECommerce.Models.AttributeValue", b =>
                 {
-                    b.Navigation("VariantAttributeValues");
+                    b.Navigation("ProductAttributeValues");
                 });
 
             modelBuilder.Entity("TechCorner_ECommerce.Models.Cart", b =>
@@ -945,13 +967,22 @@ namespace TechCorner_ECommerce.Migrations
                     b.Navigation("Payments");
                 });
 
-            modelBuilder.Entity("TechCorner_ECommerce.Models.Product", b =>
+            modelBuilder.Entity("TechCorner_ECommerce.Models.ParentProduct", b =>
                 {
                     b.Navigation("Images");
 
-                    b.Navigation("Reviews");
+                    b.Navigation("Products");
 
-                    b.Navigation("Variants");
+                    b.Navigation("Reviews");
+                });
+
+            modelBuilder.Entity("TechCorner_ECommerce.Models.Product", b =>
+                {
+                    b.Navigation("CartItems");
+
+                    b.Navigation("OrderDetails");
+
+                    b.Navigation("ProductAttributeValues");
                 });
 
             modelBuilder.Entity("TechCorner_ECommerce.Models.ProductAttribute", b =>
@@ -959,26 +990,16 @@ namespace TechCorner_ECommerce.Migrations
                     b.Navigation("Values");
                 });
 
-            modelBuilder.Entity("TechCorner_ECommerce.Models.ProductVariant", b =>
-                {
-                    b.Navigation("CartItems");
-
-                    b.Navigation("OrderDetails");
-
-                    b.Navigation("VariantAttributeValues");
-                });
-
             modelBuilder.Entity("TechCorner_ECommerce.Models.SubCategory", b =>
                 {
-                    b.Navigation("Products");
+                    b.Navigation("ParentProducts");
                 });
 
             modelBuilder.Entity("TechCorner_ECommerce.Models.ApplicationUser", b =>
                 {
                     b.Navigation("Addresses");
 
-                    b.Navigation("Cart")
-                        .IsRequired();
+                    b.Navigation("Carts");
 
                     b.Navigation("Orders");
 

@@ -2,8 +2,9 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using TechCorner_ECommerce.Data;
-using TechCorner_ECommerce.Models;
 using TechCorner_ECommerce.Helpers;
+using TechCorner_ECommerce.Models;
+using static TechCorner_ECommerce.Data.SeedData;
 
 namespace TechCorner_ECommerce {
     public class Program {
@@ -75,6 +76,11 @@ namespace TechCorner_ECommerce {
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}")
                 .WithStaticAssets();
+
+            using (var scope = app.Services.CreateScope()) {
+                var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                SeedData.Seed(db);
+            }
 
             app.Run();
         }
