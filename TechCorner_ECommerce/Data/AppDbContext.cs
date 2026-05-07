@@ -89,6 +89,12 @@ namespace TechCorner_ECommerce.Data {
             modelBuilder.Entity<ProductAttribute>(entity =>
             {
                 entity.HasKey(x => x.Id);
+
+                // Category 1 - n ProductAttribute
+                entity.HasOne(x => x.Category)
+                    .WithMany(x => x.ProductAttributes)
+                    .HasForeignKey(x => x.CategoryId)
+                    .OnDelete(DeleteBehavior.NoAction);
             });
 
             modelBuilder.Entity<AttributeValue>(entity =>
@@ -97,7 +103,7 @@ namespace TechCorner_ECommerce.Data {
 
                 //  Attribute 1 - n AttributeValue
                 entity.HasOne(x => x.ProductAttribute)
-                    .WithMany(x => x.Values)
+                    .WithMany(x => x.AttributeValues)
                     .HasForeignKey(x => x.ProductAttributeId);
             });
 
@@ -110,12 +116,15 @@ namespace TechCorner_ECommerce.Data {
                 //  Product 1 - n ProductAttributeValue
                 entity.HasOne(x => x.Product)
                     .WithMany(x => x.ProductAttributeValues)
-                    .HasForeignKey(x => x.ProductId);
+                    .HasForeignKey(x => x.ProductId)
+                    .OnDelete(DeleteBehavior.Cascade);
 
                 //  AttributeValue 1 - n ProductAttributeValue
                 entity.HasOne(x => x.AttributeValue)
                     .WithMany(x => x.ProductAttributeValues)
-                    .HasForeignKey(x => x.AttributeValueId);
+                    .HasForeignKey(x => x.AttributeValueId)
+                    .OnDelete(DeleteBehavior.NoAction);
+
 
                 // unique constraint to prevent duplicate attribute values for the same product
                 entity.HasIndex(x => new { x.ProductId, x.AttributeValueId })

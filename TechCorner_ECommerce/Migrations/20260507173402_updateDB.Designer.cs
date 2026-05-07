@@ -12,8 +12,8 @@ using TechCorner_ECommerce.Data;
 namespace TechCorner_ECommerce.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260503102114_fixDB")]
-    partial class fixDB
+    [Migration("20260507173402_updateDB")]
+    partial class updateDB
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -568,11 +568,16 @@ namespace TechCorner_ECommerce.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
 
                     b.ToTable("ProductAttributes");
                 });
@@ -776,7 +781,7 @@ namespace TechCorner_ECommerce.Migrations
             modelBuilder.Entity("TechCorner_ECommerce.Models.AttributeValue", b =>
                 {
                     b.HasOne("TechCorner_ECommerce.Models.ProductAttribute", "ProductAttribute")
-                        .WithMany("Values")
+                        .WithMany("AttributeValues")
                         .HasForeignKey("ProductAttributeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -885,12 +890,23 @@ namespace TechCorner_ECommerce.Migrations
                     b.Navigation("ParentProduct");
                 });
 
+            modelBuilder.Entity("TechCorner_ECommerce.Models.ProductAttribute", b =>
+                {
+                    b.HasOne("TechCorner_ECommerce.Models.Category", "Category")
+                        .WithMany("ProductAttributes")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+                });
+
             modelBuilder.Entity("TechCorner_ECommerce.Models.ProductAttributeValue", b =>
                 {
                     b.HasOne("TechCorner_ECommerce.Models.AttributeValue", "AttributeValue")
                         .WithMany("ProductAttributeValues")
                         .HasForeignKey("AttributeValueId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("TechCorner_ECommerce.Models.Product", "Product")
@@ -957,6 +973,8 @@ namespace TechCorner_ECommerce.Migrations
 
             modelBuilder.Entity("TechCorner_ECommerce.Models.Category", b =>
                 {
+                    b.Navigation("ProductAttributes");
+
                     b.Navigation("SubCategories");
                 });
 
@@ -987,7 +1005,7 @@ namespace TechCorner_ECommerce.Migrations
 
             modelBuilder.Entity("TechCorner_ECommerce.Models.ProductAttribute", b =>
                 {
-                    b.Navigation("Values");
+                    b.Navigation("AttributeValues");
                 });
 
             modelBuilder.Entity("TechCorner_ECommerce.Models.SubCategory", b =>

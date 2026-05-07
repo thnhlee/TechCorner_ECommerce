@@ -7,6 +7,12 @@
 
     if (!variants.length) return;
 
+    // ================= FILTER STOCK =================
+    const availableVariants = variants.filter(v => {
+        const stock = v.stock || v.Stock || 0;
+        return stock > 0;
+    });
+
     // ================= BUILD MAP =================
     const attrMap = {};
 
@@ -42,6 +48,21 @@
         container.innerHTML += html;
     });
 
+    // ================= CHECK PRODUCT STOCK =================
+    if (!availableVariants.length) {
+        document.getElementById("dynamic-price").innerText = "$0";
+        document.getElementById("dynamic-stock").innerText = "Out of stock";
+
+        document.querySelectorAll(".attr-btn").forEach(btn => {
+            btn.classList.add("disabled");
+        });
+
+        document.querySelector(".btn-black")?.setAttribute("disabled", true);
+        document.querySelector(".btn-primary")?.setAttribute("disabled", true);
+
+        return;
+    }
+
     // ================= CLICK =================
     document.querySelectorAll(".attr-btn").forEach(btn => {
         btn.addEventListener("click", function () {
@@ -69,32 +90,9 @@
         })
     });
 
-    // ================= FIND VARIANT =================
-    function findVariant() {
 
-        selectedVariant = variants.find(v => {
 
-            const attrs = v.attributes || v.Attributes || [];
-
-            return attrs.every(a => {
-                const name = a.Name || a.name;
-                const value = a.Value || a.value;
-
-                return selected[name] === value;
-            });
-        });
-
-        if (selectedVariant) {
-            document.getElementById("dynamic-price").innerText =
-                `$${selectedVariant.price || selectedVariant.Price}`;
-
-            document.getElementById("dynamic-stock").innerText =
-                `${selectedVariant.stock || selectedVariant.Stock} available`;
-
-        }
-    }
-
-    // ================= UPDATE VALID =================
+    // ================= UPDATE AVAILABLE ATTRIBUTE =================
     function updateAvailableOptions() {
 
         document.querySelectorAll(".attr-btn").forEach(btn => {
@@ -111,19 +109,25 @@
                     const n = a.Name || a.name;
                     const val = a.Value || a.value;
 
-                    // bỏ qua attribute đang check
+                    // attribute đang xét chính là attribute của button => phải match với value của button
                     if (n === name) return val === value;
 
-                    // nếu user đã chọn attribute khác → phải match
+                    // attribute khác => nếu đã chọn thì phải match với giá trị đã chọn, chưa chọn thì bỏ qua
                     if (selected[n] && selected[n] !== val) return false;
 
                     return true;
-                }) && attrs.some(a => {
-                    const n = a.Name || a.name;
-                    const val = a.Value || a.value;
-                    return n === name && val === value;
-                });
+                }); //&& attrs.some(a => {
+                //    const n = a.Name || a.name;
+                //    const val = a.Value || a.value;
+                //    return n === name && val === value;
+                //});
 
+                if (isAvailable) {
+                    btn.classList.remove("disabled");
+                } else {
+                    btn.classList.add("disabled");
+                }
+            
             });
 
             // UI: làm mờ nhưng KHÔNG disable click
@@ -135,6 +139,40 @@
 
         });
     }
+
+
+    // ================= FIND VARIANT =================
+    function findVariant() {
+
+        selectedVariant = variants.find(v => {
+
+            const attrs = v.attributes || v.Attributes || [];
+
+            return attrs.every(a => {
+                const name = a.Name || a.name;
+                const value = a.Value || a.value;
+
+                return selected[name] === value;
+            });
+        }) || null;
+
+        if (selectedVariant) {
+            document.getElementById("dynamic-price").innerText =
+                `Price: $${selectedVariant.price || selectedVariant.Price}`;
+
+            document.getElementById("dynamic-stock").innerText =
+                `${selectedVariant.stock || selectedVariant.Stock} available`;
+        } else {
+            //document.getElementById("dynamic-price").innerText = "$0";
+            //document.getElementById("dynamic-stock").innerText = "Out of stock";
+        }
+    }
+
+
+    // ================= INIT =================
+    updateAvailableOptions();
+
+
 
     // ================= AUTO SELECT =================
     //function autoSelect() {
@@ -185,12 +223,19 @@
         }
 
         const qty = document.getElementById("quantity").value;
-
         const id = selectedVariant.id || selectedVariant.Id;
+        const stock = selectedVariant.stock || selectedVariant.Stock || 0;
 
+        if (qty > stock) {
+            toastr.error("Vượt quá tồn kho!");
+            return;
+        } else if (qty <= 0 || isNaN(qty)) {
+            toastr.error("Số lượng không hợp lệ!");
+            return;
+        }
 
         try {
-            const res = await fetch(`/Cart/AddToCart?variantId=${id}&quantity=${qty}`);
+            const res = await fetch(`/Cart/AddToCart?productId=${id}&quantity=${qty}`);
             const data = await res.json();
 
             if (data.success) {
@@ -213,19 +258,27 @@
 
         if (!selectedVariant) {
             toastr.error("Vui lòng chọn thuộc tính");
-            document.getElementById("dynamic-price").innerText = "$0";
-            document.getElementById("dynamic-stock").innerText = "Out of stock";
             return;
         }
 
         const qty = document.getElementById("quantity").value;
-
         const id = selectedVariant.id || selectedVariant.Id;
+        const stock = selectedVariant.stock || selectedVariant.Stock || 0;
 
-        await fetch(`/Cart/AddToCart?variantId=${id}&quantity=${qty}`);
+        if (qty > stock) {
+            toastr.error("Vượt quá tồn kho!");
+            return;
+        } else if (qty <= 0 || isNaN(qty)){ 
+            toastr.error("Số lượng không hợp lệ!");
+            return;
+        }
+
+        await fetch(`/Cart/AddToCart?productId=${id}&quantity=${qty}`);
 
         window.location.href = "/Cart";
     });
+
+
 
     toastr.options = {
         closeButton: true,

@@ -5,6 +5,9 @@ namespace TechCorner_ECommerce.Models {
         public int Id { get; set; }
         public string Name { get; set; }
 
-        public ICollection<AttributeValue> Values { get; set; }
+        public int CategoryId { get; set; }
+        public Category Category { get; set; }
+
+        public ICollection<AttributeValue> AttributeValues { get; set; }
     }
 }

@@ -45,11 +45,16 @@
                                     </td>
 
                                     <td class="image-prod">
-                                        <div class="img" style="background-image:url(images/product-3.jpg);"></div>
+                                        <div class="img" style="background-image:url(@item.ImageUrl);"></div>
                                     </td>
 
                                     <td class="product-name">
-                                        <h3>@item.ProductName</h3>
+                                        <h3>@item.ProductName</h3>              
+                                       
+                                        <span style="font-size: 12px;">
+                                                @string.Join(", ", item.Attributes.Select(a => a.Value))
+                                        </span>
+                                           
                                     </td>
 
                                     <td class="price">$@item.Price</td>
@@ -146,9 +151,9 @@ document.addEventListener("click", function (e) {
     }
 
     // ================= UPDATE CART =================
-    function updateCart(variantId, qty, input, row) {
+    function updateCart(productId, qty, input, row) {
 
-        fetch(`/Cart/UpdateQuantity?variantId=${variantId}&quantity=${qty}`)
+        fetch(`/Cart/UpdateQuantity?productId=${productId}&quantity=${qty}`)
             .then(res => res.json())
             .then(data => {
 
@@ -189,10 +194,10 @@ document.addEventListener("click", function (e) {
     if (removeBtn) {
         e.preventDefault();
 
-        const variantId = removeBtn.dataset.id;
+        const productId = removeBtn.dataset.id;
         const row = removeBtn.closest("tr");
 
-        fetch(`/Cart/RemoveCart?variantId=${variantId}`)
+        fetch(`/Cart/RemoveCart?productId=${productId}`)
             .then(res => res.json())
             .then(data => {
 
@@ -231,7 +236,7 @@ document.addEventListener("click", function (e) {
     const plusBtn = e.target.closest(".qty-plus");
     if (plusBtn) {
 
-        const variantId = plusBtn.dataset.id;
+        const productId = plusBtn.dataset.id;
 
         const wrapper = plusBtn.closest(".js-cart-qty");
         const input = wrapper?.querySelector("input");
@@ -239,7 +244,7 @@ document.addEventListener("click", function (e) {
 
         let qty = parseInt(input?.value || "1") + 1;
 
-        updateCart(variantId, qty, input, row);
+        updateCart(productId, qty, input, row);
         return;
     }
 
@@ -247,7 +252,7 @@ document.addEventListener("click", function (e) {
     const minusBtn = e.target.closest(".qty-minus");
     if (minusBtn) {
 
-        const variantId = minusBtn.dataset.id;
+        const productId = minusBtn.dataset.id;
 
         const row = minusBtn.closest("tr");
         const input = row?.querySelector("input");
@@ -256,7 +261,7 @@ document.addEventListener("click", function (e) {
 
         // nếu <= 1 thì remove luôn
         if (qty <= 1) {
-            fetch(`/Cart/RemoveCart?variantId=${variantId}`)
+            fetch(`/Cart/RemoveCart?productId=${productId}`)
                 .then(res => res.json())
                 .then(data => {
 
@@ -290,7 +295,7 @@ document.addEventListener("click", function (e) {
         }
 
         qty--;
-        updateCart(variantId, qty, input, row);
+        updateCart(productId, qty, input, row);
         return;
     }
 

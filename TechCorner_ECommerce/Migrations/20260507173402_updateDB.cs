@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace TechCorner_ECommerce.Migrations
 {
     /// <inheritdoc />
-    public partial class fixDB : Migration
+    public partial class updateDB : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -67,19 +67,6 @@ namespace TechCorner_ECommerce.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Categories", x => x.CategoryId);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ProductAttributes",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ProductAttributes", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -234,6 +221,25 @@ namespace TechCorner_ECommerce.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ProductAttributes",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CategoryId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProductAttributes", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ProductAttributes_Categories_CategoryId",
+                        column: x => x.CategoryId,
+                        principalTable: "Categories",
+                        principalColumn: "CategoryId");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "SubCategories",
                 columns: table => new
                 {
@@ -252,26 +258,6 @@ namespace TechCorner_ECommerce.Migrations
                         column: x => x.CategoryId,
                         principalTable: "Categories",
                         principalColumn: "CategoryId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "AttributeValues",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Value = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ProductAttributeId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AttributeValues", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_AttributeValues_ProductAttributes_ProductAttributeId",
-                        column: x => x.ProductAttributeId,
-                        principalTable: "ProductAttributes",
-                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -302,6 +288,26 @@ namespace TechCorner_ECommerce.Migrations
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AttributeValues",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Value = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ProductAttributeId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AttributeValues", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AttributeValues_ProductAttributes_ProductAttributeId",
+                        column: x => x.ProductAttributeId,
+                        principalTable: "ProductAttributes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -498,8 +504,7 @@ namespace TechCorner_ECommerce.Migrations
                         name: "FK_ProductAttributeValues_AttributeValues_AttributeValueId",
                         column: x => x.AttributeValueId,
                         principalTable: "AttributeValues",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_ProductAttributeValues_Products_ProductId",
                         column: x => x.ProductId,
@@ -607,6 +612,11 @@ namespace TechCorner_ECommerce.Migrations
                 name: "IX_Payments_OrderId",
                 table: "Payments",
                 column: "OrderId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductAttributes_CategoryId",
+                table: "ProductAttributes",
+                column: "CategoryId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProductAttributeValues_AttributeValueId",
