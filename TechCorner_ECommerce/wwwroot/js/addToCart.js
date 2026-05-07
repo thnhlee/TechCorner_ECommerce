@@ -1,9 +1,9 @@
 ﻿const PopupProduct = (() => {
 
     let state = {
-        variants: [],        
+        variants: [],
         selected: {},
-        selectedVariant: null, 
+        selectedVariant: null,
         product: null
     };
 
@@ -15,7 +15,7 @@
             const res = await fetch(`/Product/GetVariants?productId=${productId}`);
             const data = await res.json();
 
-            if (!data || !data.variants || data.variants.length === 0) {
+            if (!data?.variants?.length) {
                 toastr.error("Sản phẩm hết hàng!");
                 return;
             }
@@ -27,7 +27,8 @@
 
             renderBaseUI();
             renderAttributes();
-            autoSelectFirst();
+            updateAvailable();
+
             show();
 
         } catch (err) {
@@ -46,10 +47,12 @@
         document.getElementById("popup-price").innerText = "";
         document.getElementById("popup-stock").innerText = "";
 
-        toggleAddButton(false);
+        document.getElementById("qty").value = 1;
+
+        
     }
 
-    /* ================= ATTRIBUTE MAP ================= */
+    /* ================= BUILD ATTR MAP ================= */
     function getAttrMap() {
         const map = {};
 
@@ -75,7 +78,7 @@
 
         Object.keys(map).forEach(name => {
 
-            let html = `<div class="attr-group"><b>${name}</b><br>`;
+            let html = `<div><b>${name}</b><br>`;
 
             map[name].forEach(val => {
                 html += `
@@ -96,6 +99,7 @@
     /* ================= EVENTS ================= */
     function bindEvents() {
 
+        // ATTR CLICK
         document.querySelectorAll(".attr-btn").forEach(btn => {
 
             btn.onclick = () => {
@@ -103,59 +107,48 @@
                 const name = btn.dataset.name;
                 const value = btn.dataset.value;
 
-                state.selected[name] = value;
+                // toggle giống detail
+                if (state.selected[name] === value) {
+                    delete state.selected[name];
+                    btn.classList.remove("active");
+                } else {
+                    state.selected[name] = value;
 
-                document.querySelectorAll(`[data-name="${name}"]`)
-                    .forEach(b => b.classList.remove("active"));
+                    document.querySelectorAll(`[data-name="${name}"]`)
+                        .forEach(b => b.classList.remove("active"));
 
-                btn.classList.add("active");
+                    btn.classList.add("active");
+                }
 
-                findVariant();
                 updateAvailable();
+                findVariant();
             };
         });
 
+        // +
         document.getElementById("plus").onclick = () => {
-            let q = document.getElementById("qty");
-            q.value++;
+            const q = document.getElementById("qty");
+
+            const stock = state.selectedVariant?.stockQuantity
+                || state.selectedVariant?.stock
+                || state.selectedVariant?.Stock
+                || Infinity;
+
+            if (parseInt(q.value) < stock) {
+                q.value++;
+            }
         };
 
+        // -
         document.getElementById("minus").onclick = () => {
-            let q = document.getElementById("qty");
+            const q = document.getElementById("qty");
             if (q.value > 1) q.value--;
         };
 
         document.getElementById("addToCartBtn").onclick = addToCart;
     }
 
-    /* ================= AUTO SELECT ================= */
-    function autoSelectFirst() {
-
-        const v = state.variants[0];
-        if (!v) return;
-
-        state.selectedVariant = v;
-
-        (v.attributes || []).forEach(a => {
-
-            const name = a.name || a.Name;
-            const value = a.value || a.Value;
-
-            state.selected[name] = value;
-
-            document.querySelectorAll(`[data-name="${name}"]`)
-                .forEach(btn => {
-                    if (btn.dataset.value === value) {
-                        btn.classList.add("active");
-                    }
-                });
-        });
-
-        findVariant();
-        updateAvailable();
-    }
-
-    /* ================= FIND SKU ================= */
+    /* ================= FIND VARIANT ================= */
     function findVariant() {
 
         state.selectedVariant = state.variants.find(v => {
@@ -166,41 +159,50 @@
 
                 return state.selected[name] === value;
             });
-        });
 
-        if (!state.selectedVariant) {
-            toggleAddButton(false);
-            return;
-        }
+        }) || null;
 
-        document.getElementById("popup-price").innerText =
-            `$${state.selectedVariant.price}`;
 
-        document.getElementById("popup-stock").innerText =
-            `Stock: ${state.selectedVariant.stockQuantity}`;
 
-        toggleAddButton(true);
+        const price = state.selectedVariant.price || state.selectedVariant.Price;
+        const stock = state.selectedVariant.stockQuantity || state.selectedVariant.stock || state.selectedVariant.Stock || 0;
+
+        document.getElementById("popup-price").innerText = `Price: $${price}`;
+        document.getElementById("popup-stock").innerText = `Stock: ${stock}`;
+
+       
     }
 
-    /* ================= VALID OPTIONS ================= */
+    /* ================= UPDATE AVAILABLE ================= */
     function updateAvailable() {
 
         document.querySelectorAll(".attr-btn").forEach(btn => {
 
-            const temp = { ...state.selected };
-            temp[btn.dataset.name] = btn.dataset.value;
+            const name = btn.dataset.name;
+            const value = btn.dataset.value;
 
-            const valid = state.variants.some(v => {
+            const isAvailable = state.variants.some(v => {
 
-                return (v.attributes || []).every(a => {
-                    const name = a.name || a.Name;
-                    const value = a.value || a.Value;
+                const attrs = v.attributes || [];
 
-                    return temp[name] === value;
+                return attrs.every(a => {
+                    const n = a.name || a.Name;
+                    const val = a.value || a.Value;
+
+                    if (n === name) return val === value;
+
+                    if (state.selected[n] && state.selected[n] !== val) return false;
+
+                    return true;
                 });
             });
 
-            btn.disabled = !valid;
+
+            if (isAvailable) {
+                btn.classList.remove("disabled");
+            } else {
+                btn.classList.add("disabled");
+            }
         });
     }
 
@@ -214,12 +216,17 @@
 
         const qty = parseInt(document.getElementById("qty").value);
 
-        if (qty <= 0) {
-            toastr.error("Số lượng không hợp lệ");
+        const stock = state.selectedVariant.stockQuantity
+            || state.selectedVariant.stock
+            || state.selectedVariant.Stock
+            || 0;
+
+        if (isNaN(qty) || qty <= 0) {
+            toastr.error("Số lượng không hợp lệ!");
             return;
         }
 
-        if (qty > state.selectedVariant.stockQuantity) {
+        if (qty > stock) {
             toastr.error("Vượt quá tồn kho!");
             return;
         }
@@ -227,7 +234,6 @@
         const id = state.selectedVariant.id || state.selectedVariant.Id;
 
         try {
-            // 🔥 FIX: dùng productId
             const res = await fetch(`/Cart/AddToCart?productId=${id}&quantity=${qty}`);
             const data = await res.json();
 
@@ -243,26 +249,20 @@
         }
     }
 
-    /* ================= CART UI ================= */
+    /* ================= UPDATE CART ================= */
     function updateCart(qty) {
         const el = document.getElementById("cart-qty");
         if (el) el.innerText = qty;
     }
 
-    /* ================= BUTTON STATE ================= */
-    function toggleAddButton(enable) {
-        const btn = document.getElementById("addToCartBtn");
-        if (btn) btn.disabled = !enable;
-    }
+    /* ================= BUTTON ================= */
+
 
     /* ================= MODAL ================= */
     function show() {
         const el = document.getElementById("variantModal");
 
-        if (!modal) {
-            modal = new bootstrap.Modal(el);
-        }
-
+        if (!modal) modal = new bootstrap.Modal(el);
         modal.show();
     }
 
@@ -281,20 +281,14 @@
             state.selected = {};
             state.selectedVariant = null;
 
-            const container = document.getElementById("attribute-container");
-            if (container) container.innerHTML = "";
-
-            const qty = document.getElementById("qty");
-            if (qty) qty.value = 1;
+            document.getElementById("attribute-container").innerHTML = "";
+            document.getElementById("qty").value = 1;
         });
     });
 
     document.getElementById("popup-close")?.addEventListener("click", close);
 
-    return {
-        open,
-        close
-    };
+    return { open, close };
 
 })();
 

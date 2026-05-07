@@ -9002,11 +9002,19 @@ h1, h2, h3, h4, h5,
     /*Màu cho Price trong Detail*/
     .product-details p.price {
         font-size: 20px;
-        
+        color: #000;
         margin-bottom: 0;
         margin-left: 15px;
         font-weight: 400;
     }
+        .product-attributeIndex p.price {
+            font-size: 20px;
+            color: #000;
+            margin-bottom: 0;
+            margin-top: 30px;
+            font-weight: 400;
+        }
+
       .product .text p.price span.price-dc {
         text-decoration: line-through;
         color: #b3b3b3; }
@@ -9031,7 +9039,7 @@ h1, h2, h3, h4, h5,
         -ms-transition: all 0.3s ease;
         transition: all 0.3s ease;
         z-index: 1;
-        justify-content: center; /* 👈 căn giữa ngang */
+        justify-content: center; /* căn giữa ngang */
         align-items: center;
         gap: 10px;
 
@@ -9110,17 +9118,17 @@ h1, h2, h3, h4, h5,
   padding: 0 15px; }
 
 .product-details button, .product-details .form-control {
-  height: 40px !important;
-  text-align: center;
-  border: 1px solid rgba(0, 0, 0, 0.1) !important;
-  color: #dbcc8f;
-  padding: 10px 20px;
-  background: transparent !important;
-  -webkit-border-radius: 0;
-  -moz-border-radius: 0;
-  -ms-border-radius: 0;
-  border-radius: 0;
-  font-size: 14px; }
+    height: 50px !important;
+    text-align: center;
+    border: 1px solid #dbcc8f !important;
+    color: #dbcc8f;
+    padding: 10px 20px;
+    background: transparent !important;
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    border-radius: 180px;
+    font-size: 14px;
+}
   .product-details button:hover, .product-details button:focus, .product-details .form-control:hover, .product-details .form-control:focus {
     text-decoration: none;
     outline: none; }

@@ -10,7 +10,9 @@ namespace TechCorner_ECommerce {
     public class Program {
         public static void Main(string[] args) {
             var builder = WebApplication.CreateBuilder(args);
-
+            builder.WebHost.ConfigureKestrel(options => {
+                options.Limits.MaxRequestBodySize = 104857600; // 100MB
+            });
             /////// Add services to the container./////////
             builder.Services.AddControllersWithViews();
             // Add DbContext
@@ -46,6 +48,8 @@ namespace TechCorner_ECommerce {
             });
 
             builder.Services.AddAuthorization();
+
+            builder.Services.AddScoped<ISlugService, SlugService>();
 
             var app = builder.Build();
 

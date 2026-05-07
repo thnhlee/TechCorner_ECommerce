@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using TechCorner_ECommerce.ViewModels;
 
 namespace TechCorner_ECommerce.Models {
     public class Category {
@@ -12,5 +13,6 @@ namespace TechCorner_ECommerce.Models {
         public DateTime UpdatedAt { get; set; }
 
         public ICollection<SubCategory> SubCategories { get; set; } = new List<SubCategory>();
+        public ICollection<ProductAttribute> ProductAttributes { get; set; } = new List<ProductAttribute>();
     }
 }
