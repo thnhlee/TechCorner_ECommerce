@@ -4,6 +4,7 @@
 }
 
 <main class="content py-4">
+
     <div class="container-fluid">
 
         <h2 class="mb-4" >Add Product</h2>
@@ -11,37 +12,24 @@
             <div class="col-12">
                 <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
                     <div class="">
-                        <h1 class="fs-3 mb-1" >Add Product</h1>
+                        <h2  >Add Product</h2>
                         <p class="mb-0">Manage your inventory items</p>
                     </div>
+
                     <div>
                         <a asp-area="Admin" asp-controller="Inventory" asp-action="Index" class="btn btn-primary">Go to Inventory List</a>
                     </div>
                 </div>
             </div>
         </div>
+
+        <div asp-validation-summary="All" class="text-danger"></div>
+
         <form asp-action="AddProduct" method="post" enctype="multipart/form-data">
-
-            @* ================= BASIC INFO ================= *@
-            <div class="card mb-4">
-                <div class="card-header"><strong>Basic Information</strong></div>
-
-                <div class="card-body">
-
-                    <input asp-for="Name"
-                           class="form-control mb-2"
-                           placeholder="Product name" />
-
-                    <textarea asp-for="Description"
-                              class="form-control mb-2"
-                              placeholder="Description"></textarea>
-
-                </div>
-            </div>
 
             @* ================= CATEGORY ================= *@
             <div class="card mb-4">
-                <div class="card-header"><strong>Category</strong></div>
+                <div class="card-header"><strong>Category</strong> <a asp-controller="Category" asp-action="Index" class=""><i class="ti ti-edit "></i></a></div>
 
                 <div class="card-body">
 
@@ -74,6 +62,24 @@
                 </div>
             </div>
 
+            @* ================= BASIC INFO ================= *@
+            <div class="card mb-4">
+                <div class="card-header"><strong>Basic Information</strong></div>
+
+                <div class="card-body">
+
+                    <input asp-for="Name"
+                           class="form-control mb-2"
+                           placeholder="Product name" />
+
+                    <textarea asp-for="Description"
+                              class="form-control mb-2"
+                              placeholder="Description"></textarea>
+
+                </div>
+            </div>
+
+
             @* ================= IMAGES ================= *@
             <div class="card mb-4">
                 <div class="card-header"><strong>Images</strong></div>
@@ -92,31 +98,6 @@
                 <div class="card-header"><strong>Attributes</strong></div>
 
                 <div class="card-body">
-@*                     <div id="attributeContainer">
-                        @foreach (var attr in Model.Attributes)
-                        {
-                            <div class="mb-3 attribute-group" data-category="@attr.CategoryId">
-
-                                <label><strong>@attr.Name</strong></label>
-
-                                <div>
-                                    @foreach (var val in attr.Values)
-                                    {
-                                        <div class="form-check form-check-inline">
-                                            <input type="checkbox"
-                                                   class="attr-checkbox"
-                                                   data-attr="@attr.Id"
-                                                   value="@val.Id" />
-                                            <label class="form-check-label">
-                                                @val.Value
-                                            </label>
-                                        </div>
-                                    }
-                                </div>
-                            </div>
-                        }
-                    </div> *@
-
                     <div id="attributeContainer">
                         <p class="text-muted">Please select a category first</p>
                     </div>
@@ -159,8 +140,9 @@
 
         </form>
     </div>
-    <div asp-validation-summary="All" class="text-danger"></div>
+
 </main>
+
 <script>
 
     const attributes = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Attributes))
@@ -217,10 +199,11 @@
 
             img.src = url;
 
-            img.style.width = "100px";
-            img.style.height = "100px";
+            img.style.width = "120px";
+            img.style.height = "120px";
             img.style.objectFit = "cover";
             img.style.border = "1px solid #ddd";
+            img.style.borderRadius = "10px";
 
             preview.appendChild(img);
         });

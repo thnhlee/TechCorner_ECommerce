@@ -14,8 +14,8 @@ namespace TechCorner_ECommerce.Models {
         public string PaymentMethod { get; set; }
         public PaymentStatus Status { get; set; }
 
-        public DateTime? PaidAt { get; set; }
+        public DateTime? PaidAt { get; set; } = DateTime.Now;
 
-        public DateTime CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
     }
 }

@@ -2,10 +2,11 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Logging;
+using System.Collections;
 using TechCorner_ECommerce.Data;
+using TechCorner_ECommerce.Helpers;
 using TechCorner_ECommerce.Models;
 using TechCorner_ECommerce.ViewModels;
-using TechCorner_ECommerce.Helpers;
 
 namespace TechCorner_ECommerce.Areas.Admin.Controllers {
     [Authorize]
@@ -21,8 +22,6 @@ namespace TechCorner_ECommerce.Areas.Admin.Controllers {
             _webHost = webHost;
         }
 
-
-         
         // ================= LOAD UI DATA =================
         private List<CategoryVM> LoadCategories() {
             return db.Categories
@@ -57,7 +56,8 @@ namespace TechCorner_ECommerce.Areas.Admin.Controllers {
 
 
 
-        // ================= GET =================
+
+        // ================= CREATE =================
         [HttpGet]
         public IActionResult AddProduct() {
             var model = new CreateProductVM {
@@ -69,13 +69,10 @@ namespace TechCorner_ECommerce.Areas.Admin.Controllers {
             return View(model);
         }
 
-        // ================= POST =================
         [HttpPost]
         public async Task<IActionResult> AddProduct(CreateProductVM model) {
             
-            if (string.IsNullOrEmpty(model.Name)) {
-                ModelState.AddModelError("Name", "Name is required");
-            }
+
             if (!ModelState.IsValid) {
                 model.Categories = LoadCategories();
                 model.SubCategories = LoadSubCategories();
@@ -84,32 +81,28 @@ namespace TechCorner_ECommerce.Areas.Admin.Controllers {
                 return View("AddProduct", model);
             }
 
-            var seen = new HashSet<string>();
+            //// Check product duplicatetrong cùng subcategory
+            var slug = _slugService.CreateSlug(model.Name.Trim());
 
-            if (model.Variants != null) {
-                foreach (var v in model.Variants) {
-                    if (v.AttributeValueIds == null || !v.AttributeValueIds.Any()) {
-                        ModelState.AddModelError("", "Variant must have attributes.");
+            // Nếu slug đã tồn tại, thêm số vào cuối để tạo slug mới, chống trùng slug khi tạo
+            int i = 1;
+            string baseSlug = slug;
 
-                        model.Categories = LoadCategories();
-                        model.SubCategories = LoadSubCategories();
-                        model.Attributes = LoadAttributes();
+            while (db.ParentProducts.Any(x => x.Slug == slug)) {
+                slug = $"{baseSlug}-{i}";
+                i++;
+            }
 
-                        return View("AddProduct", model);
-                    }
+            bool exists = db.ParentProducts.Any(x => x.Slug == slug && x.SubCategoryId == model.SubCategoryId);
 
-                    var key = string.Join("-", v.AttributeValueIds.OrderBy(x => x));
+            if (exists) {
+                ModelState.AddModelError("Name", "Product already exists in this subcategory");
 
-                    if (!seen.Add(key)) {
-                        ModelState.AddModelError("", "Duplicate variant detected.");
+                model.Categories = LoadCategories();
+                model.SubCategories = LoadSubCategories();
+                model.Attributes = LoadAttributes();
 
-                        model.Categories = LoadCategories();
-                        model.SubCategories = LoadSubCategories();
-                        model.Attributes = LoadAttributes();
-
-                        return View("AddProduct", model);
-                    }
-                }
+                return View("AddProduct", model);
             }
 
             //  Gom tất cả các thao tác DB vào một transaction để khi có lỗi sẽ rollback lại, tránh lưu dữ liệu mà bị thiếu
@@ -190,8 +183,7 @@ namespace TechCorner_ECommerce.Areas.Admin.Controllers {
             }
             catch (Exception ex) {
                 await transaction.RollbackAsync();
-                //Console.WriteLine("LỖI: " + ex.ToString());
-                //ModelState.AddModelError("", ex.Message);
+
                 model.Categories = LoadCategories();
                 model.SubCategories = LoadSubCategories();
                 model.Attributes = LoadAttributes();
@@ -201,5 +193,170 @@ namespace TechCorner_ECommerce.Areas.Admin.Controllers {
                 return View("AddProduct", model);
             }
         }
+
+        // ================= EDIT =================
+        [HttpGet]
+        public IActionResult EditProduct(int id) {
+
+            var product = db.ParentProducts
+                .Include(x => x.SubCategory)
+                .ThenInclude(x => x.Category)
+
+                .Include(x => x.Images)
+
+                .Include(x => x.Products)
+                .ThenInclude(x => x.ProductAttributeValues)
+                .ThenInclude(x => x.AttributeValue)
+
+                .FirstOrDefault(x => x.Id == id );
+
+            if (product == null)
+                return NotFound();
+
+            var model = new EditProductVM {
+
+                ParentProductId = product.Id,
+                Name = product.Name,
+                Description = product.Description,
+                SubCategoryId = product.SubCategoryId,
+
+                Categories = LoadCategories(),
+                SubCategories = LoadSubCategories(),
+                Attributes = LoadAttributes(),
+
+                ExistingImages = product.Images
+                    .Select(i => new ProductImageVM {
+                        Id = i.Id,
+                        ImageUrl = i.ImageUrl
+                    })
+                    .ToList(),
+
+                Variants = product.Products
+                    .Select(p => new ProductVariantEditVM {
+
+                        ProductId = p.Id,
+
+                        Price = p.Price,
+
+                        StockQuantity = p.StockQuantity,
+
+                        AttributeValueIds = p.ProductAttributeValues
+                            .Select(v => v.AttributeValueId)
+                            .ToList()
+
+                    }).ToList()
+            };
+
+            return View(model);
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> EditProduct(EditProductVM model) {
+
+            var parent = db.ParentProducts
+                .Include(x => x.Products)
+                .FirstOrDefault(x => x.Id == model.ParentProductId);
+
+            if (parent == null)
+                return NotFound();
+
+            parent.Name = model.Name;
+            parent.Description = model.Description;
+            parent.SubCategoryId = model.SubCategoryId;
+
+            foreach (var v in model.Variants) {
+
+                var product = db.Products.Find(v.ProductId);
+
+                if (product == null)
+                    continue;
+
+                product.Price = v.Price;
+                product.StockQuantity = v.StockQuantity;
+            }
+
+            // upload new images
+            if (model.NewImages != null && model.NewImages.Any()) {
+
+                var uploadPath =
+                    Path.Combine(_webHost.WebRootPath, "images");
+
+                foreach (var file in model.NewImages) {
+
+                    if (file == null || file.Length == 0)
+                        continue;
+
+                    var fileName =
+                        Guid.NewGuid() + Path.GetExtension(file.FileName);
+
+                    var path =
+                        Path.Combine(uploadPath, fileName);
+
+                    using var stream =
+                        new FileStream(path, FileMode.Create);
+
+                    await file.CopyToAsync(stream);
+
+                    db.ProductImages.Add(new ProductImage {
+
+                        ParentProductId = parent.Id,
+
+                        ImageUrl = "/images/" + fileName
+                    });
+                }
+            }
+
+            await db.SaveChangesAsync();
+
+            return RedirectToAction("Index", "Inventory");
+        }
+
+        // ================= DELETE =================
+        [HttpPost]
+        public IActionResult DeleteVariant(int id) {
+
+            var product = db.Products
+                .IgnoreQueryFilters()
+                .FirstOrDefault(x => x.Id == id);
+
+            if (product == null) {
+                return Json(new {
+                    success = false,
+                    message = "Variant not found"
+                });
+            }
+
+            var parent = db.ParentProducts
+                .IgnoreQueryFilters()
+                .FirstOrDefault(x => x.Id == product.ParentProductId);
+
+            if (parent == null) {
+                return Json(new {
+                    success = false,
+                    message = "Parent not found"
+                });
+            }
+
+            // soft delete variant
+            product.IsDeleted = true;
+
+            bool hasOtherVariants = db.Products
+                .IgnoreQueryFilters()
+                .Any(x =>
+                    x.ParentProductId == product.ParentProductId &&
+                    x.Id != product.Id &&
+                    !x.IsDeleted
+                );
+
+            if (!hasOtherVariants) {
+                parent.IsDeleted = true;
+            }
+
+            db.SaveChanges();
+
+            return Json(new { success = true });
+        }
+
     }
 }

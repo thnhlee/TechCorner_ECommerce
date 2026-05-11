@@ -1,0 +1,149 @@
+﻿@model TechCorner_ECommerce.ViewModels.SubCategoryEditVM
+
+@{
+    Layout = "_LayoutDashboard";
+}
+
+<main class="content py-4">
+
+    <div class="container-fluid">
+
+        <h2 class="mb-4">Edit SubCategory</h2>
+
+        <!-- TOP -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+
+            <div>
+                <h2 class="mb-1">Update SubCategory</h2>
+
+                <p class="text-muted mb-0">
+                    Edit subcategory information
+                </p>
+            </div>
+
+            <a asp-action="Index"
+               class="btn btn-light border">
+                Back
+            </a>
+
+        </div>
+
+        <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+        <!-- CARD -->
+        <div class="card">
+
+            <div class="card-header">
+                <strong>SubCategory Form</strong>
+            </div>
+
+            <div class="card-body">
+
+                <form method="post">
+
+                    <!-- ID -->
+                    <input type="hidden" asp-for="Id" />
+
+                    <!-- CATEGORY -->
+                    <div class="mb-3">
+
+                        <label class="form-label fw-semibold">
+                            Category
+                        </label>
+
+                        <select asp-for="CategoryId"
+                                class="form-select">
+
+                            <option value="">
+                                Select category
+                            </option>
+
+                            @foreach (var c in ViewBag.Categories)
+                            {
+                                <option value="@c.CategoryId">
+                                    @c.Name
+                                </option>
+                            }
+
+                        </select>
+
+                        <span asp-validation-for="CategoryId"
+                              class="text-danger"></span>
+
+                    </div>
+
+                    <!-- NAME -->
+                    <div class="mb-3">
+
+                        <label class="form-label fw-semibold">
+                            SubCategory Name
+                        </label>
+
+                        <input asp-for="Name"
+                               class="form-control"
+                               placeholder="Enter subcategory name" />
+
+                        <span asp-validation-for="Name"
+                              class="text-danger"></span>
+
+                    </div>
+
+@*                     <!-- CREATED -->
+                    <div class="mb-3">
+
+                        <label class="form-label fw-semibold">
+                            Created At
+                        </label>
+
+                        <input class="form-control"
+                               value="@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")"
+                               disabled />
+
+                    </div> *@
+
+@*                     <!-- UPDATED -->
+                    @if (Model.UpdatedAt != null)
+                    {
+                        <div class="mb-3">
+
+                            <label class="form-label fw-semibold">
+                                Last Updated
+                            </label>
+
+                            <input class="form-control"
+                                   value="@Model.UpdatedAt?.ToString("dd/MM/yyyy HH:mm")"
+                                   disabled />
+
+                        </div>
+                    } *@
+
+                    <!-- BUTTON -->
+                    <div class="d-flex gap-2">
+
+                        <button type="submit"
+                                class="btn btn-warning">
+
+                            Save Changes
+
+                        </button>
+
+                        <a asp-action="Index"
+                           class="btn btn-light border">
+
+                            Cancel
+
+                        </a>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</main>
+
+<partial name="_ValidationScriptsPartial" />
