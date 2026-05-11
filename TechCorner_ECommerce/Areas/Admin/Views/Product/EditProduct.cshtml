@@ -1,0 +1,358 @@
+﻿@model TechCorner_ECommerce.ViewModels.EditProductVM
+
+@{
+    Layout = "_LayoutDashboard";
+}
+
+<main class="content py-4">
+
+<div class="container-fluid">
+    <h2 class="mb-4" >Add Product</h2>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <h2>Edit Product</h2>
+            <p class="text-muted mb-0">
+                Update product information
+            </p>
+        </div>
+
+        <a asp-controller="Inventory"
+           asp-action="Index"
+           class="btn btn-light border">
+            Back
+        </a>
+
+    </div>
+
+    <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+    <form asp-action="EditProduct" method="post" enctype="multipart/form-data">
+
+        <input type="hidden" asp-for="ParentProductId" />
+
+        @* ================= CATEGORY ================= *@
+        <div class="card mb-4">
+
+            <div class="card-header">
+                <strong>Category</strong>
+            </div>
+
+            <div class="card-body">
+
+                <div class="row">
+
+                    <div class="col-md-6">
+
+                        <label class="form-label fw-semibold">
+                            Category
+                        </label>
+
+                        <select class="form-control"
+                                id="categorySelect" disabled>
+
+                            <option value="">
+                                Select category
+                            </option>
+
+                            @foreach (var c in Model.Categories)
+                            {
+                                var selected =
+                                    Model.SubCategories
+                                    .FirstOrDefault(x => x.Id == Model.SubCategoryId)?
+                                    .CategoryId == c.Id;
+
+                                <option value="@c.Id"
+                                        selected="@selected">
+                                    @c.Name
+                                </option>
+                            }
+
+                        </select>
+
+                    </div>
+
+                    <div class="col-md-6">
+
+                        <label class="form-label fw-semibold">
+                            SubCategory
+                        </label>
+
+                        <select asp-for="SubCategoryId"
+                                class="form-select"
+                                id="subCategorySelect">
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        @* ================= BASIC ================= *@
+        <div class="card mb-4">
+
+            <div class="card-header">
+                <strong>Basic Information</strong>
+            </div>
+
+            <div class="card-body">
+
+                <div class="mb-3">
+
+                    <label class="form-label fw-semibold">
+                        Product Name
+                    </label>
+
+                    <input asp-for="Name"
+                           class="form-control" />
+
+                    <span asp-validation-for="Name"
+                          class="text-danger"></span>
+
+                </div>
+
+                <div>
+
+                    <label class="form-label fw-semibold">
+                        Description
+                    </label>
+
+                    <textarea asp-for="Description"
+                              class="form-control"></textarea>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        @* ================= EXISTING IMAGES ================= *@
+        <div class="card mb-4">
+
+            <div class="card-header">
+                <strong>Current Images</strong>
+            </div>
+
+            <div class="card-body">
+
+                <div class="d-flex flex-wrap gap-3">
+
+                    @foreach (var img in Model.ExistingImages)
+                    {
+                        <div class="position-relative">
+
+                            <img src="@img.ImageUrl"
+                                 style="width:120px;
+                                        height:120px;
+                                        object-fit:cover;
+                                        border:1px solid #ddd;
+                                        border-radius:10px;" />
+
+                        </div>
+
+                        
+                    }
+                    <div id="preview"></div>
+                </div>
+
+            </div>
+
+        </div>
+
+        @* ================= NEW IMAGES ================= *@
+        <div class="card mb-4">
+
+            <div class="card-header">
+                <strong>Add More Images</strong>
+            </div>
+
+            <div class="card-body">
+
+                <input asp-for="NewImages"
+                       type="file"
+                       class="form-control"
+                       multiple />
+
+                <div id="preview"
+                     class="d-flex gap-2 mt-3 flex-wrap"></div>
+
+            </div>
+
+        </div>
+
+        @* ================= VARIANTS ================= *@
+        <div class="card mb-4">
+
+            <div class="card-header">
+                <strong>Variants</strong>
+            </div>
+
+            <div class="card-body">
+
+                <table class="table table-bordered">
+
+                    <thead>
+
+                        <tr>
+                            <th class="fw-bold">Price</th>
+                            <th class="fw-bold">Stock</th>
+                            <th class="fw-bold">Attributes</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        @for (int i = 0; i < Model.Variants.Count; i++)
+                        {
+                            <tr>
+
+                                <td>
+
+                                    <input type="hidden"
+                                           asp-for="Variants[i].ProductId" />
+
+                                    <input asp-for="Variants[i].Price"
+                                           class="form-control" />
+
+                                </td>
+
+                                <td>
+
+                                    <input asp-for="Variants[i].StockQuantity"
+                                           class="form-control" />
+
+                                </td>
+
+                                <td>
+
+                                    @{
+                                        var names = new List<string>();
+
+                                        foreach (var valId in Model.Variants[i].AttributeValueIds)
+                                        {
+                                            foreach (var attr in Model.Attributes)
+                                            {
+                                                var found = attr.Values
+                                                    .FirstOrDefault(x => x.Id == valId);
+
+                                                if (found != null)
+                                                {
+                                                    names.Add(found.Value);
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    @string.Join(" / ", names)
+
+                                    @foreach (var val in Model.Variants[i].AttributeValueIds)
+                                    {
+                                        <input type="hidden"
+                                               name="Variants[@i].AttributeValueIds"
+                                               value="@val" />
+                                    }
+
+                                </td>
+
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+        <button class="btn btn-warning">
+            Save Changes
+        </button>
+
+    </form>
+
+</div>
+
+</main>
+
+<script>
+
+    const subCategories =
+        @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.SubCategories));
+
+    const selectedSub = @Model.SubCategoryId;
+
+    function loadSubcategories(catId) {
+
+        let subSelect =
+            document.getElementById("subCategorySelect");
+
+        subSelect.innerHTML =
+            `<option value="">Select subcategory</option>`;
+
+        subCategories
+            .filter(x => x.CategoryId == catId)
+            .forEach(x => {
+
+                let selected =
+                    x.Id == selectedSub ? "selected" : "";
+
+                subSelect.innerHTML += `
+                    <option value="${x.Id}" ${selected}>
+                        ${x.Name}
+                    </option>
+                `;
+            });
+    }
+
+    const categorySelect =
+        document.getElementById("categorySelect");
+
+    loadSubcategories(categorySelect.value);
+
+    categorySelect.addEventListener("change", function () {
+        loadSubcategories(this.value);
+    });
+
+
+        // ================= IMAGE PREVIEW =================
+    document.querySelector('input[type="file"]')
+    .addEventListener("change", function (e) {
+
+        const preview = document.getElementById("preview");
+
+        preview.querySelectorAll("img").forEach(img => URL.revokeObjectURL(img.src));
+
+        preview.innerHTML = "";
+
+        Array.from(e.target.files).forEach(file => {
+
+            if (file.size > 2 * 1024 * 1024) {
+                alert(file.name + " quá lớn (>2MB)");
+                return;
+            }
+
+            const url = URL.createObjectURL(file);
+
+            const img = document.createElement("img");
+
+            img.src = url;
+
+            img.style.width = "120px";
+            img.style.height = "120px";
+            img.style.objectFit = "cover";
+            img.style.border = "1px solid #ddd";
+            img.style.borderRadius = "10px";
+
+            preview.appendChild(img);
+        });
+    });
+
+</script>
+
+<partial name="_ValidationScriptsPartial" />

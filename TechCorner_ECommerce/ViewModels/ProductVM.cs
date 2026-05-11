@@ -10,9 +10,13 @@ namespace TechCorner_ECommerce.ViewModels {
         public decimal Price { get; set; }
         public string ImageUrl { get; set; }
         public string CategoryName { get; set; }
+        public string SubCategoryName { get; set; }
+
+        public int ParentProductId { get; set; }
 
         public int Stock { get; set; }
         public List<VariantVM> Variants { get; set; } = new List<VariantVM>();
+        public List<AttributeVM> Attributes { get; set; } = new();
     }
 
 

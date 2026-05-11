@@ -31,7 +31,17 @@ namespace TechCorner_ECommerce.Data {
         protected override void OnModelCreating(ModelBuilder modelBuilder) {
             base.OnModelCreating(modelBuilder);
 
-            /* =========================PARENT PRODUCT========================= */
+            /* ========================= QUERY FILTERS ========================= */
+            modelBuilder.Entity<Product>()
+                .HasQueryFilter(x => !x.IsDeleted);
+
+            modelBuilder.Entity<ParentProduct>()
+                .HasQueryFilter(x => !x.IsDeleted);
+
+            /* ========================= PARENT PRODUCT ========================= */
+            modelBuilder.Entity<ParentProduct>()
+                .HasIndex(x => new { x.Slug, x.SubCategoryId })
+                .IsUnique();
 
             modelBuilder.Entity<ParentProduct>(entity =>
             {
@@ -54,7 +64,7 @@ namespace TechCorner_ECommerce.Data {
                     .HasForeignKey(x => x.SubCategoryId);
             });
 
-            /* =========================PRODUCT========================= */
+            /* ========================= PRODUCT ========================= */
 
             modelBuilder.Entity<Product>(entity =>
             {
@@ -72,7 +82,7 @@ namespace TechCorner_ECommerce.Data {
                     .HasForeignKey(x => x.ParentProductId);
             });
 
-            /* =========================PRODUCT IMAGE========================= */
+            /* ========================= PRODUCT IMAGE ========================= */
 
             modelBuilder.Entity<ProductImage>(entity =>
             {
@@ -84,7 +94,7 @@ namespace TechCorner_ECommerce.Data {
                     .HasForeignKey(x => x.ParentProductId);
             });
 
-            /* =========================ATTRIBUTE========================= */
+            /* ========================= ATTRIBUTE ========================= */
 
             modelBuilder.Entity<ProductAttribute>(entity =>
             {
@@ -107,7 +117,7 @@ namespace TechCorner_ECommerce.Data {
                     .HasForeignKey(x => x.ProductAttributeId);
             });
 
-            /* =========================PRODUCT - ATTRIBUTE VALUE (M:N)========================= */
+            /* ========================= PRODUCT - ATTRIBUTE VALUE (M:N) ========================= */
 
             modelBuilder.Entity<ProductAttributeValue>(entity =>
             {
@@ -131,7 +141,7 @@ namespace TechCorner_ECommerce.Data {
                     .IsUnique();
             });
 
-            /* =========================CART========================= */
+            /* ========================= CART ========================= */
 
             modelBuilder.Entity<Cart>(entity =>
             {
@@ -158,7 +168,7 @@ namespace TechCorner_ECommerce.Data {
                     .HasForeignKey(x => x.ProductId);
             });
 
-            /* =========================ORDER========================= */
+            /* ========================= ORDER ========================= */
 
             modelBuilder.Entity<Order>(entity =>
             {
@@ -197,7 +207,7 @@ namespace TechCorner_ECommerce.Data {
                     .HasColumnType("decimal(18,2)");
             });
 
-            /* =========================PAYMENT========================= */
+            /* ========================= PAYMENT ========================= */
 
             modelBuilder.Entity<Payment>(entity =>
             {
@@ -209,7 +219,7 @@ namespace TechCorner_ECommerce.Data {
                     .HasForeignKey(x => x.OrderId);
             });
 
-            /* =========================ADDRESS========================= */
+            /* ========================= ADDRESS ========================= */
 
             modelBuilder.Entity<Address>(entity =>
             {
@@ -221,7 +231,7 @@ namespace TechCorner_ECommerce.Data {
                     .HasForeignKey(x => x.UserId);
             });
 
-            /* =========================REVIEW========================= */
+            /* ========================= REVIEW ========================= */
 
             modelBuilder.Entity<Review>(entity =>
             {

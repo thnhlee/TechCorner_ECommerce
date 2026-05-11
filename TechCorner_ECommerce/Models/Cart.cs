@@ -9,8 +9,8 @@ namespace TechCorner_ECommerce.Models {
 
         public ApplicationUser User { get; set; }
 
-        public DateTime CreatedAt { get; set; }
-        public DateTime UpdatedAt { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime UpdatedAt { get; set; } = DateTime.Now; 
 
         public ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
     }

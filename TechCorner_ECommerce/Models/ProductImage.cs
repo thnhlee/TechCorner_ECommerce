@@ -10,6 +10,6 @@ namespace TechCorner_ECommerce.Models {
         public string ImageUrl { get; set; }
         public bool IsPrimary { get; set; }
 
-        public DateTime CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
     }
 }
