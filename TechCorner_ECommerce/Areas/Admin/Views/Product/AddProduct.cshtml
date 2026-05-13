@@ -3,6 +3,7 @@
     Layout = "_LayoutDashboard";
 }
 
+
 <main class="content py-4">
 
     <div class="container-fluid">
@@ -82,13 +83,21 @@
 
             @* ================= IMAGES ================= *@
             <div class="card mb-4">
-                <div class="card-header"><strong>Images</strong></div>
+                <div class="card-header">
+                    <strong>Images</strong>
+                </div>
 
                 <div class="card-body">
 
-                    <input asp-for="Images" type="file" class="form-control" multiple accept="image/*" />
+                    <input asp-for="Images"
+                           type="file"
+                           class="form-control"
+                           multiple
+                           accept="image/*" />
 
-                    <div id="preview" class="d-flex gap-2 mt-3 flex-wrap"></div>
+                    <div id="preview"
+                         class="d-flex flex-wrap gap-3 mt-3">
+                    </div>
 
                 </div>
             </div>
@@ -124,6 +133,7 @@
                             <tr id="variantHeader">
                                 <th class="fw-bold">Price</th>
                                 <th class="fw-bold">Stock</th>
+                                <th class="fw-bold">Attributes</th>
                             </tr>
                         </thead>
 
@@ -177,37 +187,71 @@
     });
 
     // ================= IMAGE PREVIEW =================
-    document.querySelector('input[type="file"]')
-    .addEventListener("change", function (e) {
+    const imageInput = document.querySelector('input[type="file"]');
+    let selectedFiles = [];
 
+    imageInput.addEventListener("change", function (e) {
+        selectedFiles = Array.from(e.target.files);
+
+        renderImagePreview();
+    });
+
+    function renderImagePreview() {
         const preview = document.getElementById("preview");
-
-        preview.querySelectorAll("img").forEach(img => URL.revokeObjectURL(img.src));
 
         preview.innerHTML = "";
 
-        Array.from(e.target.files).forEach(file => {
+        selectedFiles.forEach((file, index) => {
 
             if (file.size > 2 * 1024 * 1024) {
                 alert(file.name + " quá lớn (>2MB)");
+                selectedFiles.splice(index, 1);
+                updateFileInput();
                 return;
             }
 
             const url = URL.createObjectURL(file);
 
+            const wrapper = document.createElement("div");
+            wrapper.className = "image-preview-item";
+
             const img = document.createElement("img");
-
             img.src = url;
+            img.className = "image-preview-img";
 
-            img.style.width = "120px";
-            img.style.height = "120px";
-            img.style.objectFit = "cover";
-            img.style.border = "1px solid #ddd";
-            img.style.borderRadius = "10px";
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.innerHTML = "&times;";
+            btn.className = "image-remove-btn";
 
-            preview.appendChild(img);
+            btn.onclick = function () {
+                URL.revokeObjectURL(url);
+                removeSelectedImage(index);
+            };
+
+            wrapper.appendChild(img);
+            wrapper.appendChild(btn);
+
+            preview.appendChild(wrapper);
         });
-    });
+
+        updateFileInput();
+    }
+
+        function removeSelectedImage(index) {
+            selectedFiles.splice(index, 1);
+            renderImagePreview();
+        }
+
+        function updateFileInput() {
+            const dataTransfer = new DataTransfer();
+
+            selectedFiles.forEach(file => {
+                dataTransfer.items.add(file);
+            });
+
+            imageInput.files = dataTransfer.files;
+        }
 
     // ================= ATTRIBUTE RENDER =================
     function renderAttributes(catId) {
@@ -282,57 +326,63 @@
         , [[]]);
     }
 
-    function renderTable(selected, combos) {
+function renderTable(selected, combos) {
 
-        let header = document.getElementById("variantHeader");
-        let body = document.querySelector("#variantTable tbody");
+    let header = document.getElementById("variantHeader");
+    let body = document.querySelector("#variantTable tbody");
 
-        header.innerHTML = '<th class="fw-bold">Price</th><th class="fw-bold">Stock</th>';
+    header.innerHTML = `
+        <th class="fw-bold">Price</th>
+        <th class="fw-bold">Stock</th>
+        <th class="fw-bold">Attributes</th>
+    `;
 
-        Object.keys(selected).forEach(attrId => {
+    body.innerHTML = "";
 
-            let attr = attributes.find(a => a.Id === parseInt(attrId));
+    combos.forEach((combo, index) => {
 
-            if (!attr) return;
+        let attrNames = combo
+            .map(valId => findValue(valId)?.Value)
+            .filter(x => x)
+            .join(" / ");
 
-            header.innerHTML += `<th class="fw-bold">${attr.Name}</th>`;
-        });
+        let row = `<tr>`;
 
-        body.innerHTML = "";
-
-        combos.forEach((combo, index) => {
-
-            let row = `<tr>`;
-
-            row += `<td>
+        row += `
+            <td>
                 <input name="Variants[${index}].Price"
-                       class="form-control"/>
-            </td>`;
+                       class="form-control" />
+            </td>
+        `;
 
-            row += `<td>
+        row += `
+            <td>
                 <input name="Variants[${index}].StockQuantity"
-                       class="form-control"/>
-            </td>`;
+                       class="form-control" />
+            </td>
+        `;
 
-            combo.forEach(valId => {
+        row += `<td>${attrNames}`;
 
-                let val = findValue(valId);
+        combo.forEach(valId => {
+            let val = findValue(valId);
 
-                if (!val) return;
+            if (!val) return;
 
-                row += `<td>
-                    ${val.Value}
-                    <input type="hidden"
-                           name="Variants[${index}].AttributeValueIds"
-                           value="${val.Id}" />
-                </td>`;
-            });
-
-            row += `</tr>`;
-
-            body.innerHTML += row;
+            row += `
+                <input type="hidden"
+                       name="Variants[${index}].AttributeValueIds"
+                       value="${val.Id}" />
+            `;
         });
-    }
+
+        row += `</td>`;
+
+        row += `</tr>`;
+
+        body.innerHTML += row;
+    });
+}
 
     function findValue(id) {
 

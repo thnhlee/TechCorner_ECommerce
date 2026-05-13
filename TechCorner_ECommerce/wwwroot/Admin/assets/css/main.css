@@ -29488,6 +29488,7 @@ textarea.form-control-lg {
     white-space: nowrap;
     vertical-align: baseline;
     border-radius: var(--bs-badge-border-radius)
+
 }
 
     .badge:empty {
@@ -42217,11 +42218,7 @@ textarea.form-control-lg {
 .bg-primary {
     --bs-bg-opacity: 1;
     background-color: rgba(var(--bs-primary-rgb),var(--bs-bg-opacity)) !important;
-    width: 26px;
-    aspect-ratio: 1 / 1;
-    display: flex; 
-    align-items: center;
-    justify-content: center;
+
 
 }
 

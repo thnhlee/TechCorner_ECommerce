@@ -139,24 +139,25 @@
 
             <div class="card-body">
 
-                <div class="d-flex flex-wrap gap-3">
+                <div id="existingPreview"
+                     class="d-flex flex-wrap gap-3">
 
                     @foreach (var img in Model.ExistingImages)
                     {
-                        <div class="position-relative">
+                        <div class="image-preview-item"
+                             id="image-@img.Id">
 
                             <img src="@img.ImageUrl"
-                                 style="width:120px;
-                                        height:120px;
-                                        object-fit:cover;
-                                        border:1px solid #ddd;
-                                        border-radius:10px;" />
+                                 class="image-preview-img" />
+
+                            <button type="button"
+                                    class="image-remove-btn"
+                                    onclick="openDeleteImageModal(@img.Id)">
+                                &times;
+                            </button>
 
                         </div>
-
-                        
                     }
-                    <div id="preview"></div>
                 </div>
 
             </div>
@@ -176,60 +177,70 @@
                        type="file"
                        class="form-control"
                        multiple />
-
-                <div id="preview"
-                     class="d-flex gap-2 mt-3 flex-wrap"></div>
+                <div id="newPreview"
+                     class="d-flex flex-wrap gap-3 mt-3">
+                </div>
 
             </div>
 
         </div>
 
+        @* ================= ATTRIBUTES ================= *@
+        <div class="card mb-4">
+            <div class="card-header">
+                <strong>Add New Variants</strong>
+            </div>
+
+            <div class="card-body">
+                <div id="attributeContainer">
+                    <p class="text-muted">Loading attributes...</p>
+                </div>
+
+                <button type="button"
+                        class="btn btn-primary mt-2"
+                        onclick="generateVariants()">
+                    Generate Variants
+                </button>
+            </div>
+        </div>
+
         @* ================= VARIANTS ================= *@
         <div class="card mb-4">
-
             <div class="card-header">
                 <strong>Variants</strong>
             </div>
 
             <div class="card-body">
 
-                <table class="table table-bordered">
+                <table class="table table-bordered" id="variantTable">
 
                     <thead>
-
-                        <tr>
+                        <tr id="variantHeader">
                             <th class="fw-bold">Price</th>
                             <th class="fw-bold">Stock</th>
                             <th class="fw-bold">Attributes</th>
+                            <th class="fw-bold">Action</th>
                         </tr>
-
                     </thead>
 
                     <tbody>
-
                         @for (int i = 0; i < Model.Variants.Count; i++)
                         {
                             <tr>
-
                                 <td>
-
                                     <input type="hidden"
-                                           asp-for="Variants[i].ProductId" />
+                                            asp-for="Variants[i].ProductId" />
 
                                     <input asp-for="Variants[i].Price"
-                                           class="form-control" />
-
+                                            class="form-control" />
                                 </td>
 
                                 <td>
-
                                     <input asp-for="Variants[i].StockQuantity"
-                                           class="form-control" />
-
+                                            class="form-control" />
                                 </td>
 
                                 <td>
-
                                     @{
                                         var names = new List<string>();
 
@@ -237,8 +248,7 @@
                                         {
                                             foreach (var attr in Model.Attributes)
                                             {
-                                                var found = attr.Values
-                                                    .FirstOrDefault(x => x.Id == valId);
+                                                var found = attr.Values.FirstOrDefault(x => x.Id == valId);
 
                                                 if (found != null)
                                                 {
@@ -253,21 +263,26 @@
                                     @foreach (var val in Model.Variants[i].AttributeValueIds)
                                     {
                                         <input type="hidden"
-                                               name="Variants[@i].AttributeValueIds"
-                                               value="@val" />
+                                                name="Variants[@i].AttributeValueIds"
+                                                value="@val" />
                                     }
-
                                 </td>
+                                    <td class="">
 
+                                        <button type="button" class="btn p-0 border-0 bg-transparent link-danger" onclick="openDeleteModal(@Model.Variants[i].ProductId, '@Model.Name')">
+
+                                            <i class="ti ti-trash ms-2"></i>
+
+                                        </button>
+
+                                    </td>
                             </tr>
                         }
-
                     </tbody>
 
                 </table>
 
             </div>
-
         </div>
 
         <button class="btn btn-warning">
@@ -277,30 +292,107 @@
     </form>
 
 </div>
+    <!-- DELETE MODAL -->
+    <div class="modal fade" id="deleteModal">
 
+        <div class="modal-dialog">
+
+            <div class="modal-content">
+
+                <div class="modal-header">
+
+                    <h5>Delete Variant</h5>
+
+                </div>
+
+                <div class="modal-body">
+
+                    Are you sure delete 
+                    <strong>this Variant</strong> 
+                    @* <strong id="productName"></strong> ? *@
+
+                </div>
+
+                <div class="modal-footer">
+
+                    <button class="btn btn-danger" id="confirmDelete">
+                        Delete
+                    </button>
+
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">
+                        Cancel
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- DELETE IMAGE MODAL -->
+    <div class="modal fade" id="deleteImageModal">
+
+        <div class="modal-dialog">
+
+            <div class="modal-content">
+
+                <div class="modal-header">
+
+                    <h5>Delete Image</h5>
+
+                </div>
+
+                <div class="modal-body">
+
+                    Are you sure delete
+                    <strong>this image</strong> ?
+
+                </div>
+
+                <div class="modal-footer">
+
+                    <button class="btn btn-danger"
+                            id="confirmDeleteImage">
+                        Delete
+                    </button>
+
+                    <button class="btn btn-secondary"
+                            data-bs-dismiss="modal">
+                        Cancel
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
 </main>
 
 <script>
-
+    // ================= GENERATE VARIANTS =================
     const subCategories =
         @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.SubCategories));
 
+    const attributes =
+        @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Attributes));
+
     const selectedSub = @Model.SubCategoryId;
 
+    let variantIndex = @Model.Variants.Count;
+
     function loadSubcategories(catId) {
+        let subSelect = document.getElementById("subCategorySelect");
 
-        let subSelect =
-            document.getElementById("subCategorySelect");
-
-        subSelect.innerHTML =
-            `<option value="">Select subcategory</option>`;
+        subSelect.innerHTML = `<option value="">Select subcategory</option>`;
 
         subCategories
             .filter(x => x.CategoryId == catId)
             .forEach(x => {
-
-                let selected =
-                    x.Id == selectedSub ? "selected" : "";
+                let selected = x.Id == selectedSub ? "selected" : "";
 
                 subSelect.innerHTML += `
                     <option value="${x.Id}" ${selected}>
@@ -310,49 +402,346 @@
             });
     }
 
-    const categorySelect =
-        document.getElementById("categorySelect");
+    const categorySelect = document.getElementById("categorySelect");
 
     loadSubcategories(categorySelect.value);
+    renderAttributes(parseInt(categorySelect.value));
 
-    categorySelect.addEventListener("change", function () {
-        loadSubcategories(this.value);
+    function renderAttributes(catId) {
+        const container = document.getElementById("attributeContainer");
+
+        const filtered = attributes.filter(a => a.CategoryId === catId);
+
+        if (filtered.length === 0) {
+            container.innerHTML = `<p class="text-muted">No attributes for this category</p>`;
+            return;
+        }
+
+        container.innerHTML = "";
+
+        filtered.forEach(attr => {
+            let html = `
+                <div class="mb-3 attribute-group">
+                    <label class="fw-bold mb-2 d-block">${attr.Name}</label>
+                    <div class="ms-2 mt-1">
+            `;
+
+            attr.Values.forEach(val => {
+                html += `
+                    <div class="form-check form-check-inline">
+                        <input type="checkbox"
+                               class="attr-checkbox"
+                               data-attr="${attr.Id}"
+                               value="${val.Id}" />
+                        <label class="form-check-label">
+                            ${val.Value}
+                        </label>
+                    </div>
+                `;
+            });
+
+            html += `</div></div>`;
+
+            container.innerHTML += html;
+        });
+    }
+
+    function generateVariants() {
+        let selected = {};
+
+        document.querySelectorAll(".attr-checkbox:checked").forEach(cb => {
+            let attrId = parseInt(cb.dataset.attr);
+
+            if (!selected[attrId]) selected[attrId] = [];
+
+            selected[attrId].push(parseInt(cb.value));
+        });
+
+        let attrArrays = Object.values(selected);
+
+        if (attrArrays.length === 0) {
+            alert("Chọn ít nhất 1 attribute");
+            return;
+        }
+
+        let combos = cartesian(attrArrays);
+
+        appendNewVariants(combos);
+    }
+
+    function cartesian(arr) {
+        return arr.reduce((a, b) =>
+            a.flatMap(d => b.map(e => [...d, e]))
+        , [[]]);
+    }
+
+    const existingVariantKeys = new Set([
+    @foreach (var variant in Model.Variants)
+    {
+        var key = string.Join(",", variant.AttributeValueIds.OrderBy(x => x));
+        <text>"@key",</text>
+    }
+    ]);
+
+    const generatedVariantKeys = new Set();
+
+function appendNewVariants(combos) {
+    let body = document.querySelector("#variantTable tbody");
+
+    let addedCount = 0;
+    let duplicatedCount = 0;
+
+    combos.forEach(combo => {
+        let comboKey = combo
+            .map(x => parseInt(x))
+            .sort((a, b) => a - b)
+            .join(",");
+
+        if (existingVariantKeys.has(comboKey) || generatedVariantKeys.has(comboKey)) {
+            duplicatedCount++;
+            return;
+        }
+
+        let attrNames = combo.map(id => findValue(id)?.Value).join(" / ");
+
+        let row = `<tr>`;
+
+        row += `
+            <td>
+                <input type="hidden"
+                       name="Variants[${variantIndex}].ProductId"
+                       value="0" />
+
+                <input name="Variants[${variantIndex}].Price"
+                       class="form-control" />
+            </td>
+        `;
+
+        row += `
+            <td>
+                <input name="Variants[${variantIndex}].StockQuantity"
+                       class="form-control" />
+            </td>
+        `;
+
+        row += `<td>${attrNames}`;
+
+        combo.forEach(valId => {
+            row += `
+                <input type="hidden"
+                       name="Variants[${variantIndex}].AttributeValueIds"
+                       value="${valId}" />
+            `;
+        });
+
+        row += `</td></tr>`;
+
+        body.innerHTML += row;
+
+        generatedVariantKeys.add(comboKey);
+        addedCount++;
+        variantIndex++;
     });
 
+    if (addedCount === 0 && duplicatedCount > 0) {
+        alert("Không generate được vì combo attribute này đã tồn tại.");
+        return;
+    }
 
-        // ================= IMAGE PREVIEW =================
-    document.querySelector('input[type="file"]')
-    .addEventListener("change", function (e) {
+    if (duplicatedCount > 0) {
+        alert(`Đã bỏ qua ${duplicatedCount} combo bị trùng.`);
+    }
+}
 
-        const preview = document.getElementById("preview");
+    function findValue(id) {
+        id = parseInt(id);
 
-        preview.querySelectorAll("img").forEach(img => URL.revokeObjectURL(img.src));
+        for (let attr of attributes) {
+            let found = attr.Values.find(v => v.Id === id);
+            if (found) return found;
+        }
+
+        return null;
+    }
+
+    // ================= NEW IMAGE PREVIEW =================
+    const imageInput = document.querySelector('input[type="file"]');
+
+    let selectedFiles = [];
+
+    imageInput.addEventListener("change", function (e) {
+
+        selectedFiles = Array.from(e.target.files);
+
+        renderImagePreview();
+    });
+
+    function renderImagePreview() {
+
+        const preview =
+            document.getElementById("newPreview");
 
         preview.innerHTML = "";
 
-        Array.from(e.target.files).forEach(file => {
+        selectedFiles.forEach((file, index) => {
 
             if (file.size > 2 * 1024 * 1024) {
+
                 alert(file.name + " quá lớn (>2MB)");
+
+                selectedFiles.splice(index, 1);
+
+                updateFileInput();
+
                 return;
             }
 
             const url = URL.createObjectURL(file);
 
+            const wrapper = document.createElement("div");
+
+            wrapper.className = "image-preview-item";
+
             const img = document.createElement("img");
 
             img.src = url;
 
-            img.style.width = "120px";
-            img.style.height = "120px";
-            img.style.objectFit = "cover";
-            img.style.border = "1px solid #ddd";
-            img.style.borderRadius = "10px";
+            img.className = "image-preview-img";
 
-            preview.appendChild(img);
+            const btn = document.createElement("button");
+
+            btn.type = "button";
+
+            btn.innerHTML = "&times;";
+
+            btn.className = "image-remove-btn";
+
+            btn.onclick = function () {
+
+                URL.revokeObjectURL(url);
+
+                removeSelectedImage(index);
+            };
+
+            wrapper.appendChild(img);
+
+            wrapper.appendChild(btn);
+
+            preview.appendChild(wrapper);
+        });
+
+        updateFileInput();
+    }
+
+    function removeSelectedImage(index) {
+
+        selectedFiles.splice(index, 1);
+
+        renderImagePreview();
+    }
+
+    function updateFileInput() {
+
+        const dataTransfer = new DataTransfer();
+
+        selectedFiles.forEach(file => {
+            dataTransfer.items.add(file);
+        });
+
+        imageInput.files = dataTransfer.files;
+    }
+    // ================= DELETE IMAGE =================
+    let deleteImageId = 0;
+
+    function openDeleteImageModal(id) {
+
+        deleteImageId = id;
+
+        let modal = new bootstrap.Modal(
+            document.getElementById("deleteImageModal")
+        );
+
+        modal.show();
+    }
+
+    document.getElementById("confirmDeleteImage")
+        .addEventListener("click", function () {
+
+        const formData = new FormData();
+
+        formData.append("id", deleteImageId);
+
+        fetch('/Admin/Product/DeleteImage', {
+
+            method: 'POST',
+
+            body: formData
+
+        })
+        .then(r => r.json())
+        .then(res => {
+
+            if (res.success) {
+
+                document
+                    .getElementById(`image-${deleteImageId}`)
+                    .remove();
+
+                bootstrap.Modal
+                    .getInstance(document.getElementById("deleteImageModal"))
+                    .hide();
+
+            } else {
+
+                alert(res.message);
+            }
         });
     });
 
+    // ================= DELETE VARIANT =================
+    let deleteId = 0;
+
+    function openDeleteModal(id, name) {
+
+        deleteId = id;
+
+        //document.getElementById("productName").innerText = name;
+
+        let modal = new bootstrap.Modal(
+            document.getElementById("deleteModal")
+        );
+
+        modal.show();
+    }
+
+    document.getElementById("confirmDelete")
+        .addEventListener("click", function () {
+
+        const formData = new FormData();
+
+        formData.append("id", deleteId);
+
+        fetch('/Admin/Product/DeleteVariant', {
+
+            method: 'POST',
+
+            body: formData
+
+        })
+        .then(r => r.json())
+        .then(res => {
+
+            if (res.success) {
+
+                location.reload();
+
+            } else {
+
+                alert(res.message);
+            }
+        });
+
+    });
 </script>
 
 <partial name="_ValidationScriptsPartial" />

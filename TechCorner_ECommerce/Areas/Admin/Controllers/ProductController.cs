@@ -265,15 +265,55 @@ namespace TechCorner_ECommerce.Areas.Admin.Controllers {
             parent.Description = model.Description;
             parent.SubCategoryId = model.SubCategoryId;
 
-            foreach (var v in model.Variants) {
+            if (model.Variants != null) {
+                var existingVariantKeys = db.Products
+                    .Where(p => p.ParentProductId == parent.Id && !p.IsDeleted)
+                    .Include(p => p.ProductAttributeValues)
+                    .AsEnumerable()
+                    .Select(p => string.Join(",", p.ProductAttributeValues
+                        .Select(x => x.AttributeValueId)
+                        .OrderBy(x => x)))
+                    .ToHashSet();
 
-                var product = db.Products.Find(v.ProductId);
+                foreach (var v in model.Variants) {
+                    if (v.ProductId > 0) {
+                        var product = db.Products.Find(v.ProductId);
 
-                if (product == null)
-                    continue;
+                        if (product == null)
+                            continue;
 
-                product.Price = v.Price;
-                product.StockQuantity = v.StockQuantity;
+                        product.Price = v.Price;
+                        product.StockQuantity = v.StockQuantity;
+                    }
+                    else {
+                        if (v.AttributeValueIds == null || !v.AttributeValueIds.Any())
+                            continue;
+
+                        var newVariantKey = string.Join(",", v.AttributeValueIds.OrderBy(x => x));
+
+                        if (existingVariantKeys.Contains(newVariantKey))
+                            continue;
+
+                        var newProduct = new Product {
+                            ParentProductId = parent.Id,
+                            Price = v.Price,
+                            StockQuantity = v.StockQuantity
+                        };
+
+                        db.Products.Add(newProduct);
+                        await db.SaveChangesAsync();
+
+                        var pavs = v.AttributeValueIds.Select(attrId =>
+                            new ProductAttributeValue {
+                                ProductId = newProduct.Id,
+                                AttributeValueId = attrId
+                            });
+
+                        db.ProductAttributeValues.AddRange(pavs);
+
+                        existingVariantKeys.Add(newVariantKey);
+                    }
+                }
             }
 
             // upload new images
@@ -313,6 +353,39 @@ namespace TechCorner_ECommerce.Areas.Admin.Controllers {
         }
 
         // ================= DELETE =================
+        [HttpPost]
+        public IActionResult DeleteImage(int id) {
+            var image = db.ProductImages
+                .FirstOrDefault(x => x.Id == id);
+
+            if (image == null) {
+                return Json(new {
+                    success = false,
+                    message = "Image not found"
+                });
+            }
+
+            if (!string.IsNullOrEmpty(image.ImageUrl)) {
+                var relativePath = image.ImageUrl.TrimStart('/');
+
+                var fullPath = Path.Combine(
+                    _webHost.WebRootPath,
+                    relativePath.Replace("/", Path.DirectorySeparatorChar.ToString())
+                );
+
+                if (System.IO.File.Exists(fullPath)) {
+                    System.IO.File.Delete(fullPath);
+                }
+            }
+
+            db.ProductImages.Remove(image);
+
+            db.SaveChanges();
+
+            return Json(new {
+                success = true
+            });
+        }
         [HttpPost]
         public IActionResult DeleteVariant(int id) {
 
