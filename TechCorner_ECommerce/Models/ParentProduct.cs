@@ -1,6 +1,8 @@
 ﻿namespace TechCorner_ECommerce.Models {
     public class ParentProduct {
         public int Id { get; set; }
+
+        public string PublicId { get; set; }
         public string Name { get; set; }
         public string Slug { get; set; }
         public string Description { get; set; }

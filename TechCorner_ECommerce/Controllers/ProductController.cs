@@ -45,7 +45,9 @@ namespace TechCorner_ECommerce.Controllers {
             }
 
             var result = products.Select(p => new ProductVM {
+
                 Id = p.Id,
+                Slug = p.Slug,
                 Name = p.Name,
                 Description = p.Description,
 
@@ -62,11 +64,11 @@ namespace TechCorner_ECommerce.Controllers {
             return View(result);
         }
 
-        public IActionResult Detail(int id) {
+        public IActionResult Detail(string id) {
             var result = db.ParentProducts
-                .Where(p => p.Id == id)
+                .Where(p => p.Slug == id)
                 .Select(p => new ProductVM {
-                    Id = p.Id,
+                    Id = p.Id,             
                     Name = p.Name,
                     Description = p.Description,
 

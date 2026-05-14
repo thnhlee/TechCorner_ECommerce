@@ -63,29 +63,29 @@
 
                         <thead class="table-light border-light">
                             <tr>
-                                <th>Id</th>
-                                <th>Product</th>
-                                <th>Attributes</th>
+                                <th class="fw-bold">Id</th>
+                                <th class="fw-bold">Product</th>
+                                <th class="fw-bold">Attributes</th>
 
                                 
-                                <th>Category</th>
-                                <th>SubCategory</th>
-                                <th>Price</th>
-                                <th>Quantity</th>
-                                <th>Action</th>
+                                <th class="fw-bold">Category</th>
+                                <th class="fw-bold">SubCategory</th>
+                                <th class="fw-bold">Price</th>
+                                <th class="fw-bold">Quantity</th>
+                                <th class="fw-bold">Action</th>
                             </tr>
                         </thead>
 
                         @foreach (var item in Model) {
                             <tbody>
                                 <tr class="align-middle ">
-                                    <td>#@item.ParentProductId</td>
+                                    <td>#@item.SkuCode</td>
                                     <td>
                                         <a href=""><img src="@item.ImageUrl" alt="" class="avatar avatar-md rounded" /><span class="ms-3">@item.Name</span></a>
                                     </td>
                                     <td>
 
-                                        <span class="badge bg-light text-dark border px-2 py-1">
+                                        <span class="badge bg-light text-dark border px-2 py-1" style="margin-left: 12px">
 
                                             @string.Join(" / ", item.Attributes.Select(x => x.Value))
 
@@ -106,7 +106,7 @@
 
                                             <a asp-controller="Product"
                                                asp-action="EditProduct"
-                                               asp-route-id="@item.ParentProductId"
+                                               asp-route-id="@item.PublicId"
                                                class="text-warning fs-5 d-flex align-items-center">
 
                                                 <i class="ti ti-edit"></i>

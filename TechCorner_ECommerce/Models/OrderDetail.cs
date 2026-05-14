@@ -9,7 +9,7 @@ namespace TechCorner_ECommerce.Models {
         public Order Order { get; set; }
 
         public int ProductId { get; set; }
-        public Product Product { get; set; }
+        public Product? Product { get; set; }
 
         [Range(1, int.MaxValue)]
         public int Quantity { get; set; }

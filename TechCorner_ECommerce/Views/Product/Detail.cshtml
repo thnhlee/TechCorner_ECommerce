@@ -21,7 +21,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-6 mb-5 ftco-animate">
-                    <a asp-controller="Product" asp-action="Detail" asp-route-id="@Model.Id" class="image-popup prod-img-bg"><img src="images/product-1.png" class="img-fluid" alt="Colorlib Template"></a>
+            <a asp-controller="Product" asp-action="Detail" asp-route-id="@Model.Id" class="image-popup prod-img-bg"><img src="@Model.ImageUrl" class="img-fluid" alt="Colorlib Template"></a>
                 </div>
                 <div class="col-lg-6 product-details pl-md-5 ftco-animate">
                     <h3>@Model.Name</h3>

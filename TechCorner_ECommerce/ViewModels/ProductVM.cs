@@ -3,8 +3,11 @@
 namespace TechCorner_ECommerce.ViewModels {
     public class ProductVM {
         public int Id { get; set; }
+        public string PublicId { get; set; }
+        public string SkuCode { get; set; }
         public string Name { get; set; }
 
+        public string Slug { get; set; }
         public string Description { get; set; } 
 
         public decimal Price { get; set; }
