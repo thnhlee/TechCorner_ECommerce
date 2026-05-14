@@ -158,7 +158,7 @@ namespace TechCorner_ECommerce.Areas.Admin.Controllers {
             if (hasProducts) {
                 return Json(new {
                     success = false,
-                    message = "Cannot delete because category has products"
+                    message = "This category cannot be deleted because it is already used."
                 });
             }
 

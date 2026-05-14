@@ -20,10 +20,11 @@ namespace TechCorner_ECommerce.Areas.Admin.Controllers {
                 .Include(x => x.ParentProducts)
                 .AsQueryable();
 
-            // SEARCH
+            // FILTER CATEGORY
             if (categoryId.HasValue)
                 query = query.Where(x => x.CategoryId == categoryId);
 
+            // SEARCH
             if (!string.IsNullOrEmpty(search)) {
 
                 search = search.Trim();
@@ -190,7 +191,7 @@ namespace TechCorner_ECommerce.Areas.Admin.Controllers {
             if (sub.ParentProducts.Any()) {
                 return Json(new {
                     success = false,
-                    message = "Cannot delete because it has products"
+                    message = "This subcategory cannot be deleted because it is already used."
                 });
             }
 

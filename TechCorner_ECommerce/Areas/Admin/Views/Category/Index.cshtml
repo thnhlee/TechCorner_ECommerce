@@ -50,8 +50,8 @@
         <!-- FILTER -->
         <form method="get" class="row mb-3">
 
-            <div class="col-md-4">
-                <input name="search" value="@ViewBag.Search" class="form-control" placeholder="Search Category..." />
+            <div class="col-md-2" >
+                <input name="search" value="@ViewBag.Search" class="form-control" placeholder="Search Category..." style="max-width: 250px;" />
             </div>
 
             <div class="col-md-2">
@@ -105,8 +105,8 @@
                                     </div>
                                 </td>
 
-                                <td class="text-center">
-                                    <span class="badge bg-primary  ">
+                                <td >
+                                    <span class="badge bg-primary" style="margin-left: 15px">
                                         @item.ProductCount
                                     </span>
                                 </td>
@@ -122,7 +122,7 @@
 
                                             @foreach (var subcate in item.SubCategories)
                                             {
-                                                <span class="badge bg-light text-dark border px-3 py-2">
+                                                <span class="badge bg-light text-dark border px-3 py-2 shadow-sm">
 
                                                     @subcate.Name
 
@@ -142,27 +142,16 @@
 
                                 <td>
 
-                                    <div class="d-flex align-items-center">
+                                    <div class="d-flex align-items-center gap-2">
 
-                                        <a asp-action="Edit"
-                                           asp-route-id="@item.Id"
-                                           class="text-warning fs-5">
-
+                                        <a asp-action="Edit" asp-route-id="@item.Id" class="text-warning fs-5">
                                             <i class="ti ti-edit"></i>
-
                                         </a>
 
+                                        <input type="hidden" name="id" value="@item.Id" />
 
-                                        <input type="hidden"
-                                                name="id"
-                                                value="@item.Id" />
-
-                                        <button 
-                                                class="btn p-0 border-0 bg-transparent link-danger"
-                                                onclick="openDeleteModal(@item.Id, '@item.Name', @item.ProductCount)">
-
+                                        <button class="btn p-0 border-0 bg-transparent link-danger" onclick="openDeleteModal(@item.Id, '@item.Name', @item.ProductCount)">
                                             <i class="ti ti-trash"></i>
-
                                         </button>
 
 
@@ -189,13 +178,18 @@
             <div class="modal-content">
 
                 <div class="modal-header">
-                    <h5>Delete SubCategory</h5>
+                    <h5>Delete Category</h5>
                 </div>
 
                 <div class="modal-body">
-                    Are you sure delete <strong id="subName"></strong> ?
 
-                    <p class="text-danger mt-2" id="warningText"></p>
+                    <div id="deleteError"
+                         class="alert alert-danger d-none mb-3">
+                    </div>
+
+                    Are you sure delete
+                    <strong id="catName"></strong> ?
+
                 </div>
 
                 <div class="modal-footer">
@@ -227,21 +221,23 @@
 
         document.getElementById("catName").innerText = name;
 
-        const warning =
-            document.getElementById("warningText");
+        const errorBox = document.getElementById("deleteError");
+
+        errorBox.classList.add("d-none");
+        errorBox.innerText = "";
 
         if (productCount > 0) {
 
             canDelete = false;
 
-            warning.innerText =
+            errorBox.innerText =
                 "Cannot delete because it has products";
+
+            errorBox.classList.remove("d-none");
 
         } else {
 
             canDelete = true;
-
-            warning.innerText = "";
         }
 
         new bootstrap.Modal(
@@ -252,28 +248,33 @@
     document.getElementById("confirmDelete")
         .addEventListener("click", function () {
 
-        if (!canDelete) return;
+            if (!canDelete) return;
 
-        const formData = new FormData();
+            const formData = new FormData();
 
-        formData.append("id", deleteId);
+            formData.append("id", deleteId);
 
-        fetch('/Admin/Category/Delete', {
-            method: 'POST',
-            body: formData
-        })
-        .then(r => r.json())
-        .then(res => {
+            fetch('/Admin/Category/Delete', {
+                method: 'POST',
+                body: formData
+            })
+            .then(r => r.json())
+            .then(res => {
 
-            if (res.success) {
+                if (res.success) {
 
-                location.reload();
+                    location.reload();
 
-            } else {
+                } else {
 
-                alert(res.message);
-            }
+                    const errorBox =
+                        document.getElementById("deleteError");
+
+                    errorBox.innerText = res.message;
+
+                    errorBox.classList.remove("d-none");
+                }
+            });
         });
-    });
 
 </script>

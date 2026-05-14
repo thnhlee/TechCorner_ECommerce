@@ -72,76 +72,76 @@ namespace TechCorner_ECommerce.Areas.Admin.Controllers {
 
             //=========== Show ra toàn bộ Product variant ===========
             var products = db.Products
+                    .Include(x => x.ParentProduct)
+                    .ThenInclude(x => x.SubCategory)
+                        .ThenInclude(x => x.Category)
 
                     .Include(x => x.ParentProduct)
-            .ThenInclude(x => x.SubCategory)
-                .ThenInclude(x => x.Category)
+                        .ThenInclude(x => x.Images)
 
-            .Include(x => x.ParentProduct)
-                .ThenInclude(x => x.Images)
+                    .Include(x => x.ProductAttributeValues)
+                        .ThenInclude(x => x.AttributeValue)
 
-            .Include(x => x.ProductAttributeValues)
-                .ThenInclude(x => x.AttributeValue)
+                    .AsQueryable();
 
-            .AsQueryable();
+            // FILTER SUBCATEGORY
+            if (cate.HasValue) {
+                products = products.Where(x => x.ParentProduct.SubCategoryId == cate.Value);
+            }
 
-                // FILTER SUBCATEGORY
-                if (cate.HasValue) {
-                    products = products.Where(x =>
-                        x.ParentProduct.SubCategoryId == cate.Value);
-                }
+            // SEARCH
+            if (!string.IsNullOrWhiteSpace(keyword)) {
+                keyword = keyword.Trim();
 
-                // SEARCH
-                if (!string.IsNullOrWhiteSpace(keyword)) {
-                    keyword = keyword.Trim();
+                products = products.Where(x =>
+                    EF.Functions.Like(
+                        EF.Functions.Collate(
+                            x.ParentProduct.Name,
+                            "SQL_Latin1_General_CP1_CI_AI"
+                        ),
+                        $"%{keyword}%"
+                    ));
 
-                    products = products.Where(x =>
-                        EF.Functions.Like(
-                            EF.Functions.Collate(
-                                x.ParentProduct.Name,
-                                "SQL_Latin1_General_CP1_CI_AI"
-                            ),
-                            $"%{keyword}%"
-                        ));
+                
+                ViewBag.SearchQuery = keyword;
+            }
 
-                    ViewBag.SearchQuery = keyword;
-                }
+            var result = products.Select(x => new ProductVM {
 
-                var result = products.Select(x => new ProductVM {
+                Id = x.Id,
+                ParentProductId = x.ParentProductId,
 
-                    Id = x.Id,
-                    ParentProductId = x.ParentProductId,
+                Name = x.ParentProduct.Name,
+                Description = x.ParentProduct.Description,
+                Price = x.Price,
 
-                    Name = x.ParentProduct.Name,
-                    Description = x.ParentProduct.Description,
-                    Price = x.Price,
+                Stock = x.StockQuantity,
 
-                    Stock = x.StockQuantity,
+                CategoryName = x.ParentProduct.SubCategory.Category.Name,
 
-                    CategoryName = x.ParentProduct.SubCategory.Category.Name,
+                SubCategoryName = x.ParentProduct.SubCategory.Name,
 
-                    SubCategoryName = x.ParentProduct.SubCategory.Name,
-
-                    ImageUrl = x.ParentProduct.Images
-                                    .Where(i => i.IsPrimary)
-                                    .Select(i => i.ImageUrl)
-                                    .FirstOrDefault()??
-                               x.ParentProduct.Images
+                ImageUrl = x.ParentProduct.Images
+                                .Where(i => i.IsPrimary)
                                 .Select(i => i.ImageUrl)
-                                .FirstOrDefault()??"",
+                                .FirstOrDefault()??
+                            x.ParentProduct.Images
+                            .Select(i => i.ImageUrl)
+                            .FirstOrDefault()??"",
 
-                    Attributes = x.ProductAttributeValues
-                        .Select(v => new AttributeVM {
+                Attributes = x.ProductAttributeValues
+                    .Select(v => new AttributeVM {
 
-                            Name = v.AttributeValue.ProductAttribute.Name,
+                        Name = v.AttributeValue.ProductAttribute.Name,
 
-                            Value = v.AttributeValue.Value
+                        Value = v.AttributeValue.Value
 
-                        })
-                        .ToList()
-                })
-                .ToList();
+                    })
+                    .ToList()
+            })
+            .ToList();
 
+            ViewBag.SubCategories = db.SubCategories.ToList();
             ViewBag.Count = result.Count;
 
             return View(result);
