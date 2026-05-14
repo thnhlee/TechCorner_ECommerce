@@ -1,0 +1,417 @@
+﻿@model TechCorner_ECommerce.ViewModels.AttributeManageVM
+
+@{
+    Layout = "_LayoutDashboard";
+}
+
+<main class="content py-4">
+    <div class="container-fluid">
+
+        <h2 class="mb-4">Manage Attributes</h2>
+        <div class="row">
+            <div class="col-12">
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+                    <div class="">
+                        <h2>Manage Attributes</h2>
+                        <p class="mb-0">Manage your attributes</p>
+                    </div>
+                <a asp-controller="Product" asp-action="AddProduct" class="btn btn-light border">
+                    Back
+                </a>
+                </div>
+            </div>
+        </div>
+        <div class="card mb-4">
+            <div class="card-header">
+                <strong>Select Category</strong>
+            </div>
+
+            <div class="card-body">
+                <form method="get" asp-action="Index">
+                    <select name="categoryId"
+                            class="form-select"
+                            onchange="this.form.submit()">
+
+                        <option value="">Select category</option>
+
+                        @foreach (var c in Model.Categories)
+                        {
+                            <option value="@c.Id"
+                                    selected="@(Model.SelectedCategoryId == c.Id)">
+                                @c.Name
+                            </option>
+                        }
+
+                    </select>
+                </form>
+            </div>
+        </div>
+
+        @if (Model.SelectedCategoryId.HasValue)
+        {
+            <div class="card mb-4">
+                <div class="card-header">
+                    <strong>Add Attribute</strong>
+                </div>
+
+                <div class="card-body">
+                    <div class="input-group">
+                        <input type="text"
+                               id="attributeName"
+                               class="form-control"
+                               placeholder="Example: Color, Storage, RAM" />
+
+                        <button type="button"
+                                class="btn btn-dark px-4 fw-medium"
+                                onclick="addAttribute()">
+
+                            <i class="bi bi-plus-lg me-1"></i>
+                            Add Attribute
+
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+
+            <div class="card-header">
+                <strong>Attribute Lists</strong>
+            </div>
+
+            <div class="card-body">
+
+                <div id="attributeList">
+
+                    @foreach (var attr in Model.Attributes)
+                    {
+                        <div class="card mb-3" id="attr-@attr.Id">
+
+                            <div class="card-header d-flex justify-content-between align-items-center">
+
+                                <div class="fw-semibold fs-6 text-dark">
+                                    @attr.Name
+                                </div>
+
+                                <button class="btn p-0 border-0 bg-transparent link-danger shadow-sm"
+                                        style="width:36px; height:36px;"
+                                        onclick="openDeleteAttributeModal(@attr.Id, 'attribute')">
+
+                                    <i class="bi bi-trash3"></i>
+
+                                </button>
+
+                            </div>
+
+                            <div class="card-body">
+
+                                <div class="mb-3 d-flex flex-wrap gap-2"
+                                     id="value-list-@attr.Id">
+
+                                    @foreach (var val in attr.Values)
+                                    {
+                                        <span class="badge bg-light text-dark border px-3 py-2 position-relative shadow-sm">
+
+                                            @val.Value
+
+                                            <button type="button"
+                                                    class="position-absolute top-0 start-100 translate-middle
+                                                           border-0 rounded-circle d-flex align-items-center justify-content-center"
+                                                    style="width:13px; height:13px; font-size:10px; background:#dc3545; color:white; padding:0; line-height:1;"
+                                                    onclick="openDeleteAttributeModal(@val.Id, 'value')">
+
+                                                ×
+
+                                            </button>
+
+                                        </span>
+                                    }
+
+                                </div>
+
+                                <div class="input-group">
+                                    <input type="text"
+                                           class="form-control"
+                                           id="value-input-@attr.Id"
+                                           placeholder="Example: Black, White, 128GB" />
+
+                                    <button type="button"
+                                            class="btn btn-primary px-3"
+                                            onclick="addAttributeValue(@attr.Id)">
+
+                                        <i class="bi bi-plus-lg"></i>
+
+                                    </button>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    }
+
+                </div>
+
+            </div>
+
+        </div>
+        }
+
+    </div>
+
+    <!-- DELETE -->
+    <div class="modal fade" id="deleteAttributeModal">
+
+        <div class="modal-dialog">
+
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 id="deleteModalTitle">Delete</h5>
+                </div>
+
+                <div class="modal-body">
+
+                    <div id="deleteError"
+                         class="alert alert-danger d-none mb-3">
+                    </div>
+
+                    Are you sure delete
+                    <strong id="deleteModalText"></strong> ?
+
+                </div>
+
+                <div class="modal-footer">
+
+                    <button class="btn btn-danger"
+                            id="confirmDeleteAttribute">
+                        Delete
+                    </button>
+
+                    <button class="btn btn-secondary"
+                            data-bs-dismiss="modal">
+                        Cancel
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</main>
+
+<script>
+    const selectedCategoryId = @Model.SelectedCategoryId.GetValueOrDefault();
+
+    function addAttribute() {
+        const input = document.getElementById("attributeName");
+        const name = input.value.trim();
+
+        if (!name) {
+            alert("Please enter attribute name");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("CategoryId", selectedCategoryId);
+        formData.append("Name", name);
+
+        fetch('/Admin/Attribute/AddAttribute', {
+            method: 'POST',
+            body: formData
+        })
+        .then(r => r.json())
+        .then(res => {
+            if (!res.success) {
+                alert(res.message);
+                return;
+            }
+
+            const html = `
+                <div class="card mb-3" id="attr-${res.id}">
+
+                <div class="card-header d-flex justify-content-between align-items-center bg-white">
+
+                    <div class="fw-semibold fs-6 text-dark">
+                        ${res.name}
+                    </div>
+
+                    <button class="btn p-0 border-0 bg-transparent link-danger shadow-sm"
+                            style="width:36px; height:36px;"
+                            onclick="openDeleteAttributeModal(${res.id}, 'attribute')">
+
+                        <i class="bi bi-trash3"></i>
+
+                    </button>
+
+                </div>
+
+                    <div class="card-body">
+
+                        <div class="mb-3 d-flex flex-wrap gap-2"
+                             id="value-list-${res.id}">
+                        </div>
+
+                        <div class="input-group">
+                            <input type="text"
+                                   class="form-control"
+                                   id="value-input-${res.id}"
+                                   placeholder="Example: Black, White, 128GB" />
+
+                        <button type="button"
+                                class="btn btn-primary px-3"
+                                onclick="addAttributeValue(${res.id})">
+
+                            <i class="bi bi-plus-lg"></i>
+
+                        </button>
+                        </div>
+
+                    </div>
+                </div>
+            `;
+
+            document
+                .getElementById("attributeList")
+                .insertAdjacentHTML("beforeend", html);
+
+            input.value = "";
+        });
+    }
+
+    function addAttributeValue(attributeId) {
+        const input = document.getElementById(`value-input-${attributeId}`);
+        const value = input.value.trim();
+
+        if (!value) {
+            alert("Please enter value");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("AttributeId", attributeId);
+        formData.append("Value", value);
+
+        fetch('/Admin/Attribute/AddAttributeValue', {
+            method: 'POST',
+            body: formData
+        })
+        .then(r => r.json())
+        .then(res => {
+            if (!res.success) {
+                alert(res.message);
+                return;
+            }
+
+            const html = `
+                <span class="badge bg-light text-dark border px-3 py-2 position-relative shadow-sm rounded-pill"
+                      id="value-${res.id}">
+
+                    ${res.value}
+
+                    <button type="button"
+                            class="position-absolute top-0 start-100 translate-middle
+                                   border-0 rounded-circle d-flex align-items-center justify-content-center"
+                            style="
+                                width:13px;
+                                height:13px;
+                                font-size:10px;
+                                background:#dc3545;
+                                color:white;
+                                padding:0;
+                                line-height:1;
+                            "
+                            onclick="openDeleteAttributeModal(${res.id}, 'value')">
+
+                        ×
+
+                    </button>
+
+                </span>
+            `;
+
+            document
+                .getElementById(`value-list-${attributeId}`)
+                .insertAdjacentHTML("beforeend", html);
+
+            input.value = "";
+        });
+    }
+
+    let deleteTargetId = 0;
+    let deleteTargetType = "";
+
+    function openDeleteAttributeModal(id, type) {
+
+        deleteTargetId = id;
+        deleteTargetType = type;
+
+        document
+            .getElementById("deleteError")
+            .classList.add("d-none");
+
+        document
+            .getElementById("deleteError")
+            .innerText = "";
+
+        document.getElementById("deleteModalTitle").innerText =
+            type === "attribute" ? "Delete Attribute" : "Delete Attribute Value";
+
+        document.getElementById("deleteModalText").innerText =
+            type === "attribute" ? "this attribute" : "this value";
+
+        let modal = new bootstrap.Modal(
+            document.getElementById("deleteAttributeModal")
+        );
+
+        modal.show();
+    }
+
+    document.getElementById("confirmDeleteAttribute")
+        .addEventListener("click", function () {
+
+            const formData = new FormData();
+
+            formData.append("id", deleteTargetId);
+
+            const url = deleteTargetType === "attribute"
+                ? "/Admin/Attribute/DeleteAttribute"
+                : "/Admin/Attribute/DeleteAttributeValue";
+
+            fetch(url, {
+                method: "POST",
+                body: formData
+            })
+            .then(r => r.json())
+            .then(res => {
+
+                if (!res.success) {
+
+                    const errorBox =
+                        document.getElementById("deleteError");
+
+                    errorBox.innerText = res.message;
+
+                    errorBox.classList.remove("d-none");
+
+                    return;
+                }
+
+                if (deleteTargetType === "attribute") {
+                    document
+                        .getElementById(`attr-${deleteTargetId}`)
+                        .remove();
+                } else {
+                    document
+                        .getElementById(`value-${deleteTargetId}`)
+                        .remove();
+                }
+
+                bootstrap.Modal
+                    .getInstance(document.getElementById("deleteAttributeModal"))
+                    .hide();
+            });
+        });
+</script>
