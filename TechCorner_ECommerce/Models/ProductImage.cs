@@ -5,7 +5,7 @@ namespace TechCorner_ECommerce.Models {
         public int Id { get; set; }
 
         public int ParentProductId { get; set; }
-        public ParentProduct ParentProduct { get; set; }
+        public ParentProduct? ParentProduct { get; set; }
 
         public string ImageUrl { get; set; }
         public bool IsPrimary { get; set; }

@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace TechCorner_ECommerce.Models {
     public class Product {
         public int Id { get; set; }
+        public string SkuCode { get; set; }
 
         [Required]
         [StringLength(200)]

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using TechCorner_ECommerce.Data;
 using TechCorner_ECommerce.Helpers;
 using TechCorner_ECommerce.ViewModels;
@@ -106,11 +107,17 @@ namespace TechCorner_ECommerce.Areas.Admin.Controllers {
                 ViewBag.SearchQuery = keyword;
             }
 
+            // VIEWMODEL MAPPING
             var result = products.Select(x => new ProductVM {
 
                 Id = x.Id,
+
                 ParentProductId = x.ParentProductId,
 
+                PublicId = x.ParentProduct.PublicId,
+                SkuCode = x.SkuCode,
+
+                Slug = x.ParentProduct.Slug,
                 Name = x.ParentProduct.Name,
                 Description = x.ParentProduct.Description,
                 Price = x.Price,

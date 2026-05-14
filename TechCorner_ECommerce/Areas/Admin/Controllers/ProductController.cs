@@ -108,8 +108,15 @@ namespace TechCorner_ECommerce.Areas.Admin.Controllers {
             //  Gom tất cả các thao tác DB vào một transaction để khi có lỗi sẽ rollback lại, tránh lưu dữ liệu mà bị thiếu
             using var transaction = await db.Database.BeginTransactionAsync();
 
+            var publicId = CodeGenerator.Generate("PROD");
+
+            while (db.ParentProducts.Any(x => x.PublicId == publicId)) {
+                publicId = CodeGenerator.Generate("PROD");
+            }
+
             try {
                 var parent = new ParentProduct {
+                    PublicId = publicId,
                     Name = model.Name,
                     Slug = _slugService.CreateSlug(model.Name),
                     Description = model.Description,
@@ -156,8 +163,14 @@ namespace TechCorner_ECommerce.Areas.Admin.Controllers {
                 // Lưu các variant
                 if (model.Variants != null) {
                     foreach (var v in model.Variants) {
+                        var sku = CodeGenerator.Generate("SKU");
+
+                        while (db.Products.Any(x => x.SkuCode == sku)) {
+                            sku = CodeGenerator.Generate("SKU");
+                        }
 
                         var product = new Product {
+                            SkuCode = sku,
                             ParentProductId = parent.Id,
                             Price = v.Price,
                             StockQuantity = v.StockQuantity
@@ -196,7 +209,7 @@ namespace TechCorner_ECommerce.Areas.Admin.Controllers {
 
         // ================= EDIT =================
         [HttpGet]
-        public IActionResult EditProduct(int id) {
+        public IActionResult EditProduct(string id) {
 
             var product = db.ParentProducts
                 .Include(x => x.SubCategory)
@@ -208,7 +221,7 @@ namespace TechCorner_ECommerce.Areas.Admin.Controllers {
                 .ThenInclude(x => x.ProductAttributeValues)
                 .ThenInclude(x => x.AttributeValue)
 
-                .FirstOrDefault(x => x.Id == id );
+                .FirstOrDefault(x => x.PublicId == id );
 
             if (product == null)
                 return NotFound();

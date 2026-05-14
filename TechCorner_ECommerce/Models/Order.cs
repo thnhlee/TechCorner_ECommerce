@@ -6,6 +6,7 @@ using TechCorner_ECommerce.Models.Enums;
 namespace TechCorner_ECommerce.Models {
     public class Order {
         public int Id { get; set; }
+        public string OrderCode { get; set; }
 
         public string UserId { get; set; }
         public ApplicationUser User { get; set; }

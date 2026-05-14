@@ -6,7 +6,7 @@ namespace TechCorner_ECommerce.Models {
 
         [Required]
         public int ParentProductId { get; set; }
-        public ParentProduct ParentProduct { get; set; }
+        public ParentProduct? ParentProduct { get; set; }
 
 
         [Required]
