@@ -1,4 +1,5 @@
-﻿@model IEnumerable<TechCorner_ECommerce.ViewModels.MenuSubCategoryVM>
+﻿@model X.PagedList.IPagedList<TechCorner_ECommerce.ViewModels.MenuSubCategoryVM>
+@using X.PagedList.Mvc.Core;
 
 @{
     Layout = "_LayoutDashboard";
@@ -54,56 +55,76 @@
         </form>
 
         <!-- TABLE -->
-        <div class="card table-responsive">
+        <div class="card">
 
-            <table class="table table-hover mb-0">
+            <div class="card-header">
+                <strong>SubCategory List</strong>
+            </div>
 
-                <thead class="table-light">
-                    <tr>
-                        <th>ID</th>
-                        <th>SubCategory</th>
-                        <th>Products</th>
-                        <th>Category</th>
-                        
-                        @* <th>Created</th> *@
-                        <th>Action</th>
-                    </tr>
-                </thead>
+            <div class="card-body">
 
-                <tbody>
+                <table class="table table-hover mb-0">
 
-                    @foreach (var item in Model)
-                    {
+                    <thead class="table-light">
                         <tr>
-                            <td>#@item.Id</td>
-                            <td>@item.Name</td>
-                            <td>
-                                <span class="badge bg-primary" style="margin-left: 15px">
-                                    @item.Quantity
-                                </span>
-                            </td>
-                            <td>@item.CategoryName</td>
-                            
-                            @* <td>@item.CreatedAt.ToString("dd/MM/yyyy")</td> *@
-
-                            <td>
-                                <div class="d-flex align-items-center gap-2">
-                                    <a asp-action="Edit" asp-route-id="@item.Id" class="text-warning fs-5">
-                                        <i class="ti ti-edit"></i>
-                                    </a>
-
-                                    <button class="btn p-0 border-0 bg-transparent link-danger" onclick="openDelete(@item.Id, '@item.Name', @item.Quantity)">
-                                        <i class="ti ti-trash"></i>
-                                    </button>
-                                </div>
-                            </td>
+                            <th>ID</th>
+                            <th>SubCategory</th>
+                            <th>Products</th>
+                            <th>Category</th>
+                        
+                            @* <th>Created</th> *@
+                            <th>Action</th>
                         </tr>
-                    }
+                    </thead>
 
-                </tbody>
+                    <tbody>
 
-            </table>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>#@item.Id</td>
+                                <td>
+                                    <span class="badge bg-light text-dark border px-3 py-2 shadow-sm">
+                                        @item.Name
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-primary" style="margin-left: 15px">
+                                        @item.Quantity
+                                    </span>
+                                </td>
+                                <td>@item.CategoryName</td>
+                            
+                                @* <td>@item.CreatedAt.ToString("dd/MM/yyyy")</td> *@
 
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <a asp-action="Edit" asp-route-id="@item.Id" class="text-warning fs-5">
+                                            <i class="ti ti-edit"></i>
+                                        </a>
+
+                                        <button class="btn p-0 border-0 bg-transparent link-danger" onclick="openDelete(@item.Id, '@item.Name', @item.Quantity)">
+                                            <i class="ti ti-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+                        <tfoot class="">
+
+                            <tr>
+                                
+                                <td colspan="9" class="border-bottom-0">
+                                    <partial name="_Paging" model="Model" />
+                                </td>
+                            </tr>
+
+                        </tfoot>
+                </table>
+                </div>
+            </div>
         </div>
     </div>
 

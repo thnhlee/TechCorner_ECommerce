@@ -1,4 +1,6 @@
-﻿@model IEnumerable<TechCorner_ECommerce.ViewModels.ProductVM>
+﻿@model X.PagedList.IPagedList<TechCorner_ECommerce.ViewModels.ProductVM>
+@using X.PagedList.Mvc.Core;
+
 @{
     Layout = "_LayoutDashboard";
 }
@@ -133,19 +135,7 @@
                             <tr>
                                 
                                 <td colspan="9" class="border-bottom-0">
-                                    <nav aria-label="Page navigation" class="d-flex justify-content-end">
-                                        <ul class="pagination mb-0">
-                                            <li class="page-item disabled">
-                                                <a class="page-link" href="#" tabindex="-1">Previous</a>
-                                            </li>
-                                            <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                                            <li class="page-item"><a class="page-link" href="#">2</a></li>
-                                            <li class="page-item"><a class="page-link" href="#">3</a></li>
-                                            <li class="page-item">
-                                                <a class="page-link" href="#">Next</a>
-                                            </li>
-                                        </ul>
-                                    </nav>
+                                    <partial name="_Paging" model="Model" />
                                 </td>
                             </tr>
 
