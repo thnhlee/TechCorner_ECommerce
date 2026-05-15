@@ -2,6 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using TechCorner_ECommerce.Data;
 using TechCorner_ECommerce.ViewModels;
+using X.PagedList.Extensions;
+using X.PagedList;
 
 namespace TechCorner_ECommerce.Controllers {
     public class ProductController : Controller {
@@ -11,13 +13,21 @@ namespace TechCorner_ECommerce.Controllers {
             db = context;
         }
 
-        public IActionResult Index(int? cate, string keyword) {
+        public IActionResult Index(int? cate, string keyword, int? page) {
+
+            int pageSize = 3;
+            int pageNumber = page ?? 1;
+
+            ViewBag.SearchQuery = keyword;
+            ViewBag.Cate = cate;
+
             var products = db.ParentProducts
                 .Include(p => p.SubCategory)
                     .ThenInclude(sc => sc.Category)
                 .Include(p => p.Images)
                 .Include(p => p.Products)
                 .AsQueryable();
+
 
             // filter by subcategory
             if (cate.HasValue) {
@@ -39,12 +49,10 @@ namespace TechCorner_ECommerce.Controllers {
                 products = products.Where(p => EF.Functions.Like(EF.Functions.Collate(p.Name, "SQL_Latin1_General_CP1_CI_AI"), $"%{keyword}%"
                     )
                 );
-
-                ViewBag.SearchQuery = keyword;
-
             }
 
-            var result = products.Select(p => new ProductVM {
+
+            var result = products.OrderByDescending(p => p.Id).Select(p => new ProductVM {
 
                 Id = p.Id,
                 Slug = p.Slug,
@@ -59,7 +67,8 @@ namespace TechCorner_ECommerce.Controllers {
 
                 CategoryName = p.SubCategory.Category.Name
             })
-            .ToList();
+            .ToPagedList(pageNumber, pageSize);
+
             ViewBag.Count = result.Count;
             return View(result);
         }

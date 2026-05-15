@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using TechCorner_ECommerce.Data;
 using TechCorner_ECommerce.Models;
 using TechCorner_ECommerce.ViewModels;
+using X.PagedList.Extensions;
 
 namespace TechCorner_ECommerce.Areas.Admin.Controllers {
     [Area("Admin")]
@@ -16,7 +17,10 @@ namespace TechCorner_ECommerce.Areas.Admin.Controllers {
         }
 
         // ================= LIST =================
-        public IActionResult Index(string search) {
+        public IActionResult Index(string search, int? page) {
+
+            int pageSize = 10;
+            int pageNumber = page ?? 1;
 
             var query = db.Categories
                 .Include(x => x.SubCategories)
@@ -48,7 +52,7 @@ namespace TechCorner_ECommerce.Areas.Admin.Controllers {
                 .ToList()
 
             })
-            .ToList();
+            .ToPagedList(pageNumber, pageSize);
 
             ViewBag.Search = search;
 

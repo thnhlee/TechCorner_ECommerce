@@ -1,0 +1,36 @@
+﻿@model X.PagedList.IPagedList
+@using X.PagedList.Mvc.Core;
+
+
+<div class="row mt-5">
+    <div class="col text-center">
+        <div class="block-27">
+
+            @Html.PagedListPager(Model, page => Url.Action("Index", new {
+                    page,
+                    cate = ViewBag.Cate,
+                    keyword = ViewBag.SearchQuery,
+
+                    search = ViewBag.Search,
+                    categoryId = ViewBag.categoryId
+                }),
+                new PagedListRenderOptions {
+                    UlElementClasses = new[] { "" },
+                    LiElementClasses = new[] { "" },
+
+                    DisplayLinkToFirstPage = PagedListDisplayMode.Always,
+                    DisplayLinkToLastPage = PagedListDisplayMode.Always,
+
+                    DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
+                    DisplayLinkToNextPage = PagedListDisplayMode.Always,
+
+                    LinkToPreviousPageFormat = "&lt;",
+                    LinkToNextPageFormat = "&gt;",
+
+                    MaximumPageNumbersToDisplay = 5
+                }
+            )
+
+        </div>
+    </div>
+</div>

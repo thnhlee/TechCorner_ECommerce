@@ -10374,9 +10374,10 @@ textarea.form-control {
       border: 1px solid #e6e6e6;
       background: #fff; }
     .block-27 ul li.active a, .block-27 ul li.active span {
-      background: #000000;
-      color: #fff;
-      border: 1px solid transparent; }
+        background: #dbcc8f;
+        color: #fff;
+        border: 1px solid transparent;
+    }
 
 .contact-section .contact-info p a {
   color: #1a1a1a; }
