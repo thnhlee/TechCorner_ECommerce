@@ -269,7 +269,7 @@ namespace TechCorner_ECommerce.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Addresses");
+                    b.ToTable("Addresses", (string)null);
                 });
 
             modelBuilder.Entity("TechCorner_ECommerce.Models.AttributeValue", b =>
@@ -291,7 +291,7 @@ namespace TechCorner_ECommerce.Migrations
 
                     b.HasIndex("ProductAttributeId");
 
-                    b.ToTable("AttributeValues");
+                    b.ToTable("AttributeValues", (string)null);
                 });
 
             modelBuilder.Entity("TechCorner_ECommerce.Models.Cart", b =>
@@ -316,7 +316,7 @@ namespace TechCorner_ECommerce.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Carts");
+                    b.ToTable("Carts", (string)null);
                 });
 
             modelBuilder.Entity("TechCorner_ECommerce.Models.CartItem", b =>
@@ -348,7 +348,7 @@ namespace TechCorner_ECommerce.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("CartItems");
+                    b.ToTable("CartItems", (string)null);
                 });
 
             modelBuilder.Entity("TechCorner_ECommerce.Models.Category", b =>
@@ -372,7 +372,7 @@ namespace TechCorner_ECommerce.Migrations
 
                     b.HasKey("CategoryId");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
                 });
 
             modelBuilder.Entity("TechCorner_ECommerce.Models.Order", b =>
@@ -415,7 +415,7 @@ namespace TechCorner_ECommerce.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Orders");
+                    b.ToTable("Orders", (string)null);
                 });
 
             modelBuilder.Entity("TechCorner_ECommerce.Models.OrderDetail", b =>
@@ -444,7 +444,7 @@ namespace TechCorner_ECommerce.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("OrderDetails");
+                    b.ToTable("OrderDetails", (string)null);
                 });
 
             modelBuilder.Entity("TechCorner_ECommerce.Models.ParentProduct", b =>
@@ -495,7 +495,7 @@ namespace TechCorner_ECommerce.Migrations
                     b.HasIndex("Slug", "SubCategoryId")
                         .IsUnique();
 
-                    b.ToTable("ParentProducts");
+                    b.ToTable("ParentProducts", (string)null);
                 });
 
             modelBuilder.Entity("TechCorner_ECommerce.Models.Payment", b =>
@@ -527,7 +527,7 @@ namespace TechCorner_ECommerce.Migrations
 
                     b.HasIndex("OrderId");
 
-                    b.ToTable("Payments");
+                    b.ToTable("Payments", (string)null);
                 });
 
             modelBuilder.Entity("TechCorner_ECommerce.Models.Product", b =>
@@ -575,7 +575,7 @@ namespace TechCorner_ECommerce.Migrations
 
                     b.HasIndex("ParentProductId");
 
-                    b.ToTable("Products");
+                    b.ToTable("Products", (string)null);
                 });
 
             modelBuilder.Entity("TechCorner_ECommerce.Models.ProductAttribute", b =>
@@ -597,7 +597,7 @@ namespace TechCorner_ECommerce.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("ProductAttributes");
+                    b.ToTable("ProductAttributes", (string)null);
                 });
 
             modelBuilder.Entity("TechCorner_ECommerce.Models.ProductAttributeValue", b =>
@@ -621,7 +621,7 @@ namespace TechCorner_ECommerce.Migrations
                     b.HasIndex("ProductId", "AttributeValueId")
                         .IsUnique();
 
-                    b.ToTable("ProductAttributeValues");
+                    b.ToTable("ProductAttributeValues", (string)null);
                 });
 
             modelBuilder.Entity("TechCorner_ECommerce.Models.ProductImage", b =>
@@ -649,7 +649,7 @@ namespace TechCorner_ECommerce.Migrations
 
                     b.HasIndex("ParentProductId");
 
-                    b.ToTable("ProductImages");
+                    b.ToTable("ProductImages", (string)null);
                 });
 
             modelBuilder.Entity("TechCorner_ECommerce.Models.Review", b =>
@@ -684,7 +684,7 @@ namespace TechCorner_ECommerce.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Reviews");
+                    b.ToTable("Reviews", (string)null);
                 });
 
             modelBuilder.Entity("TechCorner_ECommerce.Models.SubCategory", b =>
@@ -713,7 +713,7 @@ namespace TechCorner_ECommerce.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("SubCategories");
+                    b.ToTable("SubCategories", (string)null);
                 });
 
             modelBuilder.Entity("TechCorner_ECommerce.Models.ApplicationUser", b =>

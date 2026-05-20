@@ -1,0 +1,208 @@
+﻿@model TechCorner_ECommerce.ViewModels.ProfileVM
+
+@{
+    ViewData["Title"] = "My Profile";
+}
+<link rel="stylesheet" href="~/css/profile.css" />
+
+<div style="min-height:30px"></div>
+<main class="container py-5">
+
+    <div class="row g-4">
+
+        <!-- SIDEBAR -->
+        <div class="col-lg-3">
+
+            <div class="profile-sidebar">
+
+                <div class="text-center mb-4">
+
+                    <div class="profile-avatar">
+                        @(string.IsNullOrEmpty(Model.FullName)
+                            ? "U"
+                            : Model.FullName.Substring(0,1).ToUpper())
+                    </div>
+
+                    <h5 class="mt-3 mb-1 fw-bold">
+                        @Model.FullName
+                    </h5>
+
+                    <p class="text-muted small mb-0">
+                        @Model.Email
+                    </p>
+
+                </div>
+
+                <div class="profile-menu">
+
+                    <a href="#" class="active">
+                        <i class="bi bi-person"></i>
+                        My Profile
+                    </a>
+
+                    <a href="#">
+                        <i class="bi bi-bag"></i>
+                        My Orders
+                    </a>
+
+                    <a href="#">
+                        <i class="bi bi-heart"></i>
+                        Wishlist
+                    </a>
+
+                    <a href="#">
+                        <i class="bi bi-lock"></i>
+                        Change Password
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- CONTENT -->
+        <div class="col-lg-9">
+
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success border-0 shadow-sm">
+                    @TempData["Success"]
+                </div>
+            }
+
+
+
+            <form asp-action="Index" method="post">
+
+                <div class="profile-card">
+
+                    <!-- HEADER -->
+                    <div class="profile-header">
+
+                        <div class="d-flex justify-content-between align-items-center">
+
+                            <div>
+                                <h3 class="fw-bold mb-1">
+                                    My Profile
+                                </h3>
+
+                                <p class="text-muted mb-0">
+                                    Manage your personal information
+                                </p>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- BODY -->
+                    <div class="profile-body">
+
+                        <div class="row g-5">
+
+                            <!-- ACCOUNT -->
+                            <div class="col-md-6">
+
+                                <div class="section-title">
+                                    Account Information
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="Email"
+                                           class="form-label"></label>
+
+                                    <input asp-for="Email"
+                                           class="form-control readonly-input"
+                                           readonly />
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="UserName"
+                                           class="form-label"></label>
+
+                                    <input asp-for="UserName"
+                                           class="form-control" />
+
+                                    <span asp-validation-for="UserName"
+                                          class="text-danger small"></span>
+                                </div>
+
+
+                            </div>
+
+                            <!-- SHIPPING -->
+                            <div class="col-md-6">
+
+                                <div class="section-title">
+                                    Shipping Information
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="ReceiverName"
+                                           class="form-label"></label>
+
+                                    <input asp-for="ReceiverName"
+                                           class="form-control" />
+
+                                    <span asp-validation-for="ReceiverName"
+                                          class="text-danger small"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="Phone"
+                                           class="form-label"></label>
+
+                                    <input asp-for="Phone"
+                                           class="form-control" />
+
+                                    <span asp-validation-for="Phone"
+                                          class="text-danger small"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="FullAddress"
+                                           class="form-label"></label>
+
+                                    <textarea asp-for="FullAddress"
+                                              class="form-control"
+                                              rows="5"></textarea>
+
+                                    <span asp-validation-for="FullAddress"
+                                          class="text-danger small"></span>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- FOOTER -->
+                    <div class="profile-footer">
+
+                        <div class="d-flex justify-content-end">
+
+                            <button type="submit"
+                                    class="btn btn-dark save-btn">
+
+                                <i class="bi bi-check-circle me-2"></i>
+                                Save Changes
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</main>
+
+<partial name="_ValidationScriptsPartial" />

@@ -8,7 +8,7 @@ namespace TechCorner_ECommerce.Models {
         public int Id { get; set; }
         public string OrderCode { get; set; }
 
-        public string UserId { get; set; }
+        public string UserId { get; set; } = string.Empty;
         public ApplicationUser User { get; set; }
 
         public DateTime OrderDate { get; set; }

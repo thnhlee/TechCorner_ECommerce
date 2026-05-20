@@ -1,4 +1,7 @@
-﻿@using TechCorner_ECommerce.Helpers
+﻿@using Microsoft.AspNetCore.Identity
+@using TechCorner_ECommerce.Helpers
+@inject UserManager<IdentityUser> UserManager
+
 <!-- START nav -->
 <div class="py-1 bg-black">
     <div class="container">
@@ -99,15 +102,22 @@
                 <li class="nav-item dropdown">
                     @if (User.Identity.IsAuthenticated)
                     {
+                        var currentUser = await UserManager.GetUserAsync(User);
+
                         <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
                             <i class="fa fa-user"></i>
                         </a>
 
                         <ul class="dropdown-menu dropdown-menu-end custom-dropdown">
                             <li class="dropdown-item text-muted">
-                                Hi, @User.Identity.Name
+                                Hi, @currentUser?.UserName
                             </li>
                             <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item" asp-controller="Profile" asp-action="Index">
+                                    My Profile
+                                </a>
+                            </li>
                             <li>
                                 <a class="dropdown-item" asp-controller="Account" asp-action="Logout">
                                     Logout
