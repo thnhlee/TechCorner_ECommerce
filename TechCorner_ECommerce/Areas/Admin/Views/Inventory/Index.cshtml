@@ -38,7 +38,7 @@
                         <button class="btn btn-primary">Filter</button>
                     </div>
                     <div class="col-md-auto ms-auto text-end">
-                        <button class="btn btn-outline-secondary">
+                        <button asp-controller="Inventory" asp-action="ExportToExcel" class="btn btn-outline-secondary">
                             <i class="ti ti-file-excel"></i> Excel
                         </button>
                         <button class="btn btn-outline-secondary">
@@ -96,7 +96,7 @@
                                     </td>
                                     <td>@item.CategoryName</td>
                                     <td>@item.SubCategoryName</td>
-                                    <td>@item.Price</td>
+                                    <td>$@item.Price</td>
                                     <td>
                                         <span class="badge bg-primary " style="margin-left: 15px">
                                             @item.Stock

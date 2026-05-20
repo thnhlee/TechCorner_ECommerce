@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using ClosedXML.Excel;
+using DocumentFormat.OpenXml.InkML;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -6,6 +8,7 @@ using TechCorner_ECommerce.Data;
 using TechCorner_ECommerce.Helpers;
 using TechCorner_ECommerce.ViewModels;
 using X.PagedList.Extensions;
+using System.IO;
 
 namespace TechCorner_ECommerce.Areas.Admin.Controllers {
     [Authorize]
@@ -16,6 +19,65 @@ namespace TechCorner_ECommerce.Areas.Admin.Controllers {
         public InventoryController(AppDbContext context) {
             db = context;
         }
+
+        // ================= Export Excel =================
+        public async Task<IActionResult> ExportToExcel() {
+            var data = await db.Products
+                .Select(x => new {
+                    Name = x.ParentProduct.Name,
+                    Category = x.ParentProduct.SubCategory.Category.Name,
+                    SubCategory = x.ParentProduct.SubCategory.Name,
+                    Price = x.Price,
+                    StockQuantity = x.StockQuantity,
+                    CreatedAt = x.CreatedAt,
+
+                    Attributes = string.Join(" / ",
+                        x.ProductAttributeValues.Select(v =>
+                            v.AttributeValue.ProductAttribute.Name + ": " +
+                            v.AttributeValue.Value))
+                })
+                .ToListAsync();
+
+
+            var workbook = new XLWorkbook();
+            var worksheet = workbook.Worksheets.Add("Danh sách ");
+
+            // Header
+            worksheet.Cell(1, 1).Value = "ID";
+            worksheet.Cell(1, 2).Value = "Product";
+            worksheet.Cell(1, 3).Value = "Attributes";
+            worksheet.Cell(1, 4).Value = "Category";
+            worksheet.Cell(1, 5).Value = "Subcategory";
+            worksheet.Cell(1, 6).Value = "Price";
+            worksheet.Cell(1, 7).Value = "Quantity";
+            worksheet.Cell(1, 8).Value = "Create At";
+
+            // Data
+            int row = 2;
+            int stt = 1;
+            foreach (var item in data) {
+                worksheet.Cell(row, 1).Value = stt++;
+                worksheet.Cell(row, 2).Value = item.Name;
+                worksheet.Cell(row, 3).Value = item.Attributes;
+                worksheet.Cell(row, 4).Value = item.Category;
+                worksheet.Cell(row, 5).Value = item.SubCategory;
+                worksheet.Cell(row, 6).Value = item.Price;
+                worksheet.Cell(row, 6).Style.NumberFormat.Format = "$#,##0.00";
+                worksheet.Cell(row, 7).Value = item.StockQuantity;
+                worksheet.Cell(row, 8).Value = item.CreatedAt.ToString("dd/MM/yyyy HH:mm");
+                row++;
+            }
+
+            worksheet.Columns().AdjustToContents();
+
+            var stream = new MemoryStream();
+            workbook.SaveAs(stream);
+            stream.Position = 0;
+
+            string fileName = $"DanhSach_{DateTime.Now:yyyyMMddHHmmss}.xlsx";
+            return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
+        }
+
         // ================= INVENTORY =================
         public IActionResult Index(int? cate, string keyword, int? page) {
 
@@ -162,5 +224,7 @@ namespace TechCorner_ECommerce.Areas.Admin.Controllers {
             //ViewBag.Count = result.Count;
             //return View(result);
         }
+
+
     }
 }
