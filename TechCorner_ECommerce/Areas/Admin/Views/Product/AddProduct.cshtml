@@ -27,7 +27,7 @@
         <div asp-validation-summary="All" class="text-danger"></div>
 
         <form asp-action="AddProduct" method="post" enctype="multipart/form-data">
-
+            @Html.AntiForgeryToken()
             @* ================= CATEGORY ================= *@
             <div class="card mb-4">
                 <div class="card-header"><strong>Category</strong> <a asp-controller="Category" asp-action="Index" class=""><i class="ti ti-edit "></i></a></div>

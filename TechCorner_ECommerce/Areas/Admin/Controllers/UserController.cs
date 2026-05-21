@@ -75,6 +75,14 @@ namespace TechCorner_ECommerce.Areas.Admin.Controllers {
         // ================= EDIT =================
         [HttpGet]
         public IActionResult Edit(string id) {
+
+            var currentUserId = _userManager.GetUserId(User);
+            if (id == currentUserId) {
+                TempData["Error"] = "You cannot edit your own account.";
+
+                return RedirectToAction("Index");
+            }
+
             var user = db.Users.FirstOrDefault(x => x.Id == id);
 
             if (user == null)
@@ -98,6 +106,7 @@ namespace TechCorner_ECommerce.Areas.Admin.Controllers {
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(EditUserVM model) {
             if (!ModelState.IsValid)
                 return View(model);
@@ -154,7 +163,16 @@ namespace TechCorner_ECommerce.Areas.Admin.Controllers {
 
         // ================= DELETE =================
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(string id) {
+
+            var currentUserId = _userManager.GetUserId(User);
+            if (id == currentUserId) {
+                return Json(new {
+                    success = false,
+                    message = "You cannot delete your own account."
+                });
+            }
             var user = await _userManager.FindByIdAsync(id);
 
             if (user == null) {
@@ -164,6 +182,7 @@ namespace TechCorner_ECommerce.Areas.Admin.Controllers {
                 });
             }
 
+
             bool hasOrders = db.Orders.Any(x => x.UserId == id);
 
             if (hasOrders) {
@@ -172,6 +191,7 @@ namespace TechCorner_ECommerce.Areas.Admin.Controllers {
                     message = "Cannot delete this user because this user already has orders."
                 });
             }
+
 
             var addresses = db.Addresses.Where(x => x.UserId == id);
             db.Addresses.RemoveRange(addresses);

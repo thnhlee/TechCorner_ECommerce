@@ -17,6 +17,13 @@
             </div>
         </div>
 
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger">
+                @TempData["Error"]
+            </div>
+        }
+
         <form method="get" class="row mb-3">
 
             <div class="col-md-3">
@@ -64,10 +71,7 @@
                             <td>
                                 <div class="d-flex align-items-center gap-2">
 
-                                    <a asp-area="Admin"
-                                       asp-controller="User"
-                                       asp-action="Edit"
-                                       asp-route-id="@item.Id"
+                                    <a asp-area="Admin" asp-controller="User" asp-action="Edit" asp-route-id="@item.Id"
                                        class="text-warning fs-5 d-flex align-items-center">
 
                                         <i class="ti ti-edit"></i>
@@ -161,6 +165,7 @@
 
             fetch('/Admin/User/Delete', {
                 method: 'POST',
+                headers: {RequestVerificationToken: getToken()},
                 body: formData
             })
             .then(r => r.json())

@@ -24,6 +24,7 @@
     <None Include="wwwroot\fonts\ionicons\fonts\.DS_Store" />
     <None Include="wwwroot\images\.DS_Store" />
     <None Include="wwwroot\js\.DS_Store" />
+    <None Include="wwwroot\js\AntiToken.js" />
     <None Include="wwwroot\scss\.DS_Store" />
     <None Include="wwwroot\scss\bootstrap\.DS_Store" />
   </ItemGroup>

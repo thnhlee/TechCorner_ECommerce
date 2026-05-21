@@ -34,11 +34,8 @@
              class="text-danger mb-3">
         </div>
 
-        <form asp-area="Admin"
-              asp-controller="User"
-              asp-action="Edit"
-              method="post">
-
+        <form asp-area="Admin" asp-controller="User" asp-action="Edit" method="post">
+              @Html.AntiForgeryToken()
             <input type="hidden" asp-for="Id" />
 
             <div class="card mb-4">

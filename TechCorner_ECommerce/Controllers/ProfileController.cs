@@ -44,6 +44,7 @@ namespace TechCorner_ECommerce.Controllers {
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Index(ProfileVM model) {
             var user = await _userManager.GetUserAsync(User);
 

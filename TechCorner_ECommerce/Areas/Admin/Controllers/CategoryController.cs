@@ -66,6 +66,7 @@ namespace TechCorner_ECommerce.Areas.Admin.Controllers {
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Create(CategoryCreateVM vm) {
 
             // ================= VALIDATION =================
@@ -114,6 +115,7 @@ namespace TechCorner_ECommerce.Areas.Admin.Controllers {
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Edit(CategoryEditVM vm) {
 
             // ================= VALIDATION (Check trong table đã tồn tại cate này chưa) =================
@@ -142,6 +144,7 @@ namespace TechCorner_ECommerce.Areas.Admin.Controllers {
 
         // ================= DELETE =================
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Delete(int id) {
 
             var cate = db.Categories

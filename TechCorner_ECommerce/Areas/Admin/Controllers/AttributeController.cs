@@ -47,6 +47,7 @@ namespace TechCorner_ECommerce.Areas.Admin.Controllers {
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult AddAttribute(CreateAttributeVM model) {
             if (string.IsNullOrWhiteSpace(model.Name)) {
                 return Json(new {
@@ -83,6 +84,7 @@ namespace TechCorner_ECommerce.Areas.Admin.Controllers {
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult AddAttributeValue(CreateAttributeValueVM model) {
             if (string.IsNullOrWhiteSpace(model.Value)) {
                 return Json(new {
@@ -119,6 +121,7 @@ namespace TechCorner_ECommerce.Areas.Admin.Controllers {
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult DeleteAttribute(int id) {
             var attr = db.ProductAttributes
                 .Include(x => x.AttributeValues)
@@ -152,6 +155,7 @@ namespace TechCorner_ECommerce.Areas.Admin.Controllers {
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult DeleteAttributeValue(int id) {
             var value = db.AttributeValues
                 .FirstOrDefault(x => x.Id == id);

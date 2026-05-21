@@ -28,7 +28,7 @@
     <div asp-validation-summary="All" class="text-danger mb-3"></div>
 
     <form asp-action="EditProduct" method="post" enctype="multipart/form-data">
-
+        @Html.AntiForgeryToken()
         <input type="hidden" asp-for="ParentProductId" />
 
         @* ================= CATEGORY ================= *@
@@ -674,7 +674,7 @@ function appendNewVariants(combos) {
         fetch('/Admin/Product/DeleteImage', {
 
             method: 'POST',
-
+            headers: {RequestVerificationToken: getToken()},
             body: formData
 
         })
@@ -724,7 +724,7 @@ function appendNewVariants(combos) {
         fetch('/Admin/Product/DeleteVariant', {
 
             method: 'POST',
-
+            headers: {RequestVerificationToken: getToken()},
             body: formData
 
         })

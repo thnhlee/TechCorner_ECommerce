@@ -214,7 +214,7 @@
         fetch('/Admin/SubCategory/Delete', {
 
             method: 'POST',
-
+            headers: {RequestVerificationToken: getToken()},
             body: formData
 
         })
