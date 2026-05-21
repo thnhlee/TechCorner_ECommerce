@@ -220,6 +220,7 @@
 
         fetch('/Admin/Attribute/AddAttribute', {
             method: 'POST',
+            headers: {RequestVerificationToken: getToken()},
             body: formData
         })
         .then(r => r.json())
@@ -296,6 +297,7 @@
 
         fetch('/Admin/Attribute/AddAttributeValue', {
             method: 'POST',
+            headers: {RequestVerificationToken: getToken()},
             body: formData
         })
         .then(r => r.json())
@@ -382,6 +384,7 @@
 
             fetch(url, {
                 method: "POST",
+                headers: {RequestVerificationToken: getToken()},
                 body: formData
             })
             .then(r => r.json())

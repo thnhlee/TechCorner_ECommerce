@@ -73,6 +73,7 @@ namespace TechCorner_ECommerce.Areas.Admin.Controllers {
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Create(SubCategoryCreateVM vm) {
 
             // ================= VALIDATION =================
@@ -143,6 +144,7 @@ namespace TechCorner_ECommerce.Areas.Admin.Controllers {
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Edit(SubCategoryEditVM vm) {
 
             // ================= VALIDATION (Check trong cate này đã tồn tại subcate này chưa) =================
@@ -186,6 +188,7 @@ namespace TechCorner_ECommerce.Areas.Admin.Controllers {
 
         // ================= DELETE =================
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Delete(int id) {
             var sub = db.SubCategories
                 .Include(x => x.ParentProducts)

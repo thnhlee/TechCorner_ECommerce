@@ -225,7 +225,7 @@
         fetch('/Admin/Product/DeleteVariant', {
 
             method: 'POST',
-
+            headers: {RequestVerificationToken: getToken()},
             body: formData
 
         })

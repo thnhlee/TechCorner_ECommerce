@@ -266,6 +266,7 @@
 
             fetch('/Admin/Category/Delete', {
                 method: 'POST',
+                headers: {RequestVerificationToken: getToken()},
                 body: formData
             })
             .then(r => r.json())

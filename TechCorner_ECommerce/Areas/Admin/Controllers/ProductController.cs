@@ -71,6 +71,7 @@ namespace TechCorner_ECommerce.Areas.Admin.Controllers {
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddProduct(CreateProductVM model) {
             
 
@@ -266,6 +267,7 @@ namespace TechCorner_ECommerce.Areas.Admin.Controllers {
 
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditProduct(EditProductVM model) {
 
             var parent = db.ParentProducts
@@ -368,6 +370,7 @@ namespace TechCorner_ECommerce.Areas.Admin.Controllers {
 
         // ================= DELETE =================
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult DeleteImage(int id) {
             var image = db.ProductImages
                 .FirstOrDefault(x => x.Id == id);
@@ -401,6 +404,7 @@ namespace TechCorner_ECommerce.Areas.Admin.Controllers {
             });
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult DeleteVariant(int id) {
 
             var product = db.Products

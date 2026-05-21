@@ -40,7 +40,7 @@
             <div class="card-body">
 
                 <form method="post">
-
+                    @Html.AntiForgeryToken()
                     <!-- ID -->
                     <input type="hidden" asp-for="Id" />
 

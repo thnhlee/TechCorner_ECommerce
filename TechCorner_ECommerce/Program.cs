@@ -20,7 +20,7 @@ namespace TechCorner_ECommerce {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             // Add Identity services
-            builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
+            builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
                 .AddEntityFrameworkStores<AppDbContext>()
                 .AddErrorDescriber<CustomIdentityErrorDescriber>();
             builder.Services.AddRazorPages();
