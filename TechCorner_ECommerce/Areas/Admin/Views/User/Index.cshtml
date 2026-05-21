@@ -1,163 +1,117 @@
-﻿@model X.PagedList.IPagedList<TechCorner_ECommerce.ViewModels.ProductVM>
-@using X.PagedList.Mvc.Core;
+﻿@model X.PagedList.IPagedList<TechCorner_ECommerce.ViewModels.UserListVM>
+@using X.PagedList.Mvc.Core
 
 @{
     Layout = "_LayoutDashboard";
 }
-<!-- MAIN CONTENT -->
-<main id="content" class="content py-10">
+
+<main class="content py-4">
     <div class="container-fluid">
-        <div class="row">
-            <div class="col-12">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <div class="">
-                        <h1 class="fs-3 mb-1">Inventory</h1>
-                        <p class="mb-0">Manage your product inventory</p>
-                    </div>
-                    <div>
-                        <a asp-area="Admin" asp-controller="Product" asp-action="AddProduct" class="btn btn-primary">Add Product</a>
-                    </div>
-                </div>
 
-                <form method="get" class="row mb-3">
-                    <div class="col-md-auto ms-auto text-end">
-                        <button asp-controller="Inventory" asp-action="ExportToExcel" class="btn btn-outline-secondary">
-                            <i class="ti ti-file-excel"></i> Excel
-                        </button>
-                        <button class="btn btn-outline-secondary">
-                            <i class="ti ti-file-pdf"></i> PDF
-                        </button>
-                    </div> 
-                </form> 
+        <h2 class="mb-4" >User accounts</h2>
 
-
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="fs-3 mb-1">Users</h1>
+                <p class="mb-0">Manage user accounts</p>
             </div>
         </div>
-        <div class="row">
-            <div class="col-12">
-                <div>
-                    <div class="d-flex gap-2 mb-3 flex-wrap justify-content-between">
 
+        <form method="get" class="row mb-3">
 
-                        
-                    </div>
-                </div>
-
-                <div class="card table-responsive ">
-                    <table class="table mb-0 text-nowrap table-hover">
-
-                        <thead class="table-light border-light">
-                            <tr>
-                                <th class="fw-bold">Id</th>
-                                <th class="fw-bold">Product</th>
-                                <th class="fw-bold">Attributes</th>
-
-                                
-                                <th class="fw-bold">Category</th>
-                                <th class="fw-bold">SubCategory</th>
-                                <th class="fw-bold">Price</th>
-                                <th class="fw-bold">Quantity</th>
-                                <th class="fw-bold">Action</th>
-                            </tr>
-                        </thead>
-
-                        @foreach (var item in Model) {
-                            <tbody>
-                                <tr class="align-middle ">
-                                    <td>#@item.SkuCode</td>
-                                    <td>
-                                        <a href=""><img src="@item.ImageUrl" alt="" class="avatar avatar-md rounded" /><span class="ms-3">@item.Name</span></a>
-                                    </td>
-                                    <td>
-
-                                        <span class="badge bg-light text-dark border px-2 py-1" style="margin-left: 12px">
-
-                                            @string.Join(" / ", item.Attributes.Select(x => x.Value))
-
-                                        </span>
-
-                                    </td>
-                                    <td>@item.CategoryName</td>
-                                    <td>@item.SubCategoryName</td>
-                                    <td>$@item.Price</td>
-                                    <td>
-                                        <span class="badge bg-primary " style="margin-left: 15px">
-                                            @item.Stock
-                                        </span>
-                                    </td>
-                                    <td class="">
-    
-                                        <div class="d-flex align-items-center gap-2">
-
-                                            <a asp-controller="Product"
-                                               asp-action="EditProduct"
-                                               asp-route-id="@item.PublicId"
-                                               class="text-warning fs-5 d-flex align-items-center">
-
-                                                <i class="ti ti-edit"></i>
-
-                                            </a>
-
-                                            <button type="button"
-                                                    class="btn p-0 border-0 bg-transparent link-danger d-flex align-items-center"
-                                                    onclick="openDeleteModal(@item.Id, '@item.Name')">
-
-                                                <i class="ti ti-trash"></i>
-
-                                            </button>
-
-                                        </div>
-
-                                    </td>
-                                </tr>
-
-                            </tbody>
-                        }
-                        <tfoot class="">
-
-                            <tr>
-                                
-                                <td colspan="9" class="border-bottom-0">
-                                    <partial name="_Paging" model="Model" />
-                                </td>
-                            </tr>
-
-                        </tfoot>
-                    </table>
-                </div>
-
-
+            <div class="col-md-3">
+                <input name="keyword"
+                       value="@ViewBag.SearchQuery"
+                       type="text"
+                       class="form-control"
+                       placeholder="Search users..." />
             </div>
 
-        </div>
-        <div class="row">
-            <div class="col-12">
-                <footer class="text-center py-2 mt-6 text-secondary ">
-                    <p class="mb-0">Copyright © 2026 InApp Inventory Dashboard. Developed by <a href="https://codescandy.com/" target="_blank" class="text-primary">CodesCandy</a> • Distributed by <a href="https://themewagon.com/" target="_blank" class="text-primary">ThemeWagon</a> </p>
-                </footer>
+            <div class="col-md-2">
+                <button class="btn btn-primary">
+                    Filter
+                </button>
             </div>
 
+        </form>
+
+        <div class="card table-responsive">
+            <table class="table mb-0 text-nowrap table-hover">
+
+                <thead class="table-light border-light">
+                    <tr>
+                        <th class="fw-bold">No.</th>
+                        <th class="fw-bold">UserName</th>
+                        <th class="fw-bold">Email</th>
+                        <th class="fw-bold">Phone</th>
+                        <th class="fw-bold">Address</th>
+                        <th class="fw-bold">Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr class="align-middle">
+                            <td>@item.No</td>
+                            <td>@item.UserName</td>
+                            <td>@item.Email</td>
+                            <td>@item.Phone</td>
+                            <td style="max-width: 300px; white-space: normal;">
+                                @item.Address
+                            </td>
+
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+
+                                    <a asp-area="Admin"
+                                       asp-controller="User"
+                                       asp-action="Edit"
+                                       asp-route-id="@item.Id"
+                                       class="text-warning fs-5 d-flex align-items-center">
+
+                                        <i class="ti ti-edit"></i>
+
+                                    </a>
+
+                                    <button type="button"
+                                            class="btn p-0 border-0 bg-transparent link-danger d-flex align-items-center"
+                                            onclick="openDeleteModal('@item.Id', '@item.UserName')">
+
+                                        <i class="ti ti-trash"></i>
+
+                                    </button>
+
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+
+            </table>
         </div>
+
+        <partial name="_Paging" model="Model" />
 
     </div>
 
     <!-- DELETE MODAL -->
     <div class="modal fade" id="deleteModal">
-
         <div class="modal-dialog">
-
             <div class="modal-content">
 
                 <div class="modal-header">
-
-                    <h5>Delete Variant</h5>
-
+                    <h5>Delete User</h5>
                 </div>
 
                 <div class="modal-body">
 
+                    <div id="deleteError"
+                         class="alert alert-danger d-none mb-3">
+                    </div>
+
                     Are you sure delete
-                    <strong id="productName"></strong> ?
+                    <strong id="userName"></strong> ?
 
                 </div>
 
@@ -167,64 +121,64 @@
                         Delete
                     </button>
 
-                    <button class="btn btn-secondary" data-bs-dismiss="modal">
+                    <button class="btn btn-secondary"
+                            data-bs-dismiss="modal">
                         Cancel
                     </button>
 
                 </div>
 
             </div>
-
         </div>
-
     </div>
+
 </main>
 
-
 <script>
-
-    let deleteId = 0;
+    let deleteId = "";
 
     function openDeleteModal(id, name) {
 
         deleteId = id;
 
-        document.getElementById("productName").innerText = name;
+        document.getElementById("userName").innerText = name;
 
-        let modal = new bootstrap.Modal(
+        const errorBox = document.getElementById("deleteError");
+        errorBox.classList.add("d-none");
+        errorBox.innerText = "";
+
+        new bootstrap.Modal(
             document.getElementById("deleteModal")
-        );
-
-        modal.show();
+        ).show();
     }
 
     document.getElementById("confirmDelete")
         .addEventListener("click", function () {
 
-        const formData = new FormData();
+            const formData = new FormData();
 
-        formData.append("id", deleteId);
+            formData.append("id", deleteId);
 
-        fetch('/Admin/Product/DeleteVariant', {
+            fetch('/Admin/User/Delete', {
+                method: 'POST',
+                body: formData
+            })
+            .then(r => r.json())
+            .then(res => {
 
-            method: 'POST',
+                if (res.success) {
 
-            body: formData
+                    location.reload();
 
-        })
-        .then(r => r.json())
-        .then(res => {
+                } else {
 
-            if (res.success) {
+                    const errorBox =
+                        document.getElementById("deleteError");
 
-                location.reload();
+                    errorBox.innerText = res.message;
 
-            } else {
-
-                alert(res.message);
-            }
+                    errorBox.classList.remove("d-none");
+                }
+            });
         });
-
-    });
-
 </script>

@@ -1,0 +1,148 @@
+﻿@model TechCorner_ECommerce.ViewModels.EditUserVM
+
+@{
+    Layout = "_LayoutDashboard";
+}
+
+<main class="content py-4">
+    <div class="container-fluid">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2>Edit User</h2>
+                <p class="text-muted mb-0">
+                    Update user information
+                </p>
+            </div>
+
+            <a asp-area="Admin"
+               asp-controller="User"
+               asp-action="Index"
+               class="btn btn-light border">
+                Back
+            </a>
+        </div>
+
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success">
+                @TempData["Success"]
+            </div>
+        }
+
+        <div asp-validation-summary="All"
+             class="text-danger mb-3">
+        </div>
+
+        <form asp-area="Admin"
+              asp-controller="User"
+              asp-action="Edit"
+              method="post">
+
+            <input type="hidden" asp-for="Id" />
+
+            <div class="card mb-4">
+
+                <div class="card-header">
+                    <strong>Account Information</strong>
+                </div>
+
+                <div class="card-body">
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">
+                            UserName
+                        </label>
+
+                        <input asp-for="UserName"
+                               class="form-control" />
+
+                        <span asp-validation-for="UserName"
+                              class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">
+                            Email
+                        </label>
+
+                        <input asp-for="Email"
+                               class="form-control" />
+
+                        <span asp-validation-for="Email"
+                              class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">
+                            Full Name
+                        </label>
+
+                        <input asp-for="FullName"
+                               class="form-control" />
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="card mb-4">
+
+                <div class="card-header">
+                    <strong>Shipping Information</strong>
+                </div>
+
+                <div class="card-body">
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">
+                            Receiver Name
+                        </label>
+
+                        <input asp-for="ReceiverName"
+                               class="form-control" />
+
+                        <span asp-validation-for="ReceiverName"
+                              class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">
+                            Phone
+                        </label>
+
+                        <input asp-for="Phone"
+                               class="form-control" />
+
+                        <span asp-validation-for="Phone"
+                              class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">
+                            Address
+                        </label>
+
+                        <textarea asp-for="FullAddress"
+                                  class="form-control"
+                                  rows="4"></textarea>
+
+                        <span asp-validation-for="FullAddress"
+                              class="text-danger"></span>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <button class="btn btn-warning">
+                Save Changes
+            </button>
+
+        </form>
+
+    </div>
+</main>
+
+<partial name="_ValidationScriptsPartial" />

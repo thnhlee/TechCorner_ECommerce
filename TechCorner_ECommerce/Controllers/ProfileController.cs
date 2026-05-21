@@ -8,12 +8,10 @@ using TechCorner_ECommerce.ViewModels;
 namespace TechCorner_ECommerce.Controllers {
     [Authorize]
     public class ProfileController : Controller {
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly AppDbContext db;
 
-        public ProfileController(
-            UserManager<IdentityUser> userManager,
-            AppDbContext context) {
+        public ProfileController(UserManager<ApplicationUser> userManager, AppDbContext context) {
             _userManager = userManager;
             db = context;
         }
