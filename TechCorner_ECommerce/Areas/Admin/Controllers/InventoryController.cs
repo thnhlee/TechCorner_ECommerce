@@ -11,7 +11,7 @@ using X.PagedList.Extensions;
 using System.IO;
 
 namespace TechCorner_ECommerce.Areas.Admin.Controllers {
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     [Area("Admin")]
     public class InventoryController : Controller {
         private readonly AppDbContext db;

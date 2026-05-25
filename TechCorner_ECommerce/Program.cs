@@ -21,6 +21,7 @@ namespace TechCorner_ECommerce {
 
             // Add Identity services
             builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
+                .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<AppDbContext>()
                 .AddErrorDescriber<CustomIdentityErrorDescriber>();
             builder.Services.AddRazorPages();
@@ -36,6 +37,9 @@ namespace TechCorner_ECommerce {
                 options.Password.RequiredUniqueChars = 1;
             });
 
+            builder.Services.ConfigureApplicationCookie(options => {
+                options.AccessDeniedPath = "/Account/AccessDenied";
+            });
 
             // Add session services
             builder.Services.AddDistributedMemoryCache();
@@ -82,8 +86,22 @@ namespace TechCorner_ECommerce {
                 .WithStaticAssets();
 
             using (var scope = app.Services.CreateScope()) {
-                var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-                SeedData.Seed(db);
+
+                var services = scope.ServiceProvider;
+
+                var db = services.GetRequiredService<AppDbContext>();
+
+                var userManager =
+                    services.GetRequiredService<UserManager<ApplicationUser>>();
+
+                var roleManager =
+                    services.GetRequiredService<RoleManager<IdentityRole>>();
+
+                SeedData.Seed(
+                    db,
+                    userManager,
+                    roleManager
+                ).GetAwaiter().GetResult();
             }
 
             app.Run();

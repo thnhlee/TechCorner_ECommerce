@@ -130,12 +130,12 @@
       <li><a class="nav-link @Html.IsActiveDashboard("Dashboard")" asp-area="Admin" asp-controller="Dashboard" asp-action="Index"><i class="ti ti-home"></i><span
             class="nav-text">Dashboard</span></a></li>
 
-    <li><a class="nav-link @Html.IsActiveDashboard("User")" asp-area="Admin" asp-controller="User" asp-action="Index"><i class="ti ti-user"></i><span class="nav-text">User</span></a>
+      <li><a class="nav-link @Html.IsActiveDashboard("User", "Role")" asp-area="Admin" asp-controller="User"  asp-action="Index"><i class="ti ti-user"></i><span class="nav-text">User</span></a>
       </li>
 
       <li><a class="nav-link @Html.IsActiveDashboard("Inventory")" asp-area="Admin" asp-controller="Inventory" asp-action="Index"><i class="ti ti-box-seam"></i><span
             class="nav-text">Inventory</span></a></li>
-      <li><a class="nav-link @Html.IsActiveDashboard("Product")" asp-area="Admin" asp-controller="Product" asp-action="AddProduct"><i class="ti ti-plus"></i><span 
+      <li><a class="nav-link @Html.IsActiveDashboard("Product", "Category", "SubCategory")" asp-area="Admin" asp-controller="Product" asp-action="AddProduct"><i class="ti ti-plus"></i><span 
             class="nav-text">Add Product</span></a></li>
 
 
@@ -148,7 +148,7 @@
 
 
       <li class="px-4 pt-4 pb-2"><small class="nav-text">Account</small></li>
-      <li><a class="nav-link" asp-controller="Account" asp-action="Logout"><i class="ti ti-logout"></i><span class="nav-text">Log out</span></a>
+      <li><a class="nav-link" asp-area="" asp-controller="Account" asp-action="Logout"><i class="ti ti-logout"></i><span class="nav-text">Log out</span></a>
       </li>
 
     </ul>

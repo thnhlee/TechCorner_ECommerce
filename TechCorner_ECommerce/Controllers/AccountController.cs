@@ -13,6 +13,11 @@ namespace TechCorner_ECommerce.Controllers {
             _signInManager = signInManager;
         }
 
+        [HttpGet]
+        public IActionResult AccessDenied() {
+            return View();
+        }
+
         ///////////////////////// LOGIN  /////////////////////////
         [HttpGet]
         public IActionResult Login() {
@@ -26,18 +31,32 @@ namespace TechCorner_ECommerce.Controllers {
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginVM model) {
+
             if (!ModelState.IsValid)
-            return View(model);
+                return View(model);
 
-            var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null) {
+                ModelState.AddModelError(string.Empty, "Email or Password is incorrect");
+                return View(model);
+            }
 
+            var result = await _signInManager.PasswordSignInAsync(user.UserName, model.Password, model.RememberMe, lockoutOnFailure: false);
             if (result.Succeeded) {
 
                 //TempData["SuccessMessage"] = "Login successful!";
-                return RedirectToAction("Index", "Admin");
+                var roles = await _userManager.GetRolesAsync(user);
+                if (roles.Contains("Admin")
+                    || roles.Contains("Staff")) {
+
+                    return RedirectToAction("Index", "Dashboard", new { area = "Admin" });
+                }
+
+                return RedirectToAction("Index", "Home");
+
             }
 
-            ModelState.AddModelError(string.Empty, "Email or Password is incorrect");
+
 
 
             return View(model);

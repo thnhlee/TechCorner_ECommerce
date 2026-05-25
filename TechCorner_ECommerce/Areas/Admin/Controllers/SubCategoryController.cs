@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TechCorner_ECommerce.Data;
 using TechCorner_ECommerce.Models;
@@ -6,6 +7,7 @@ using TechCorner_ECommerce.ViewModels;
 using X.PagedList.Extensions;
 
 namespace TechCorner_ECommerce.Areas.Admin.Controllers {
+    [Authorize(Roles = "Admin")]
     [Area("Admin")]
     public class SubCategoryController : Controller {
         private readonly AppDbContext db;

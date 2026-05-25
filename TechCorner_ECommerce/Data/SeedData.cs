@@ -1,8 +1,51 @@
-﻿using TechCorner_ECommerce.Models;
+﻿using Microsoft.AspNetCore.Identity;
+using TechCorner_ECommerce.Models;
 
 namespace TechCorner_ECommerce.Data {
     public class SeedData {
-        public static void Seed(AppDbContext db) {
+        public static async Task Seed( AppDbContext db, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager) {
+
+            //* ================= ROLE ================= */
+            if (!await roleManager.RoleExistsAsync("Admin")) {
+
+                await roleManager.CreateAsync(
+                    new IdentityRole("Admin")
+                );
+            }
+            
+            //* ================= ADMIN ACCOUNT ================= */
+            var adminEmail = "admin@gmail.com";
+
+            var adminUser =
+                await userManager.FindByEmailAsync(adminEmail);
+
+            if (adminUser == null) {
+
+                adminUser = new ApplicationUser {
+
+                    UserName = "admin",
+
+                    Email = adminEmail,
+
+                    EmailConfirmed = false,
+
+                    CreatedAt = DateTime.Now
+                };
+
+                var result = await userManager.CreateAsync(
+                    adminUser,
+                    "Admin@123"
+                );
+
+                if (result.Succeeded) {
+
+                    await userManager.AddToRoleAsync(
+                        adminUser,
+                        "Admin"
+                    );
+                }
+            }
+
             // tránh seed lại
             if (db.ParentProducts.Any()) return; 
 
