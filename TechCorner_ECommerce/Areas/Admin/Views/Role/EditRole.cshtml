@@ -1,0 +1,68 @@
+﻿@model TechCorner_ECommerce.ViewModels.RoleEditVM
+
+@{
+    Layout = "_LayoutDashboard";
+}
+
+<main class="content py-4">
+    <div class="container-fluid">
+        <h2 class="mb-4">EditRoles</h2>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+
+            <div>
+                <h2>Edit Role</h2>
+                <p class="text-muted mb-0">
+                    Update role information
+                </p>
+            </div>
+
+            <a asp-area="Admin" asp-controller="Role" asp-action="Index" class="btn btn-light border">
+                Back
+            </a>
+
+        </div>
+
+        <div asp-validation-summary="All"
+             class="text-danger mb-3">
+        </div>
+
+        <form asp-area="Admin" asp-controller="Role" asp-action="EditRole" method="post">
+
+            @Html.AntiForgeryToken()
+
+            <input type="hidden" asp-for="Id" />
+
+            <div class="card mb-4">
+
+                <div class="card-header">
+                    <strong>Role Information</strong>
+                </div>
+
+                <div class="card-body">
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">
+                            Role Name
+                        </label>
+
+                        <input asp-for="Name"
+                               class="form-control" />
+
+                        <span asp-validation-for="Name"
+                              class="text-danger"></span>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <button class="btn btn-warning">
+                Save Changes
+            </button>
+
+        </form>
+
+    </div>
+</main>
+
+<partial name="_ValidationScriptsPartial" />

@@ -6,6 +6,7 @@
 
 <main class="content py-4">
     <div class="container-fluid">
+        <h2 class="mb-4" >Edit </h2>
 
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
@@ -23,12 +24,12 @@
             </a>
         </div>
 
-        @if (TempData["Success"] != null)
+@*         @if (TempData["Success"] != null)
         {
             <div class="alert alert-success">
                 @TempData["Success"]
             </div>
-        }
+        } *@
 
         <div asp-validation-summary="All"
              class="text-danger mb-3">
@@ -70,15 +71,29 @@
                               class="text-danger"></span>
                     </div>
 
+
                     <div class="mb-3">
                         <label class="form-label fw-semibold">
-                            Full Name
+                            Role
                         </label>
 
-                        <input asp-for="FullName"
-                               class="form-control" />
+                        <select asp-for="RoleName" class="form-select">
 
+                            <option value="">No Role</option>
+
+                            @foreach (var role in Model.Roles)
+                            {
+                                <option value="@role"
+                                        selected="@(Model.RoleName == role)">
+                                    @role
+                                </option>
+                            }
+
+                        </select>
+
+                        <span asp-validation-for="RoleName" class="text-danger"></span>
                     </div>
+
 
                 </div>
 
@@ -97,11 +112,9 @@
                             Receiver Name
                         </label>
 
-                        <input asp-for="ReceiverName"
-                               class="form-control" />
+                        <input asp-for="ReceiverName" class="form-control" />
 
-                        <span asp-validation-for="ReceiverName"
-                              class="text-danger"></span>
+                        <span asp-validation-for="ReceiverName" class="text-danger"></span>
                     </div>
 
                     <div class="mb-3">
@@ -112,8 +125,7 @@
                         <input asp-for="Phone"
                                class="form-control" />
 
-                        <span asp-validation-for="Phone"
-                              class="text-danger"></span>
+                        <span asp-validation-for="Phone" class="text-danger"></span>
                     </div>
 
                     <div class="mb-3">
@@ -121,12 +133,9 @@
                             Address
                         </label>
 
-                        <textarea asp-for="FullAddress"
-                                  class="form-control"
-                                  rows="4"></textarea>
+                        <textarea asp-for="FullAddress" class="form-control" rows="4"></textarea>
 
-                        <span asp-validation-for="FullAddress"
-                              class="text-danger"></span>
+                        <span asp-validation-for="FullAddress" class="text-danger"></span>
                     </div>
 
                 </div>

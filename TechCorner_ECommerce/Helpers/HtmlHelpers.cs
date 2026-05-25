@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace TechCorner_ECommerce.Helpers {
     public static class HtmlHelpers {
@@ -11,11 +12,11 @@ namespace TechCorner_ECommerce.Helpers {
             return (currentController == controller && currentAction == action) ? "active" : "";
         }
 
-        public static string IsActiveDashboard(this IHtmlHelper html, string controller) {
-            var routeData = html.ViewContext.RouteData;
+        public static string IsActiveDashboard(this IHtmlHelper html, params string[] controllers) {
+            
 
-            var currentController = routeData.Values["controller"]?.ToString();
-            return currentController == controller ? "active" : "";
+            var currentController = html.ViewContext.RouteData.Values["controller"]?.ToString();
+            return controllers.Contains(currentController) ? "active" : "";
         }
     }
 }

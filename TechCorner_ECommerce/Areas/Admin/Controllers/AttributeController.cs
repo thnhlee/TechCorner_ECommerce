@@ -6,7 +6,7 @@ using TechCorner_ECommerce.Models;
 using TechCorner_ECommerce.ViewModels;
 
 namespace TechCorner_ECommerce.Areas.Admin.Controllers {
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     [Area("Admin")]
     public class AttributeController : Controller {
         private readonly AppDbContext db;

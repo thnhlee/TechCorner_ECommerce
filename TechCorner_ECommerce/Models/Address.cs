@@ -9,17 +9,17 @@ namespace TechCorner_ECommerce.Models {
 
         public ApplicationUser User { get; set; }
 
-        [Required]
+
         [StringLength(300)]
-        public string FullAddress { get; set; }
+        public string? FullAddress { get; set; }
 
-        [Required]
+
         [StringLength(100)]
-        public string ReceiverName { get; set; }
+        public string? ReceiverName { get; set; }
 
-        [Required]
+
         [Phone]
-        public string Phone { get; set; }
+        public string? Phone { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime UpdatedAt { get; set; } = DateTime.Now;
