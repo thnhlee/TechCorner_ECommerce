@@ -180,7 +180,8 @@ namespace TechCorner_ECommerce.Data {
                     .HasForeignKey(x => x.UserId)
                     .OnDelete(DeleteBehavior.NoAction);
 
-                //  Order 1 - 1 Address 
+                //  Address is only kept as the autofill source used at checkout.
+                //  Order shipping information is snapshotted on Order itself.
                 entity.HasOne(x => x.Address)
                     .WithMany()
                     .HasForeignKey(x => x.AddressId)
@@ -228,7 +229,8 @@ namespace TechCorner_ECommerce.Data {
                 //  User 1 - n Address
                 entity.HasOne(x => x.User)
                     .WithMany(x => x.Addresses)
-                    .HasForeignKey(x => x.UserId);
+                    .HasForeignKey(x => x.UserId)
+                    .OnDelete(DeleteBehavior.NoAction);
             });
 
             /* ========================= REVIEW ========================= */

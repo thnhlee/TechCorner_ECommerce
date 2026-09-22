@@ -95,6 +95,8 @@ namespace TechCorner_ECommerce {
 
                 var db = services.GetRequiredService<AppDbContext>();
 
+                
+
                 var userManager =
                     services.GetRequiredService<UserManager<ApplicationUser>>();
 

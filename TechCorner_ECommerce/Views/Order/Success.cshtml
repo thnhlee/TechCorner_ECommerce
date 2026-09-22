@@ -13,9 +13,12 @@
                     <p class="mb-1">Order code: <strong>@Model.OrderCode</strong></p>
                     <p class="mb-4">Total: <strong>$@Model.TotalPrice</strong></p>
 
-                    <a asp-controller="Order" asp-action="Detail" asp-route-id="@Model.OrderCode" class="btn btn-primary py-3 px-4">
-                        View Order
-                    </a>
+                    @if (!string.IsNullOrEmpty(Model.UserId))
+                    {
+                        <a asp-controller="Order" asp-action="Detail" asp-route-id="@Model.OrderCode" class="btn btn-primary py-3 px-4">
+                            View Order
+                        </a>
+                    }
                     <a asp-controller="Product" asp-action="Index" class="btn btn-black py-3 px-4">
                         Continue Shopping
                     </a>

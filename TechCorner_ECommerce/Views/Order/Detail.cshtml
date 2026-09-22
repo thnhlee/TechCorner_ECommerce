@@ -60,17 +60,22 @@
 
                     <p class="d-flex">
                         <span>Receiver</span>
-                        <span>@Model.Address.ReceiverName</span>
+                        <span>@Model.ReceiverName</span>
+                    </p>
+
+                    <p class="d-flex">
+                        <span>Email</span>
+                        <span>@Model.ReceiverEmail</span>
                     </p>
 
                     <p class="d-flex">
                         <span>Phone</span>
-                        <span>@Model.Address.Phone</span>
+                        <span>@Model.ReceiverPhone</span>
                     </p>
 
                     <p>
                         <span class="d-block mb-1">Address</span>
-                        <span>@Model.Address.FullAddress</span>
+                        <span>@Model.ShippingAddress</span>
                     </p>
 
                     <hr />
