@@ -65,16 +65,9 @@
                         <span id="cart-total">$@cartTotal</span>
                     </p>
 
-                    @if (User.Identity != null && User.Identity.IsAuthenticated) {
-                        <a asp-controller="Order" asp-action="Checkout" class="btn btn-primary py-1 px-2 mt-auto">
-                            Proceed to Checkout
-                        </a>
-                    }
-                    else {
-                        <a asp-controller="Account" asp-action="Login" asp-route-returnToCart="/Order/Checkout" class="btn btn-primary py-1 px-2 mt-auto">
-                            Proceed to Checkout
-                        </a>
-                    }
+                    <a asp-controller="Order" asp-action="Checkout" class="btn btn-primary py-1 px-2 mt-auto">
+                        Proceed to Checkout
+                    </a>
                 </div>
 
                 

@@ -6,6 +6,11 @@ namespace TechCorner_ECommerce.ViewModels {
         [StringLength(100)]
         public string? ReceiverName { get; set; }
 
+        [Required(ErrorMessage = "Email is required")]
+        [EmailAddress(ErrorMessage = "Invalid email address")]
+        [StringLength(256)]
+        public string? Email { get; set; }
+
         [Required(ErrorMessage = "Phone is required")]
         [Phone(ErrorMessage = "Invalid phone number")]
         public string? Phone { get; set; }

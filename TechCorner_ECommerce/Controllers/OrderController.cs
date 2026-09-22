@@ -29,6 +29,7 @@ namespace TechCorner_ECommerce.Controllers {
             HttpContext.Session.Get<List<CartItemVM>>(MySetting.CART_KEY) ?? new List<CartItemVM>();
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> Checkout() {
             var cart = Cart;
 
@@ -38,16 +39,14 @@ namespace TechCorner_ECommerce.Controllers {
             }
 
             var user = await _userManager.GetUserAsync(User);
-
-            if (user == null) {
-                return RedirectToAction("Login", "Account");
-            }
-
-            var address = await db.Addresses.FirstOrDefaultAsync(x => x.UserId == user.Id);
+            var address = user == null
+                ? null
+                : await db.Addresses.FirstOrDefaultAsync(x => x.UserId == user.Id);
 
             var model = new CheckoutVM {
-                ReceiverName = address?.ReceiverName,
-                Phone = address?.Phone,
+                ReceiverName = address?.ReceiverName ?? user?.FullName,
+                Email = user?.Email,
+                Phone = address?.Phone ?? user?.PhoneNumber,
                 FullAddress = address?.FullAddress,
                 Items = cart
             };
@@ -56,6 +55,7 @@ namespace TechCorner_ECommerce.Controllers {
         }
 
         [HttpPost]
+        [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Checkout(CheckoutVM model) {
             var cart = Cart;
@@ -71,10 +71,6 @@ namespace TechCorner_ECommerce.Controllers {
             }
 
             var user = await _userManager.GetUserAsync(User);
-
-            if (user == null) {
-                return RedirectToAction("Login", "Account");
-            }
 
             var productIds = cart.Select(x => x.ProductId).ToList();
             var products = await db.Products
@@ -104,9 +100,11 @@ namespace TechCorner_ECommerce.Controllers {
             await using var transaction = await db.Database.BeginTransactionAsync();
 
             try {
-                var address = await db.Addresses.FirstOrDefaultAsync(x => x.UserId == user.Id);
+                var address = user == null
+                    ? null
+                    : await db.Addresses.FirstOrDefaultAsync(x => x.UserId == user.Id);
 
-                if (address == null) {
+                if (user != null && address == null) {
                     address = new Address {
                         UserId = user.Id,
                         ReceiverName = model.ReceiverName?.Trim(),
@@ -117,7 +115,7 @@ namespace TechCorner_ECommerce.Controllers {
 
                     db.Addresses.Add(address);
                 }
-                else {
+                else if (address != null) {
                     address.ReceiverName = model.ReceiverName?.Trim();
                     address.Phone = model.Phone?.Trim();
                     address.FullAddress = model.FullAddress?.Trim();
@@ -128,11 +126,15 @@ namespace TechCorner_ECommerce.Controllers {
 
                 var order = new Order {
                     OrderCode = _uniqueCodeService.CreateOrderCode(),
-                    UserId = user.Id,
+                    UserId = user?.Id,
+                    ReceiverName = model.ReceiverName?.Trim() ?? string.Empty,
+                    ReceiverEmail = model.Email?.Trim() ?? user?.Email ?? string.Empty,
+                    ReceiverPhone = model.Phone?.Trim() ?? string.Empty,
+                    ShippingAddress = model.FullAddress?.Trim() ?? string.Empty,
                     OrderDate = DateTime.Now,
                     TotalPrice = cart.Sum(x => x.SubTotal),
                     Status = OrderStatus.Pending,
-                    AddressId = address.Id,
+                    AddressId = address?.Id,
                     CreatedAt = DateTime.Now,
                     UpdatedAt = DateTime.Now
                 };
@@ -216,7 +218,6 @@ namespace TechCorner_ECommerce.Controllers {
             }
 
             var order = await db.Orders
-                .Include(x => x.Address)
                 .Include(x => x.Payments)
                 .Include(x => x.OrderDetails)
                     .ThenInclude(x => x.Product!)
@@ -231,16 +232,19 @@ namespace TechCorner_ECommerce.Controllers {
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> Success(string id) {
             var user = await _userManager.GetUserAsync(User);
 
-            if (user == null) {
-                return RedirectToAction("Login", "Account");
-            }
-
-            var order = await db.Orders
+            var query = db.Orders
                 .Include(x => x.Payments)
-                .FirstOrDefaultAsync(x => x.OrderCode == id && x.UserId == user.Id);
+                .AsQueryable();
+
+            query = user == null
+                ? query.Where(x => x.OrderCode == id && x.UserId == null)
+                : query.Where(x => x.OrderCode == id && (x.UserId == user.Id || x.UserId == null));
+
+            var order = await query.FirstOrDefaultAsync();
 
             if (order == null) {
                 return NotFound();

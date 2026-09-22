@@ -8,8 +8,25 @@ namespace TechCorner_ECommerce.Models {
         public int Id { get; set; }
         public string OrderCode { get; set; }
 
-        public string UserId { get; set; } = string.Empty;
-        public ApplicationUser User { get; set; }
+        public string? UserId { get; set; }
+        public ApplicationUser? User { get; set; }
+
+        [Required]
+        [StringLength(100)]
+        public string ReceiverName { get; set; } = string.Empty;
+
+        [Required]
+        [EmailAddress]
+        [StringLength(256)]
+        public string ReceiverEmail { get; set; } = string.Empty;
+
+        [Required]
+        [Phone]
+        public string ReceiverPhone { get; set; } = string.Empty;
+
+        [Required]
+        [StringLength(300)]
+        public string ShippingAddress { get; set; } = string.Empty;
 
         public DateTime OrderDate { get; set; }
 
@@ -18,8 +35,8 @@ namespace TechCorner_ECommerce.Models {
 
         public OrderStatus Status { get; set; }
 
-        public int AddressId { get; set; }
-        public Address Address { get; set; }
+        public int? AddressId { get; set; }
+        public Address? Address { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime UpdatedAt { get; set; } = DateTime.Now;
