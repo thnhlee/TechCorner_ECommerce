@@ -36,48 +36,48 @@
                 <li class="nav-item @Html.IsActive("Product", "Index")"><a asp-controller="Product" asp-action="Index" class="nav-link">All Products</a></li>
 
 
-        <li class="nav-item dropdown mega-menu">
-            <a class="nav-link dropdown-toggle" href="#">
-                Catalog
-            </a>
+                <li class="nav-item dropdown mega-menu">
+                    <a class="nav-link dropdown-toggle" href="#">
+                        Catalog
+                    </a>
 
-            <div class="mega-menu-content">
+                    <div class="mega-menu-content">
 
-                <div class="mega-container">
+                        <div class="mega-container">
 
-                    <div class="mega-col">
-                        <h6>Chuột Gaming</h6>
-                        <a href="#">Chuột siêu nhẹ</a>
-                        <a href="#">Chuột không dây</a>
-                        <a href="#">Chuột có dây</a>
-                        <a href="#">Dongle</a>
+                            <div class="mega-col">
+                                <h6>Chuột Gaming</h6>
+                                <a href="#">Chuột siêu nhẹ</a>
+                                <a href="#">Chuột không dây</a>
+                                <a href="#">Chuột có dây</a>
+                                <a href="#">Dongle</a>
+                            </div>
+
+                            <div class="mega-col">
+                                <h6>Lót chuột</h6>
+                                <a href="#">Lót vải</a>
+                                <a href="#">Lót kính</a>
+                                <a href="#">Cerapad</a>
+                            </div>
+
+                            <div class="mega-col">
+                                <h6>Bàn phím</h6>
+                                <a href="#">Bàn phím cơ</a>
+                                <a href="#">Keycap</a>
+                                <a href="#">Kê tay</a>
+                            </div>
+
+                            <div class="mega-col">
+                                <h6>Phụ kiện</h6>
+                                <a href="#">Switch</a>
+                                <a href="#">Arm màn hình</a>
+                                <a href="#">Túi đựng</a>
+                            </div>
+
+                        </div>
+
                     </div>
-
-                    <div class="mega-col">
-                        <h6>Lót chuột</h6>
-                        <a href="#">Lót vải</a>
-                        <a href="#">Lót kính</a>
-                        <a href="#">Cerapad</a>
-                    </div>
-
-                    <div class="mega-col">
-                        <h6>Bàn phím</h6>
-                        <a href="#">Bàn phím cơ</a>
-                        <a href="#">Keycap</a>
-                        <a href="#">Kê tay</a>
-                    </div>
-
-                    <div class="mega-col">
-                        <h6>Phụ kiện</h6>
-                        <a href="#">Switch</a>
-                        <a href="#">Arm màn hình</a>
-                        <a href="#">Túi đựng</a>
-                    </div>
-
-                </div>
-
-            </div>
-        </li>
+                </li>
 
 
                 <li class="nav-item @Html.IsActive("Home", "About")"><a asp-controller="Home" asp-action="About" class="nav-link">About</a></li>
@@ -87,7 +87,7 @@
                 <li class="nav-item nav-search">
                     <form method="get" asp-controller="Product" asp-action="Index">
                         <div class="search-box">
-                            <input type="text" name="keyword" placeholder="Tìm chuột, bàn phím, tai nghe..." value="@Context.Request.Query["keyword"]"/>
+                            <input type="text" name="keyword" placeholder="Tìm chuột, bàn phím, tai nghe..." value="@Context.Request.Query["keyword"]" />
 
                             <input type="hidden" name="cate" value="@Context.Request.Query["cate"]" />
 
@@ -100,8 +100,7 @@
 
 
                 <li class="nav-item dropdown">
-                    @if (User.Identity.IsAuthenticated)
-                    {
+                    @if (User.Identity?.IsAuthenticated == true) {
                         var currentUser = await UserManager.GetUserAsync(User);
 
                         <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
@@ -130,8 +129,7 @@
                             </li>
                         </ul>
                     }
-                    else
-                    {
+                    else {
                         <a asp-controller="Account" asp-action="Login" class="nav-link">
                             <i class="fa fa-user"></i>
                         </a>
@@ -146,6 +144,7 @@
     </div>
 </nav>
 <!-- END nav -->
+
                     
 
 
@@ -153,21 +152,20 @@
 
 
 
+<script>
+        function filterCategories() {
+            var input = document.getElementById("categorySearch");
+            var filter = input.value.toLowerCase();
+            var items = document.getElementsByClassName("category-item");
 
-    <script>
-    function filterCategories() {
-        var input = document.getElementById("categorySearch");
-        var filter = input.value.toLowerCase();
-        var items = document.getElementsByClassName("category-item");
+            for (var i = 0; i < items.length; i++) {
+                var name = items[i].querySelector(".category-name").innerText.toLowerCase();
 
-        for (var i = 0; i < items.length; i++) {
-            var name = items[i].querySelector(".category-name").innerText.toLowerCase();
-
-            if (name.includes(filter)) {
-                items[i].style.display = "";
-            } else {
-                items[i].style.display = "none";
-            }
+                if (name.includes(filter)) {
+                    items[i].style.display = "";
+                } else {
+                    items[i].style.display = "none";
+                }
+        }
     }
-}
 </script>

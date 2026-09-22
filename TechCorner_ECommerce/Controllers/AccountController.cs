@@ -30,10 +30,12 @@ namespace TechCorner_ECommerce.Controllers {
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(LoginVM model) {
+        public async Task<IActionResult> Login(LoginVM model, string? returnToCart) {
 
             if (!ModelState.IsValid)
                 return View(model);
+
+
 
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null) {
@@ -41,7 +43,13 @@ namespace TechCorner_ECommerce.Controllers {
                 return View(model);
             }
 
-            var result = await _signInManager.PasswordSignInAsync(user.UserName, model.Password, model.RememberMe, lockoutOnFailure: false);
+            var userName = user.UserName ?? user.Email;
+            if (string.IsNullOrWhiteSpace(userName)) {
+                ModelState.AddModelError(string.Empty, "Email or Password is incorrect");
+                return View(model);
+            }
+
+            var result = await _signInManager.PasswordSignInAsync(userName, model.Password, model.RememberMe, lockoutOnFailure: false);
             if (result.Succeeded) {
 
                 //TempData["SuccessMessage"] = "Login successful!";
@@ -52,9 +60,15 @@ namespace TechCorner_ECommerce.Controllers {
                     return RedirectToAction("Index", "Dashboard", new { area = "Admin" });
                 }
 
+                if (!string.IsNullOrEmpty(returnToCart)) {
+                    return Redirect(returnToCart);
+                }
+
                 return RedirectToAction("Index", "Home");
 
+
             }
+
 
 
 

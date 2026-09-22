@@ -1,0 +1,26 @@
+@model TechCorner_ECommerce.Models.Order
+
+@{
+    ViewData["Title"] = "Order Success";
+}
+
+<section class="ftco-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 text-center">
+                <div class="bg-light p-5">
+                    <h2 class="mb-3">Order placed successfully</h2>
+                    <p class="mb-1">Order code: <strong>@Model.OrderCode</strong></p>
+                    <p class="mb-4">Total: <strong>$@Model.TotalPrice</strong></p>
+
+                    <a asp-controller="Order" asp-action="Detail" asp-route-id="@Model.OrderCode" class="btn btn-primary py-3 px-4">
+                        View Order
+                    </a>
+                    <a asp-controller="Product" asp-action="Index" class="btn btn-black py-3 px-4">
+                        Continue Shopping
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

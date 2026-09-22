@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using TechCorner_ECommerce.Data;
 using TechCorner_ECommerce.Helpers;
 using TechCorner_ECommerce.Models;
+using TechCorner_ECommerce.Services;
 using static TechCorner_ECommerce.Data.SeedData;
 
 namespace TechCorner_ECommerce {
@@ -54,6 +55,9 @@ namespace TechCorner_ECommerce {
             builder.Services.AddAuthorization();
 
             builder.Services.AddScoped<ISlugService, SlugService>();
+            builder.Services.AddScoped<ICatalogLookupService, CatalogLookupService>();
+            builder.Services.AddScoped<IProductImageService, ProductImageService>();
+            builder.Services.AddScoped<IUniqueCodeService, UniqueCodeService>();
 
             var app = builder.Build();
 

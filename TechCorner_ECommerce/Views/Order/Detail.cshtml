@@ -1,0 +1,86 @@
+@model TechCorner_ECommerce.Models.Order
+
+@{
+    ViewData["Title"] = "Order Detail";
+    var payment = Model.Payments.OrderByDescending(x => x.CreatedAt).FirstOrDefault();
+}
+
+<section class="ftco-section">
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <h2>Order @Model.OrderCode</h2>
+                <p class="text-muted mb-0">@Model.OrderDate.ToString("dd/MM/yyyy HH:mm")</p>
+            </div>
+            <div class="col-md-4 text-md-right">
+                <a asp-controller="Order" asp-action="Index" class="btn btn-black py-2 px-4">Back to Orders</a>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="cart-list">
+                    <table class="table">
+                        <thead class="thead-primary">
+                            <tr class="text-center">
+                                <th>Product</th>
+                                <th>Price</th>
+                                <th>Quantity</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.OrderDetails)
+                            {
+                                <tr class="text-center">
+                                    <td>@(item.Product?.ParentProduct?.Name ?? "Product unavailable")</td>
+                                    <td>$@item.Price</td>
+                                    <td>@item.Quantity</td>
+                                    <td>$@(item.Price * item.Quantity)</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="cart-detail cart-total bg-light p-4">
+                    <h3 class="billing-heading mb-4">Summary</h3>
+
+                    <p class="d-flex">
+                        <span>Order Status</span>
+                        <span>@Model.Status</span>
+                    </p>
+
+                    <p class="d-flex">
+                        <span>Payment</span>
+                        <span>@payment?.PaymentMethod (@(payment?.Status.ToString() ?? "Pending"))</span>
+                    </p>
+
+                    <p class="d-flex">
+                        <span>Receiver</span>
+                        <span>@Model.Address.ReceiverName</span>
+                    </p>
+
+                    <p class="d-flex">
+                        <span>Phone</span>
+                        <span>@Model.Address.Phone</span>
+                    </p>
+
+                    <p>
+                        <span class="d-block mb-1">Address</span>
+                        <span>@Model.Address.FullAddress</span>
+                    </p>
+
+                    <hr />
+
+                    <p class="d-flex total-price">
+                        <span>Total</span>
+                        <span>$@Model.TotalPrice</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

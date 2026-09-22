@@ -19,7 +19,7 @@ namespace TechCorner_ECommerce.Areas.Admin.Controllers {
         }
 
         // ================= LIST =================
-        public IActionResult Index(string keyword, int? page) {
+        public async Task<IActionResult> Index(string keyword, int? page) {
 
             int pageSize = 10;
             int pageNumber = page ?? 1;
@@ -33,14 +33,14 @@ namespace TechCorner_ECommerce.Areas.Admin.Controllers {
 
                 keyword = keyword.Trim();
 
-                roles = roles.Where(x => x.Name.Contains(keyword));
+                roles = roles.Where(x => x.Name != null &&  x.Name.Contains(keyword));
             }
 
             var data = roles
                 .OrderByDescending(x => x.Id)
                 .Select(x => new RoleVM {
                     Id = x.Id,
-                    Name = x.Name
+                    Name = x.Name ?? ""
                 })
                 .ToList();
 
@@ -50,9 +50,9 @@ namespace TechCorner_ECommerce.Areas.Admin.Controllers {
 
                 item.No = no++;
 
-                item.UserCount = _userManager.GetUsersInRoleAsync(item.Name)
-                    .Result
-                    .Count;
+                if (!string.IsNullOrWhiteSpace(item.Name)) {
+                    item.UserCount = (await _userManager.GetUsersInRoleAsync(item.Name)).Count;
+                }
             }
 
             var result = data.ToPagedList(pageNumber, pageSize);
@@ -119,7 +119,7 @@ namespace TechCorner_ECommerce.Areas.Admin.Controllers {
 
             var model = new RoleEditVM {
                 Id = role.Id,
-                Name = role.Name
+                Name = role.Name ?? ""
             };
 
             return View(model);
@@ -180,7 +180,9 @@ namespace TechCorner_ECommerce.Areas.Admin.Controllers {
                 });
             }
 
-            var users = await _userManager.GetUsersInRoleAsync(role.Name);
+            var users = string.IsNullOrWhiteSpace(role.Name)
+                ? new List<ApplicationUser>()
+                : await _userManager.GetUsersInRoleAsync(role.Name);
 
             if (users.Any()) {
                 return Json(new {

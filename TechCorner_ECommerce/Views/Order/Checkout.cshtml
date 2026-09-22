@@ -1,0 +1,107 @@
+@model TechCorner_ECommerce.ViewModels.CheckoutVM
+
+@{
+    ViewData["Title"] = "Checkout";
+}
+
+<div class="hero-wrap hero-bread" style="background-image: url('/images/bg_6.jpg');">
+    <div class="container">
+        <div class="row no-gutters slider-text align-items-center justify-content-center">
+            <div class="col-md-9 ftco-animate text-center">
+                <p class="breadcrumbs"><span class="mr-2"><a asp-controller="Home" asp-action="Index">Home</a></span> <span>Checkout</span></p>
+                <h1 class="mb-0 bread">Checkout</h1>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="ftco-section">
+    <div class="container">
+        <form asp-action="Checkout" method="post">
+            @Html.AntiForgeryToken()
+
+            <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+            <div class="row">
+                <div class="col-lg-7">
+                    <div class="billing-form bg-light p-4 p-md-5">
+                        <h3 class="mb-4 billing-heading">Shipping Details</h3>
+
+                        <div class="form-group">
+                            <label asp-for="ReceiverName">Receiver Name</label>
+                            <input asp-for="ReceiverName" class="form-control" placeholder="Full name" />
+                            <span asp-validation-for="ReceiverName" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="Phone">Phone</label>
+                            <input asp-for="Phone" class="form-control" placeholder="Phone number" />
+                            <span asp-validation-for="Phone" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="FullAddress">Address</label>
+                            <textarea asp-for="FullAddress" class="form-control" rows="4" placeholder="Delivery address"></textarea>
+                            <span asp-validation-for="FullAddress" class="text-danger"></span>
+                        </div>
+
+                        <h3 class="mb-3 mt-5 billing-heading">Payment</h3>
+
+                        <div class="radio">
+                            <label>
+                                <input asp-for="PaymentMethod" type="radio" value="COD" checked />
+                                Cash on delivery
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-5">
+                    <div class="cart-detail cart-total bg-light p-4 p-md-5">
+                        <h3 class="billing-heading mb-4">Order Summary</h3>
+
+                        @foreach (var item in Model.Items)
+                        {
+                            <p class="d-flex mb-2">
+                                <span>@item.ProductName x @item.Quantity</span>
+                                <span>$@item.SubTotal</span>
+                            </p>
+
+                            @if (item.Attributes?.Any() == true)
+                            {
+                                <p class="small text-muted mt-n2">
+                                    @string.Join(", ", item.Attributes.Select(x => x.Value))
+                                </p>
+                            }
+                        }
+
+                        <hr />
+
+                        <p class="d-flex">
+                            <span>Subtotal</span>
+                            <span>$@Model.SubTotal</span>
+                        </p>
+
+                        <p class="d-flex">
+                            <span>Delivery</span>
+                            <span>$@Model.DeliveryFee</span>
+                        </p>
+
+                        <hr />
+
+                        <p class="d-flex total-price">
+                            <span>Total</span>
+                            <span>$@Model.Total</span>
+                        </p>
+
+                        <button type="submit" class="btn btn-primary py-3 px-4 w-100">
+                            Place Order
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+
+<partial name="_ValidationScriptsPartial" />

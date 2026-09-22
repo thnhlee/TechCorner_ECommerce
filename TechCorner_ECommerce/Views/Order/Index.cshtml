@@ -1,0 +1,56 @@
+@model IEnumerable<TechCorner_ECommerce.ViewModels.OrderListVM>
+
+@{
+    ViewData["Title"] = "My Orders";
+}
+
+<section class="ftco-section">
+    <div class="container">
+        <div class="row justify-content-center mb-4">
+            <div class="col-md-8 text-center">
+                <h2 class="mb-3">My Orders</h2>
+            </div>
+        </div>
+
+        <div class="cart-list">
+            <table class="table">
+                <thead class="thead-primary">
+                    <tr class="text-center">
+                        <th>Order Code</th>
+                        <th>Date</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        <th>Payment</th>
+                        <th>&nbsp;</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Any())
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center py-5">You have no orders yet.</td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var order in Model)
+                        {
+                            <tr class="text-center">
+                                <td>@order.OrderCode</td>
+                                <td>@order.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td>$@order.TotalPrice</td>
+                                <td>@order.Status</td>
+                                <td>@order.PaymentStatus</td>
+                                <td>
+                                    <a asp-controller="Order" asp-action="Detail" asp-route-id="@order.OrderCode" class="btn btn-primary py-2 px-3">
+                                        Detail
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>

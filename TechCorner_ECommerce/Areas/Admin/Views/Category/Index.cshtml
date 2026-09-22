@@ -5,38 +5,36 @@
     Layout = "_LayoutDashboard";
 }
 
-<main class="content py-4">
-
+<main class="content py-10">
     <div class="container-fluid">
-
-        <h2 class="mb-4" >Categories</h2>
+        <div class="row">
+            <div class="col-12">
  
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h2 class="fs-3 mb-1 fw-bold">Categories</h2>
+                        <p class="text-muted mb-0">
+                            Manage product categories
+                        </p>
+                    </div>
 
+                    <div>
+                        <a asp-action="Create"
+                           class="btn btn-primary">
+                            Add Category
+                        </a>
 
-        <div class="d-flex justify-content-between align-items-center mb-4">
+                        <a asp-controller="SubCategory" asp-action="Index"
+                           class="btn btn-primary" >
+                            Go to Sub-category
+                        </a>
 
-            <div>
-                <h2 class="mb-1">Categories</h2>
-                <p class="text-muted mb-0">
-                    Manage product categories
-                </p>
-            </div>
-
-            <div>
-                <a asp-action="Create"
-                   class="btn btn-primary">
-                    Add Category
-                </a>
-
-                <a asp-controller="SubCategory" asp-action="Index"
-                   class="btn btn-primary" >
-                    Go to Sub-category
-                </a>
-
-                <a asp-controller="Product" asp-action="AddProduct"
-                   class="btn btn-light border">
-                    Back
-                </a>
+                        <a asp-controller="Product" asp-action="AddProduct"
+                           class="btn btn-light border">
+                            Back
+                        </a>
+                    </div>
+                    </div>
             </div>
 
         </div>

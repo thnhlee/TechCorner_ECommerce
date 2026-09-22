@@ -23,7 +23,7 @@ namespace TechCorner_ECommerce.Areas.Admin.Controllers {
         }
 
         // ================= LIST =================
-        public IActionResult Index(string keyword, int? page) {
+        public async Task<IActionResult> Index(string keyword, int? page) {
             int pageSize = 10;
             int pageNumber = page ?? 1;
 
@@ -45,10 +45,10 @@ namespace TechCorner_ECommerce.Areas.Admin.Controllers {
                 keyword = keyword.Trim();
 
                 users = users.Where(x =>
-                    x.User.UserName.Contains(keyword) ||
-                    x.User.Email.Contains(keyword) ||
-                    x.Address.Phone.Contains(keyword) ||
-                    x.Address.FullAddress.Contains(keyword)
+                    (x.User.UserName != null && x.User.UserName.Contains(keyword)) ||
+                    (x.User.Email != null && x.User.Email.Contains(keyword)) ||
+                    (x.Address != null && x.Address.Phone != null && x.Address.Phone.Contains(keyword)) ||
+                    (x.Address != null && x.Address.FullAddress != null && x.Address.FullAddress.Contains(keyword))
                 );
             }
 
@@ -71,7 +71,7 @@ namespace TechCorner_ECommerce.Areas.Admin.Controllers {
                 var user = db.Users.FirstOrDefault(x => x.Id == item.Id);
 
                 if (user != null) {
-                    var roles = _userManager.GetRolesAsync(user).Result;
+                    var roles = await _userManager.GetRolesAsync(user);
 
                     item.Role = roles.FirstOrDefault() ?? "No Role";
 
@@ -87,7 +87,7 @@ namespace TechCorner_ECommerce.Areas.Admin.Controllers {
 
         // ================= EDIT =================
         [HttpGet]
-        public IActionResult Edit(string id) {
+        public async Task<IActionResult> Edit(string id) {
 
             var currentUserId = _userManager.GetUserId(User);
             if (id == currentUserId) {
@@ -105,7 +105,7 @@ namespace TechCorner_ECommerce.Areas.Admin.Controllers {
                 .FirstOrDefault(x => x.UserId == user.Id);
 
 
-            var currentRoles = _userManager.GetRolesAsync(user).Result;
+            var currentRoles = await _userManager.GetRolesAsync(user);
 
             var model = new EditUserVM {
                 Id = user.Id,
@@ -119,7 +119,8 @@ namespace TechCorner_ECommerce.Areas.Admin.Controllers {
 
                 RoleName = currentRoles.FirstOrDefault(),
                 Roles = _roleManager.Roles
-                        .Select(x => x.Name)
+                        .Where(x => x.Name != null)
+                        .Select(x => x.Name!)
                         .ToList()
             };
 

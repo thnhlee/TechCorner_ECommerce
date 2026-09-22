@@ -134,6 +134,10 @@ namespace TechCorner_ECommerce.Areas.Admin.Controllers {
             }
             var category = db.Categories.Find(vm.CategoryId);
 
+            if (category == null) {
+                return NotFound();
+            }
+
             category.Name = vm.Name;
 
             category.UpdatedAt = DateTime.Now;

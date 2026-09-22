@@ -162,9 +162,14 @@
 
         }) || null;
 
+        if (!state.selectedVariant) {
+            document.getElementById("popup-price").innerText = "";
+            document.getElementById("popup-stock").innerText = "";
+            return;
+        }
 
+        const price = state.selectedVariant.price || state.selectedVariant.Price || 0;
 
-        const price = state.selectedVariant.price || state.selectedVariant.Price;
         const stock = state.selectedVariant.stockQuantity || state.selectedVariant.stock || state.selectedVariant.Stock || 0;
 
         document.getElementById("popup-price").innerText = `Price: $${price}`;

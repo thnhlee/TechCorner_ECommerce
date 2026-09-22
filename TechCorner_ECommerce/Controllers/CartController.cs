@@ -72,6 +72,25 @@ namespace TechCorner_ECommerce.Controllers {
             });
         }
 
+
+
+        [HttpGet]
+        public IActionResult GetCartItems() {
+            return PartialView("_CartContent", Cart);
+        }
+
+        [HttpGet]
+        public IActionResult GetCartSummary() {
+            var cart = Cart;
+
+            return Json(new {
+                success = true,
+                quantity = cart.Sum(x => x.Quantity),
+                subtotal = cart.Sum(x => x.SubTotal)
+            });
+        }
+
+
         public IActionResult RemoveCart(int productId) {
             var cart = Cart;
 

@@ -63,7 +63,14 @@ namespace TechCorner_ECommerce.Controllers {
                 Price = p.Products.Min(v => (decimal?)v.Price) ?? 0,
 
                 // lấy ảnh đại diện
-                ImageUrl = p.Images.FirstOrDefault(i => i.IsPrimary).ImageUrl ?? p.Images.FirstOrDefault().ImageUrl ?? "",
+                ImageUrl = p.Images
+                    .Where(i => i.IsPrimary)
+                    .Select(i => i.ImageUrl)
+                    .FirstOrDefault()
+                    ?? p.Images
+                        .Select(i => i.ImageUrl)
+                        .FirstOrDefault()
+                    ?? "",
 
                 CategoryName = p.SubCategory.Category.Name
             })

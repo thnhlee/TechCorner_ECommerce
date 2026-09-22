@@ -1,0 +1,59 @@
+﻿@model IEnumerable<TechCorner_ECommerce.ViewModels.CartItemVM>
+
+<tbody id ="cart-items">
+    @foreach (var item in Model) {
+        <tr class="text-center">
+            <td class="product-remove">
+                <a href="#" class="js-remove-cart" data-id="@item.ProductId">
+                    <span class="ion-ios-close"></span>
+                </a>
+            </td>
+
+            <td class="image-prod">
+                <div class="img" style="background-image:url(@item.ImageUrl);"></div>
+            </td>
+
+            <td class="product-name">
+                <h3>@item.ProductName</h3>
+
+                <span style="font-size: 12px;">
+                    @string.Join(", ", item.Attributes.Select(a => a.Value))
+                </span>
+
+            </td>
+
+            <td class="price">$@item.Price</td>
+
+            <td class="quantity">
+                <div class="input-group mb-3">
+                    <div class="input-group js-cart-qty cart-qty-group">
+
+                        <div class="input-group-prepend">
+                            <button type="button"
+                                    class="qty-minus btn btn-sm btn-outline-secondary"
+                                    data-id="@item.ProductId">
+                                −
+                            </button>
+                        </div>
+
+                        <input type="text"
+                               class="quantity form-control form-control-sm text-center"
+                               value="@item.Quantity"
+                               readonly />
+
+                        <div class="input-group-append">
+                            <button type="button"
+                                    class="qty-plus btn btn-sm btn-outline-secondary"
+                                    data-id="@item.ProductId">
+                                +
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </td>
+
+            <td class="total">$@item.SubTotal</td>
+        </tr>
+    }
+</tbody>
