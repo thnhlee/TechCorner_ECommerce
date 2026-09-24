@@ -135,6 +135,8 @@
 
       <li><a class="nav-link @Html.IsActiveDashboard("Inventory")" asp-area="Admin" asp-controller="Inventory" asp-action="Index"><i class="ti ti-box-seam"></i><span
             class="nav-text">Inventory</span></a></li>
+      <li><a class="nav-link @Html.IsActiveDashboard("Order")" asp-area="Admin" asp-controller="Order" asp-action="Index"><i class="ti ti-shopping-cart"></i><span
+            class="nav-text">Orders</span></a></li>
       <li><a class="nav-link @Html.IsActiveDashboard("Product", "Category", "SubCategory")" asp-area="Admin" asp-controller="Product" asp-action="AddProduct"><i class="ti ti-plus"></i><span 
             class="nav-text">Add Product</span></a></li>
 
