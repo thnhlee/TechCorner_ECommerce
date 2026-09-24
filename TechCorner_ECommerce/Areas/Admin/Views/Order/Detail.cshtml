@@ -1,0 +1,154 @@
+@model TechCorner_ECommerce.ViewModels.AdminOrderDetailVM
+@using TechCorner_ECommerce.Models.Enums
+
+@{
+    Layout = "_LayoutDashboard";
+}
+
+<main id="content" class="content py-10">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h1 class="fs-3 mb-1 fw-bold">Order #@Model.OrderCode</h1>
+                        <p class="text-muted mb-0">@Model.OrderDate.ToString("dd/MM/yyyy HH:mm")</p>
+                    </div>
+
+                    <a asp-area="Admin" asp-controller="Order" asp-action="Index" class="btn btn-primary">
+                        Back to Orders
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success">@TempData["Success"]</div>
+        }
+
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <div class="card table-responsive">
+                    <table class="table mb-0 text-nowrap table-hover">
+                        <thead class="table-light border-light">
+                            <tr>
+                                <th class="fw-bold">Product</th>
+                                <th class="fw-bold">Price</th>
+                                <th class="fw-bold">Quantity</th>
+                                <th class="fw-bold">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.Items)
+                            {
+                                <tr class="align-middle">
+                                    <td>
+                                        <div class="d-flex align-items-center gap-3">
+                                            @if (!string.IsNullOrWhiteSpace(item.ProductImageUrl))
+                                            {
+                                                <img src="@item.ProductImageUrl" alt="" class="avatar avatar-md rounded" />
+                                            }
+                                            else
+                                            {
+                                                <div class="avatar avatar-md rounded bg-light border d-flex align-items-center justify-content-center">
+                                                    <i class="ti ti-photo text-muted"></i>
+                                                </div>
+                                            }
+
+                                            <div>
+                                                <div>@item.ProductName</div>
+                                                @if (!string.IsNullOrWhiteSpace(item.AttributesText))
+                                                {
+                                                    <span class="badge bg-light text-dark border px-2 py-1 mt-1">
+                                                        @item.AttributesText
+                                                    </span>
+                                                }
+                                                @if (!string.IsNullOrWhiteSpace(item.SkuCode))
+                                                {
+                                                    <small class="d-block text-muted mt-1">#@item.SkuCode</small>
+                                                }
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>$@item.Price</td>
+                                    <td>                                        
+                                        <span class="badge bg-primary " style="margin-left: 15px">
+                                            @item.Quantity
+                                        </span></td>
+                                    <td>$@item.LineTotal</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card mb-4">
+                    <div class="card-header"><strong>Customer Snapshot</strong></div>
+                    <div class="card-body">
+                        <p class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Receiver</span>
+                            <span>@Model.ReceiverName</span>
+                        </p>
+                        <p class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Email</span>
+                            <span>@Model.ReceiverEmail</span>
+                        </p>
+                        <p class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Phone</span>
+                            <span>@Model.ReceiverPhone</span>
+                        </p>
+                        <p class="d-flex justify-content-between mb-2">
+                            <span class="text-muted ">Shipping Address</span>
+                            <span>@Model.ShippingAddress</span>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header"><strong>Status</strong></div>
+                    <div class="card-body">
+                        <form asp-area="Admin" asp-controller="Order" asp-action="UpdateStatus" method="post">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@Model.OrderCode" />
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Order Status</label>
+                                <select name="status" class="form-select">
+                                    @foreach (OrderStatus item in Model.OrderStatuses)
+                                    {
+                                        <option value="@item" selected="@(Model.Status == item)">@item</option>
+                                    }
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Payment Status</label>
+                                <select name="paymentStatus" class="form-select">
+                                    @foreach (PaymentStatus item in Model.PaymentStatuses)
+                                    {
+                                        <option value="@item" selected="@(Model.PaymentStatus == item)">@item</option>
+                                    }
+                                </select>
+                            </div>
+
+                            <p class="d-flex justify-content-between">
+                                <span class="text-muted">Payment Method</span>
+                                <span>@Model.PaymentMethod</span>
+                            </p>
+
+                            <p class="d-flex justify-content-between total-price">
+                                <span class="fw-bold">Total</span>
+                                <span class="fw-bold">$@Model.TotalPrice</span>
+                            </p>
+
+                            <button class="btn btn-success w-100" type="submit">Save Changes</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>

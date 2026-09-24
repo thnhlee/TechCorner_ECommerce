@@ -1,0 +1,145 @@
+@model X.PagedList.IPagedList<TechCorner_ECommerce.ViewModels.AdminOrderVM>
+@using TechCorner_ECommerce.Models.Enums
+@using X.PagedList.Mvc.Core
+
+@{
+    Layout = "_LayoutDashboard";
+}
+
+<main id="content" class="content py-10">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h1 class="fs-3 mb-1 fw-bold">Orders</h1>
+                        <p class="text-muted mb-0">Manage customer orders and payment status</p>
+                    </div>
+                </div>
+
+                <form method="get" class="row mb-3 g-2">
+                    <div class="col-md-3">
+                        <input name="keyword" value="@ViewBag.SearchQuery" type="text" class="form-control" placeholder="Search order, customer, email...">
+                    </div>
+
+                    <div class="col-md-2">
+                        <select name="status" class="form-select">
+                            <option value="">All order status</option>
+                            @foreach (OrderStatus item in ViewBag.OrderStatuses)
+                            {
+                                <option value="@item" selected="@(ViewBag.Status == item)">@item</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="col-md-2">
+                        <select name="paymentStatus" class="form-select">
+                            <option value="">All payment status</option>
+                            @foreach (PaymentStatus item in ViewBag.PaymentStatuses)
+                            {
+                                <option value="@item" selected="@(ViewBag.PaymentStatus == item)">@item</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="col-md-2">
+                        <button class="btn btn-primary">Filter</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success">@TempData["Success"]</div>
+        }
+
+        <div class="row">
+            <div class="col-12">
+                <div class="card table-responsive">
+                    <table class="table mb-0 text-nowrap table-hover">
+                        <thead class="table-light border-light">
+                            <tr>
+                                <th class="fw-bold">Order</th>
+                                <th class="fw-bold">Customer</th>
+                                <th class="fw-bold">Date</th>
+                                <th class="fw-bold">Items</th>
+                                <th class="fw-bold">Total</th>
+                                <th class="fw-bold">Order Status</th>
+                                <th class="fw-bold">Payment</th>
+                                <th class="fw-bold">Action</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr class="align-middle">
+                                    <td>
+                                        <div class="fw-bold">#@item.OrderCode</div>
+                                        <small class="text-muted">@item.ReceiverPhone</small>
+                                    </td>
+                                    <td>
+                                        <div>@item.ReceiverName</div>
+                                        <small class="text-muted">@item.ReceiverEmail</small>
+                                    </td>
+                                    <td>@item.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
+                                    <td>
+                                        <span class="badge bg-light text-dark border px-2 py-1">@item.ItemCount</span>
+                                    </td>
+                                    <td>$@item.TotalPrice</td>
+                                    <td>
+                                        <span class="badge @OrderStatusBadge(item.Status)">@item.Status</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge @PaymentStatusBadge(item.PaymentStatus)">@item.PaymentStatus</span>
+                                        <small class="text-muted ms-1">@item.PaymentMethod</small>
+                                    </td>
+                                    <td>
+                                        <a asp-area="Admin"
+                                           asp-controller="Order"
+                                           asp-action="Detail"
+                                           asp-route-id="@item.OrderCode"
+                                           class="text-primary fs-5 d-inline-flex align-items-center">
+                                            <i class="ti ti-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+
+                        <tfoot>
+                            <tr>
+                                <td colspan="9" class="border-bottom-0">
+                                    <partial name="_Paging" model="Model" />
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+@functions {
+    private static string OrderStatusBadge(OrderStatus status) {
+        return status switch {
+            OrderStatus.Pending => "bg-warning text-dark",
+            OrderStatus.Confirmed => "bg-info",
+            OrderStatus.Shipping => "bg-primary",
+            OrderStatus.Delivered => "bg-success",
+            OrderStatus.Cancelled => "bg-danger",
+            _ => "bg-secondary"
+        };
+    }
+
+    private static string PaymentStatusBadge(PaymentStatus status) {
+        return status switch {
+            PaymentStatus.Paid => "bg-success",
+            PaymentStatus.Failed => "bg-danger",
+            PaymentStatus.Refunded => "bg-secondary",
+            _ => "bg-warning text-dark"
+        };
+    }
+}
