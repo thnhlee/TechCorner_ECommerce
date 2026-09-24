@@ -28,23 +28,37 @@
         });
     });
 
+    function escapeHtml(value) {
+        return String(value ?? "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
     // ================= RENDER =================
     const container = document.getElementById("attribute-container");
     if (!container) return;
 
     Object.keys(attrMap).forEach(name => {
-        let html = `<div><b>${name}</b><br>`;
+        let html = `
+            <div class="variant-attribute-group">
+                <span class="variant-attribute-title">${escapeHtml(name)}</span>
+                <div class="variant-attribute-options">`;
 
         attrMap[name].forEach(val => {
             html += `
                 <button class="attr-btn"
-                    data-name="${name}"
-                    data-value="${val}">
-                    ${val}
+                    data-name="${escapeHtml(name)}"
+                    data-value="${escapeHtml(val)}">
+                    ${escapeHtml(val)}
                 </button>`;
         });
 
-        html += `</div>`;
+        html += `
+                </div>
+            </div>`;
         container.innerHTML += html;
     });
 
@@ -57,8 +71,8 @@
             btn.classList.add("disabled");
         });
 
-        document.querySelector(".btn-black")?.setAttribute("disabled", true);
-        document.querySelector(".btn-primary")?.setAttribute("disabled", true);
+        document.querySelector(".product-add-btn")?.setAttribute("disabled", true);
+        document.querySelector(".product-buy-btn")?.setAttribute("disabled", true);
 
         return;
     }
@@ -158,7 +172,7 @@
 
         if (selectedVariant) {
             document.getElementById("dynamic-price").innerText =
-                `Price: $${selectedVariant.price || selectedVariant.Price}`;
+                `$${selectedVariant.price || selectedVariant.Price}`;
 
             document.getElementById("dynamic-stock").innerText =
                 `${selectedVariant.stock || selectedVariant.Stock} available`;
@@ -215,7 +229,7 @@
     //autoSelect();
 
     // ================= ADD TO CART =================
-    document.querySelector(".btn-black")?.addEventListener("click", async function () {
+    document.querySelector(".product-add-btn")?.addEventListener("click", async function () {
 
         if (!selectedVariant) {
             toastr.error("Vui lòng chọn thuộc tính");
@@ -254,7 +268,7 @@
     });
 
     // ================= BUY =================
-    document.querySelector(".btn-primary")?.addEventListener("click", async function () {
+    document.querySelector(".product-buy-btn")?.addEventListener("click", async function () {
 
         if (!selectedVariant) {
             toastr.error("Vui lòng chọn thuộc tính");
