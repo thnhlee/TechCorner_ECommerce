@@ -1,43 +1,46 @@
-﻿
 .attr-btn {
-    background: white !important;
-    border: 1px solid #dbcc8f !important;
-    padding: 10px 20px !important;
-    color: #dbcc8f !important;
-    font-size: 14px;
+    min-height: 40px;
+    min-width: 52px;
+    border: 1px solid #d8c57e !important;
+    border-radius: 8px !important;
+    background: #ffffff !important;
+    color: #6f5a18 !important;
+    padding: 9px 16px !important;
+    margin: 0 8px 8px 0;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     text-align: center;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.2;
     cursor: pointer;
-    border-radius: 10px !important;
-    -webkit-box-shadow: 0px 24px 36px -11px rgba(0, 0, 0, 0.09);
-    -moz-box-shadow: 0px 24px 36px -11px rgba(0, 0, 0, 0.09);
-    box-shadow: 0px 24px 36px -11px rgba(0, 0, 0, 0.09);
+    box-shadow: 0 8px 22px rgba(15, 23, 42, 0.06);
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
 }
 
-    .attr-btn.active {
-        background: #dbcc8f !important;
-        padding: 10px 20px;
-        border: 1px solid #dbcc8f !important;
-        color: #fff !important;
-        font-size: 14px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-        cursor: pointer;
-        border-radius: 10px;
-        -webkit-box-shadow: 0px 24px 36px -11px rgba(0, 0, 0, 0.09);
-        -moz-box-shadow: 0px 24px 36px -11px rgba(0, 0, 0, 0.09);
-        box-shadow: 0px 24px 36px -11px rgba(0, 0, 0, 0.09);
-    }
+.attr-btn:hover {
+    border-color: #8a6f27 !important;
+    color: #111827 !important;
+    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.1);
+    transform: translateY(-1px);
+}
 
-    .attr-btn.disabled {
-        opacity: 0.3;
-        pointer-events: none;
-        cursor: not-allowed;
-    }
+.attr-btn.active {
+    border-color: #111827 !important;
+    background: #111827 !important;
+    color: #ffffff !important;
+    box-shadow: 0 14px 30px rgba(17, 24, 39, 0.22);
+}
 
-=
+.attr-btn.disabled {
+    opacity: 0.35;
+    pointer-events: none;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+}
 
+.variant-attribute-options .attr-btn {
+    margin: 0;
+}

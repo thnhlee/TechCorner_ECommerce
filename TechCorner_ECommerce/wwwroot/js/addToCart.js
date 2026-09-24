@@ -44,12 +44,21 @@
         const img = document.getElementById("popup-img");
         img.src = state.product.image || "/images/no-image.png";
 
-        document.getElementById("popup-price").innerText = "";
-        document.getElementById("popup-stock").innerText = "";
+        document.getElementById("popup-price").innerText = "Choose variant";
+        document.getElementById("popup-stock").innerText = "-";
 
         document.getElementById("qty").value = 1;
 
         
+    }
+
+    function escapeHtml(value) {
+        return String(value ?? "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
     }
 
     /* ================= BUILD ATTR MAP ================= */
@@ -78,18 +87,23 @@
 
         Object.keys(map).forEach(name => {
 
-            let html = `<div><b>${name}</b><br>`;
+            let html = `
+                <div class="variant-attribute-group">
+                    <span class="variant-attribute-title">${escapeHtml(name)}</span>
+                    <div class="variant-attribute-options">`;
 
             map[name].forEach(val => {
                 html += `
                     <button class="attr-btn"
-                        data-name="${name}"
-                        data-value="${val}">
-                        ${val}
+                        data-name="${escapeHtml(name)}"
+                        data-value="${escapeHtml(val)}">
+                        ${escapeHtml(val)}
                     </button>`;
             });
 
-            html += `</div>`;
+            html += `
+                    </div>
+                </div>`;
             container.innerHTML += html;
         });
 
@@ -163,8 +177,8 @@
         }) || null;
 
         if (!state.selectedVariant) {
-            document.getElementById("popup-price").innerText = "";
-            document.getElementById("popup-stock").innerText = "";
+            document.getElementById("popup-price").innerText = "Choose variant";
+            document.getElementById("popup-stock").innerText = "-";
             return;
         }
 
@@ -172,8 +186,8 @@
 
         const stock = state.selectedVariant.stockQuantity || state.selectedVariant.stock || state.selectedVariant.Stock || 0;
 
-        document.getElementById("popup-price").innerText = `Price: $${price}`;
-        document.getElementById("popup-stock").innerText = `Stock: ${stock}`;
+        document.getElementById("popup-price").innerText = `$${price}`;
+        document.getElementById("popup-stock").innerText = `${stock} available`;
 
        
     }

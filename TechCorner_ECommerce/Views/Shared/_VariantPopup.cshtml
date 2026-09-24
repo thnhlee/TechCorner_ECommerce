@@ -1,58 +1,56 @@
-﻿<div class="modal fade" id="variantModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content">
+<div class="modal fade variant-modal" id="variantModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered variant-modal-dialog">
+        <div class="modal-content variant-modal-content">
+            <button type="button"
+                    class="variant-modal-close"
+                    data-bs-dismiss="modal"
+                    data-dismiss="modal"
+                    aria-label="Close">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
 
-            <!-- HEADER -->
-            <div class="modal-header">
-                <h5 class="modal-title" id="popup-name"></h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-
-            <!-- BODY -->
-            <div class="modal-body">
-
-                <div class="row">
-
-                    <!-- IMAGE -->
-                    <div class="col-md-5">
-                        <img id="popup-img" class="img-fluid" />
+            <div class="variant-modal-grid">
+                <div class="variant-media-panel">
+                    <div class="variant-image-frame">
+                        <img id="popup-img" class="variant-product-image" alt="Product image" />
                     </div>
-
-                    <!-- INFO -->
-                    <div class="col-md-7">
-
-                        <!-- ATTRIBUTES -->
-                        <div id="attribute-container"></div>
-
-                        <!-- PRICE -->
-                        <div class="product-attributeIndex">
-                            <p class="price">
-                                <b id="popup-price"></b>
-                            </p>
-                        </div>
-                        
-
-                        <!-- STOCK -->
-                        <p id="popup-stock"></p>
-
-                        <!-- QTY -->
-                        <div class="input-group mb-3" style="width:150px;">
-                            <button class="btn btn-outline-secondary" id="minus">-</button>
-                            <input id="qty" class="form-control text-center" value="1">
-                            <button class="btn btn-outline-secondary" id="plus">+</button>
-                        </div>
-
-
-
-                        <!-- ACTION -->
-                        <button class="btn btn-dark" id="addToCartBtn">Add to cart</button>
-
-                    </div>
-
                 </div>
 
-            </div>
+                <div class="variant-info-panel">
+                    <span class="variant-eyebrow">Select options</span>
+                    <h5 class="variant-title" id="popup-name"></h5>
 
+                    <div id="attribute-container" class="variant-attributes"></div>
+
+                    <div class="variant-summary">
+                        <div class="variant-summary-item">
+                            <span>Price</span>
+                            <strong id="popup-price">Choose variant</strong>
+                        </div>
+                        <div class="variant-summary-item">
+                            <span>Stock</span>
+                            <strong id="popup-stock">-</strong>
+                        </div>
+                    </div>
+
+                    <div class="variant-purchase-row">
+                        <div class="variant-qty" aria-label="Quantity selector">
+                            <button type="button" id="minus" aria-label="Decrease quantity">
+                                <i class="fa-solid fa-minus"></i>
+                            </button>
+                            <input id="qty" value="1" inputmode="numeric" aria-label="Quantity">
+                            <button type="button" id="plus" aria-label="Increase quantity">
+                                <i class="fa-solid fa-plus"></i>
+                            </button>
+                        </div>
+
+                        <button type="button" class="variant-add-btn" id="addToCartBtn">
+                            <i class="fa-solid fa-cart-plus"></i>
+                            <span>Add to cart</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

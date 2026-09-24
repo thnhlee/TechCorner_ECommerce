@@ -15,7 +15,7 @@ namespace TechCorner_ECommerce.Controllers {
 
         public IActionResult Index(int? cate, string keyword, int? page) {
 
-            int pageSize = 3;
+            int pageSize = 9;
             int pageNumber = page ?? 1;
 
             ViewBag.SearchQuery = keyword;
@@ -85,6 +85,7 @@ namespace TechCorner_ECommerce.Controllers {
                 .Where(p => p.Slug == id)
                 .Select(p => new ProductVM {
                     Id = p.Id,             
+                    Slug = p.Slug,
                     Name = p.Name,
                     Description = p.Description,
 
@@ -100,6 +101,7 @@ namespace TechCorner_ECommerce.Controllers {
                         ?? "",
 
                     CategoryName = p.SubCategory.Category.Name,
+                    SubCategoryName = p.SubCategory.Name,
 
                     Stock = p.Products.Sum(v => v.StockQuantity),
 
