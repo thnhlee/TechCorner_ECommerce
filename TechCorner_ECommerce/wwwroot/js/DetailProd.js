@@ -37,6 +37,23 @@
             .replace(/'/g, "&#039;");
     }
 
+    async function postAddToCart(productId, quantity) {
+        const res = await fetch("/Cart/AddToCart", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+                "RequestVerificationToken": getToken()
+            },
+            body: new URLSearchParams({ productId, quantity })
+        });
+
+        if (!res.ok) {
+            throw new Error("Cart request failed");
+        }
+
+        return res.json();
+    }
+
     // ================= RENDER =================
     const container = document.getElementById("attribute-container");
     if (!container) return;
@@ -249,8 +266,7 @@
         }
 
         try {
-            const res = await fetch(`/Cart/AddToCart?productId=${id}&quantity=${qty}`);
-            const data = await res.json();
+            const data = await postAddToCart(id, qty);
 
             if (data.success) {
 
@@ -258,6 +274,8 @@
                 if (cartQty) cartQty.innerText = data.quantity;
 
                 toastr.success("Đã thêm vào giỏ hàng!");
+            } else {
+                toastr.error(data.message || "Không thể thêm vào giỏ hàng!");
             }
 
         } catch (err) {
@@ -287,7 +305,18 @@
             return;
         }
 
-        await fetch(`/Cart/AddToCart?productId=${id}&quantity=${qty}`);
+        try {
+            const data = await postAddToCart(id, qty);
+
+            if (!data.success) {
+                toastr.error(data.message || "Không thể thêm vào giỏ hàng!");
+                return;
+            }
+        } catch (err) {
+            console.error(err);
+            toastr.error("Lỗi server!");
+            return;
+        }
 
         window.location.href = "/Cart";
     });

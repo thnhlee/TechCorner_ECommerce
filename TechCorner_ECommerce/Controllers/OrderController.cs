@@ -15,6 +15,9 @@ namespace TechCorner_ECommerce.Controllers {
         private readonly AppDbContext db;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IUniqueCodeService _uniqueCodeService;
+        private static readonly HashSet<string> AllowedPaymentMethods = new(StringComparer.OrdinalIgnoreCase) {
+            "COD"
+        };
 
         public OrderController(
             AppDbContext context,
@@ -27,6 +30,36 @@ namespace TechCorner_ECommerce.Controllers {
 
         private List<CartItemVM> Cart =>
             HttpContext.Session.Get<List<CartItemVM>>(MySetting.CART_KEY) ?? new List<CartItemVM>();
+
+        private static void NormalizeCheckoutModel(CheckoutVM model) {
+            model.ReceiverName = model.ReceiverName?.Trim();
+            model.Email = model.Email?.Trim();
+            model.Phone = model.Phone?.Trim();
+            model.FullAddress = model.FullAddress?.Trim();
+            model.PaymentMethod = model.PaymentMethod?.Trim().ToUpperInvariant() ?? "";
+        }
+
+        private void ValidateCheckoutModel(CheckoutVM model) {
+            if (string.IsNullOrWhiteSpace(model.ReceiverName)) {
+                ModelState.AddModelError(nameof(model.ReceiverName), "Receiver name is required");
+            }
+
+            if (string.IsNullOrWhiteSpace(model.Email)) {
+                ModelState.AddModelError(nameof(model.Email), "Email is required");
+            }
+
+            if (string.IsNullOrWhiteSpace(model.Phone)) {
+                ModelState.AddModelError(nameof(model.Phone), "Phone is required");
+            }
+
+            if (string.IsNullOrWhiteSpace(model.FullAddress)) {
+                ModelState.AddModelError(nameof(model.FullAddress), "Address is required");
+            }
+
+            if (!AllowedPaymentMethods.Contains(model.PaymentMethod)) {
+                ModelState.AddModelError(nameof(model.PaymentMethod), "Invalid payment method.");
+            }
+        }
 
         [HttpGet]
         [AllowAnonymous]
@@ -58,13 +91,25 @@ namespace TechCorner_ECommerce.Controllers {
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Checkout(CheckoutVM model) {
-            var cart = Cart;
+            NormalizeCheckoutModel(model);
+
+            var cart = Cart
+                .GroupBy(x => x.ProductId)
+                .Select(group => {
+                    var item = group.First();
+                    item.Quantity = group.Sum(x => x.Quantity);
+                    return item;
+                })
+                .ToList();
+
             model.Items = cart;
 
             if (!cart.Any()) {
                 TempData["Error"] = "Your cart is empty.";
                 return RedirectToAction("Index", "Cart");
             }
+
+            ValidateCheckoutModel(model);
 
             if (!ModelState.IsValid) {
                 return View(model);
@@ -81,7 +126,7 @@ namespace TechCorner_ECommerce.Controllers {
             foreach (var cartItem in cart) {
                 var product = products.FirstOrDefault(x => x.Id == cartItem.ProductId);
 
-                if (product == null) {
+                if (product == null || product.IsDeleted || product.ParentProduct.IsDeleted) {
                     ModelState.AddModelError("", $"{cartItem.ProductName} is no longer available.");
                     return View(model);
                 }
@@ -96,6 +141,10 @@ namespace TechCorner_ECommerce.Controllers {
                     return View(model);
                 }
             }
+
+            var productLookup = products.ToDictionary(x => x.Id);
+            var orderTotal = cart.Sum(cartItem =>
+                productLookup[cartItem.ProductId].Price * cartItem.Quantity);
 
             await using var transaction = await db.Database.BeginTransactionAsync();
 
@@ -127,12 +176,12 @@ namespace TechCorner_ECommerce.Controllers {
                 var order = new Order {
                     OrderCode = _uniqueCodeService.CreateOrderCode(),
                     UserId = user?.Id,
-                    ReceiverName = model.ReceiverName?.Trim() ?? string.Empty,
-                    ReceiverEmail = model.Email?.Trim() ?? user?.Email ?? string.Empty,
-                    ReceiverPhone = model.Phone?.Trim() ?? string.Empty,
-                    ShippingAddress = model.FullAddress?.Trim() ?? string.Empty,
+                    ReceiverName = model.ReceiverName ?? string.Empty,
+                    ReceiverEmail = model.Email ?? user?.Email ?? string.Empty,
+                    ReceiverPhone = model.Phone ?? string.Empty,
+                    ShippingAddress = model.FullAddress ?? string.Empty,
                     OrderDate = DateTime.Now,
-                    TotalPrice = cart.Sum(x => x.SubTotal),
+                    TotalPrice = orderTotal,
                     Status = OrderStatus.Pending,
                     AddressId = address?.Id,
                     CreatedAt = DateTime.Now,
@@ -144,6 +193,12 @@ namespace TechCorner_ECommerce.Controllers {
 
                 foreach (var cartItem in cart) {
                     var product = products.First(x => x.Id == cartItem.ProductId);
+
+                    if (product.StockQuantity < cartItem.Quantity) {
+                        ModelState.AddModelError("", $"{product.ParentProduct.Name} only has {product.StockQuantity} item(s) in stock.");
+                        await transaction.RollbackAsync();
+                        return View(model);
+                    }
 
                     db.OrderDetails.Add(new OrderDetail {
                         OrderId = order.Id,

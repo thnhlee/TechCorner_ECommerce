@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 
 namespace TechCorner_ECommerce.Areas.Admin.Controllers {
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     [Area("Admin")]
     public class DashboardController : Controller {
         public IActionResult Index() {

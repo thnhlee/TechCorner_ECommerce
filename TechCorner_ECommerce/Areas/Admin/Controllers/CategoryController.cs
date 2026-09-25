@@ -8,7 +8,7 @@ using X.PagedList.Extensions;
 
 namespace TechCorner_ECommerce.Areas.Admin.Controllers {
     [Authorize(Roles = "Admin")]
-    [Authorize]
+    [Area("Admin")]
     public class CategoryController : Controller {
         private readonly AppDbContext db;
 

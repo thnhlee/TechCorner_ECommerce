@@ -9,7 +9,7 @@ using TechCorner_ECommerce.ViewModels;
 using X.PagedList.Extensions;
 
 namespace TechCorner_ECommerce.Areas.Admin.Controllers {
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     [Area("Admin")]
     public class UserController : Controller {
         private readonly AppDbContext db;
