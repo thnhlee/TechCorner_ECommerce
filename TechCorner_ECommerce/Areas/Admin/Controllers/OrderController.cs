@@ -2,7 +2,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TechCorner_ECommerce.Data;
+using TechCorner_ECommerce.Models;
 using TechCorner_ECommerce.Models.Enums;
+using TechCorner_ECommerce.Services;
 using TechCorner_ECommerce.ViewModels;
 using X.PagedList.Extensions;
 
@@ -11,9 +13,19 @@ namespace TechCorner_ECommerce.Areas.Admin.Controllers {
     [Area("Admin")]
     public class OrderController : Controller {
         private readonly AppDbContext db;
+        private readonly IEmailService emailService;
+        private readonly IEmailTemplateRenderer emailTemplateRenderer;
+        private readonly ILogger<OrderController> logger;
 
-        public OrderController(AppDbContext context) {
+        public OrderController(
+            AppDbContext context,
+            IEmailService emailService,
+            IEmailTemplateRenderer emailTemplateRenderer,
+            ILogger<OrderController> logger) {
             db = context;
+            this.emailService = emailService;
+            this.emailTemplateRenderer = emailTemplateRenderer;
+            this.logger = logger;
         }
 
         public IActionResult Index(string? keyword, OrderStatus? status, PaymentStatus? paymentStatus, int? page) {
@@ -157,12 +169,14 @@ namespace TechCorner_ECommerce.Areas.Admin.Controllers {
                 return NotFound();
             }
 
+            var oldStatus = order.Status;
             order.Status = status;
             order.UpdatedAt = DateTime.Now;
 
             var payment = order.Payments
                 .OrderByDescending(x => x.CreatedAt)
                 .FirstOrDefault();
+            var oldPaymentStatus = payment?.Status ?? PaymentStatus.Pending;
 
             if (payment != null) {
                 payment.Status = paymentStatus;
@@ -173,8 +187,41 @@ namespace TechCorner_ECommerce.Areas.Admin.Controllers {
 
             await db.SaveChangesAsync();
 
+            if (oldStatus != status || oldPaymentStatus != paymentStatus) {
+                await SendOrderStatusEmailAsync(order, oldStatus, status, oldPaymentStatus, paymentStatus);
+            }
+
             TempData["Success"] = "Order status updated.";
             return RedirectToAction(nameof(Detail), new { id });
+        }
+
+        private async Task SendOrderStatusEmailAsync(
+            Order order,
+            OrderStatus oldStatus,
+            OrderStatus newStatus,
+            PaymentStatus oldPaymentStatus,
+            PaymentStatus newPaymentStatus) {
+            if (string.IsNullOrWhiteSpace(order.ReceiverEmail)) {
+                return;
+            }
+
+            try {
+                var model = new OrderStatusEmailVM {
+                    ReceiverName = order.ReceiverName,
+                    OrderCode = order.OrderCode,
+                    OldStatus = oldStatus,
+                    NewStatus = newStatus,
+                    OldPaymentStatus = oldPaymentStatus,
+                    NewPaymentStatus = newPaymentStatus
+                };
+
+                var body = await emailTemplateRenderer.RenderAsync("/Views/Emails/OrderStatusChanged.cshtml", model);
+
+                await emailService.SendAsync(order.ReceiverEmail, $"TechCorner order {order.OrderCode} status updated", body);
+            }
+            catch (Exception ex) {
+                logger.LogError(ex, "Could not send order status email for order {OrderCode}.", order.OrderCode);
+            }
         }
     }
 }

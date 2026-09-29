@@ -15,6 +15,9 @@ namespace TechCorner_ECommerce.Controllers {
         private readonly AppDbContext db;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IUniqueCodeService _uniqueCodeService;
+        private readonly IEmailService emailService;
+        private readonly IEmailTemplateRenderer emailTemplateRenderer;
+        private readonly ILogger<OrderController> logger;
         private static readonly HashSet<string> AllowedPaymentMethods = new(StringComparer.OrdinalIgnoreCase) {
             "COD"
         };
@@ -22,10 +25,16 @@ namespace TechCorner_ECommerce.Controllers {
         public OrderController(
             AppDbContext context,
             UserManager<ApplicationUser> userManager,
-            IUniqueCodeService uniqueCodeService) {
+            IUniqueCodeService uniqueCodeService,
+            IEmailService emailService,
+            IEmailTemplateRenderer emailTemplateRenderer,
+            ILogger<OrderController> logger) {
             db = context;
             _userManager = userManager;
             _uniqueCodeService = uniqueCodeService;
+            this.emailService = emailService;
+            this.emailTemplateRenderer = emailTemplateRenderer;
+            this.logger = logger;
         }
 
         private List<CartItemVM> Cart =>
@@ -226,6 +235,8 @@ namespace TechCorner_ECommerce.Controllers {
                 await db.SaveChangesAsync();
                 await transaction.CommitAsync();
 
+                await SendOrderConfirmationEmailAsync(order, cart, productLookup);
+
                 HttpContext.Session.Remove(MySetting.CART_KEY);
 
                 return RedirectToAction("Success", new { id = order.OrderCode });
@@ -284,6 +295,41 @@ namespace TechCorner_ECommerce.Controllers {
             }
 
             return View(order);
+        }
+
+        private async Task SendOrderConfirmationEmailAsync(
+            Order order,
+            IEnumerable<CartItemVM> cart,
+            IReadOnlyDictionary<int, Product> products) {
+            if (string.IsNullOrWhiteSpace(order.ReceiverEmail)) {
+                return;
+            }
+
+            try {
+                var model = new OrderConfirmationEmailVM {
+                    ReceiverName = order.ReceiverName,
+                    OrderCode = order.OrderCode,
+                    ShippingAddress = order.ShippingAddress,
+                    ReceiverPhone = order.ReceiverPhone,
+                    TotalPrice = order.TotalPrice,
+                    Items = cart.Select(item => {
+                        var product = products[item.ProductId];
+
+                        return new OrderConfirmationEmailItemVM {
+                            ProductName = product.ParentProduct.Name,
+                            Quantity = item.Quantity,
+                            Price = product.Price
+                        };
+                    }).ToList()
+                };
+
+                var body = await emailTemplateRenderer.RenderAsync("/Views/Emails/OrderConfirmation.cshtml", model);
+
+                await emailService.SendAsync(order.ReceiverEmail, $"TechCorner order {order.OrderCode} confirmed", body);
+            }
+            catch (Exception ex) {
+                logger.LogError(ex, "Could not send order confirmation email for order {OrderCode}.", order.OrderCode);
+            }
         }
 
         [HttpGet]

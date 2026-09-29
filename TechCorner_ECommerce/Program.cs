@@ -14,6 +14,7 @@ namespace TechCorner_ECommerce {
             builder.WebHost.ConfigureKestrel(options => {
                 options.Limits.MaxRequestBodySize = 104857600; // 100MB
             });
+            var emailSettings = builder.Configuration.GetSection("EmailSettings").Get<EmailSettings>() ?? new EmailSettings();
             /////// Add services to the container./////////
             builder.Services.AddControllersWithViews();
             // Add DbContext
@@ -29,6 +30,8 @@ namespace TechCorner_ECommerce {
 
             builder.Services.Configure<IdentityOptions>(options =>
             {
+                options.SignIn.RequireConfirmedEmail = emailSettings.Enabled;
+
                 // Default Password settings.
                 options.Password.RequireDigit = true;
                 options.Password.RequireLowercase = true;
@@ -58,6 +61,10 @@ namespace TechCorner_ECommerce {
             builder.Services.AddScoped<ICatalogLookupService, CatalogLookupService>();
             builder.Services.AddScoped<IProductImageService, ProductImageService>();
             builder.Services.AddScoped<IUniqueCodeService, UniqueCodeService>();
+            builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+            builder.Services.AddTransient<IEmailService, SmtpEmailService>();
+            builder.Services.AddHttpContextAccessor();
+            builder.Services.AddTransient<IEmailTemplateRenderer, RazorEmailTemplateRenderer>();
 
             var app = builder.Build();
 
