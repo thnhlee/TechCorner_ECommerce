@@ -23,6 +23,7 @@ namespace TechCorner_ECommerce.Data {
 
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderDetail> OrderDetails { get; set; }
+        public DbSet<OrderStatusHistory> OrderStatusHistories { get; set; }
 
         public DbSet<Payment> Payments { get; set; }
         public DbSet<Address> Addresses { get; set; }
@@ -206,6 +207,23 @@ namespace TechCorner_ECommerce.Data {
 
                 entity.Property(x => x.Price)
                     .HasColumnType("decimal(18,2)");
+            });
+
+            modelBuilder.Entity<OrderStatusHistory>(entity =>
+            {
+                entity.HasKey(x => x.Id);
+
+                entity.Property(x => x.ChangedBy)
+                    .IsRequired()
+                    .HasMaxLength(256);
+
+                entity.Property(x => x.Note)
+                    .HasMaxLength(500);
+
+                entity.HasOne(x => x.Order)
+                    .WithMany(x => x.StatusHistories)
+                    .HasForeignKey(x => x.OrderId)
+                    .OnDelete(DeleteBehavior.NoAction);
             });
 
             /* ========================= PAYMENT ========================= */

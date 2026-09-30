@@ -27,8 +27,11 @@ namespace TechCorner_ECommerce.ViewModels {
         public string PaymentMethod { get; set; } = "";
         public PaymentStatus PaymentStatus { get; set; }
         public List<OrderStatus> OrderStatuses { get; set; } = new();
+        public List<OrderStatus> AvailableNextStatuses { get; set; } = new();
         public List<PaymentStatus> PaymentStatuses { get; set; } = new();
+        public List<AdminOrderStatusHistoryVM> StatusHistories { get; set; } = new();
         public List<AdminOrderDetailItemVM> Items { get; set; } = new();
+        public bool IsTerminalStatus => Status == OrderStatus.Delivered || Status == OrderStatus.Cancelled;
     }
 
     public class AdminOrderDetailItemVM {
@@ -39,5 +42,13 @@ namespace TechCorner_ECommerce.ViewModels {
         public decimal Price { get; set; }
         public int Quantity { get; set; }
         public decimal LineTotal { get; set; }
+    }
+
+    public class AdminOrderStatusHistoryVM {
+        public OrderStatus OldStatus { get; set; }
+        public OrderStatus NewStatus { get; set; }
+        public string ChangedBy { get; set; } = "";
+        public DateTime ChangedAt { get; set; }
+        public string? Note { get; set; }
     }
 }

@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TechCorner_ECommerce.Data;
-using TechCorner_ECommerce.Models;
 using TechCorner_ECommerce.Models.Enums;
 using TechCorner_ECommerce.Services;
 using TechCorner_ECommerce.ViewModels;
@@ -13,19 +12,13 @@ namespace TechCorner_ECommerce.Areas.Admin.Controllers {
     [Area("Admin")]
     public class OrderController : Controller {
         private readonly AppDbContext db;
-        private readonly IEmailService emailService;
-        private readonly IEmailTemplateRenderer emailTemplateRenderer;
-        private readonly ILogger<OrderController> logger;
+        private readonly IOrderStatusService orderStatusService;
 
         public OrderController(
             AppDbContext context,
-            IEmailService emailService,
-            IEmailTemplateRenderer emailTemplateRenderer,
-            ILogger<OrderController> logger) {
+            IOrderStatusService orderStatusService) {
             db = context;
-            this.emailService = emailService;
-            this.emailTemplateRenderer = emailTemplateRenderer;
-            this.logger = logger;
+            this.orderStatusService = orderStatusService;
         }
 
         public IActionResult Index(string? keyword, OrderStatus? status, PaymentStatus? paymentStatus, int? page) {
@@ -102,6 +95,7 @@ namespace TechCorner_ECommerce.Areas.Admin.Controllers {
                     .ThenInclude(x => x.Product!)
                     .ThenInclude(x => x.ProductAttributeValues)
                     .ThenInclude(x => x.AttributeValue)
+                .Include(x => x.StatusHistories)
                 .FirstOrDefaultAsync(x => x.OrderCode == id);
 
             if (order == null) {
@@ -124,7 +118,17 @@ namespace TechCorner_ECommerce.Areas.Admin.Controllers {
                 PaymentMethod = payment?.PaymentMethod ?? "N/A",
                 PaymentStatus = payment?.Status ?? PaymentStatus.Pending,
                 OrderStatuses = Enum.GetValues<OrderStatus>().ToList(),
+                AvailableNextStatuses = orderStatusService.GetNextStatuses(order.Status).ToList(),
                 PaymentStatuses = Enum.GetValues<PaymentStatus>().ToList(),
+                StatusHistories = order.StatusHistories
+                    .OrderByDescending(x => x.ChangedAt)
+                    .Select(x => new AdminOrderStatusHistoryVM {
+                        OldStatus = x.OldStatus,
+                        NewStatus = x.NewStatus,
+                        ChangedBy = x.ChangedBy,
+                        ChangedAt = x.ChangedAt,
+                        Note = x.Note
+                    }).ToList(),
                 Items = order.OrderDetails.Select(item => {
                     var product = item.Product;
                     var parent = product?.ParentProduct;
@@ -161,67 +165,25 @@ namespace TechCorner_ECommerce.Areas.Admin.Controllers {
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateStatus(string id, OrderStatus status, PaymentStatus paymentStatus) {
-            var order = await db.Orders
-                .Include(x => x.Payments)
-                .FirstOrDefaultAsync(x => x.OrderCode == id);
-
-            if (order == null) {
-                return NotFound();
+            if (!ModelState.IsValid) {
+                TempData["Error"] = "Invalid status request.";
+                return RedirectToAction(nameof(Detail), new { id });
             }
 
-            var oldStatus = order.Status;
-            order.Status = status;
-            order.UpdatedAt = DateTime.Now;
+            var changedBy = User.Identity?.Name ?? User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value ?? "Admin";
+            var result = await orderStatusService.ChangeStatusAsync(id, status, paymentStatus, changedBy);
 
-            var payment = order.Payments
-                .OrderByDescending(x => x.CreatedAt)
-                .FirstOrDefault();
-            var oldPaymentStatus = payment?.Status ?? PaymentStatus.Pending;
+            if (!result.Succeeded) {
+                if (result.Message == "Order not found.") {
+                    return NotFound();
+                }
 
-            if (payment != null) {
-                payment.Status = paymentStatus;
-                payment.PaidAt = paymentStatus == PaymentStatus.Paid
-                    ? DateTime.Now
-                    : null;
+                TempData["Error"] = result.Message;
+                return RedirectToAction(nameof(Detail), new { id });
             }
 
-            await db.SaveChangesAsync();
-
-            if (oldStatus != status || oldPaymentStatus != paymentStatus) {
-                await SendOrderStatusEmailAsync(order, oldStatus, status, oldPaymentStatus, paymentStatus);
-            }
-
-            TempData["Success"] = "Order status updated.";
+            TempData["Success"] = result.Message;
             return RedirectToAction(nameof(Detail), new { id });
-        }
-
-        private async Task SendOrderStatusEmailAsync(
-            Order order,
-            OrderStatus oldStatus,
-            OrderStatus newStatus,
-            PaymentStatus oldPaymentStatus,
-            PaymentStatus newPaymentStatus) {
-            if (string.IsNullOrWhiteSpace(order.ReceiverEmail)) {
-                return;
-            }
-
-            try {
-                var model = new OrderStatusEmailVM {
-                    ReceiverName = order.ReceiverName,
-                    OrderCode = order.OrderCode,
-                    OldStatus = oldStatus,
-                    NewStatus = newStatus,
-                    OldPaymentStatus = oldPaymentStatus,
-                    NewPaymentStatus = newPaymentStatus
-                };
-
-                var body = await emailTemplateRenderer.RenderAsync("/Views/Emails/OrderStatusChanged.cshtml", model);
-
-                await emailService.SendAsync(order.ReceiverEmail, $"TechCorner order {order.OrderCode} status updated", body);
-            }
-            catch (Exception ex) {
-                logger.LogError(ex, "Could not send order status email for order {OrderCode}.", order.OrderCode);
-            }
         }
     }
 }

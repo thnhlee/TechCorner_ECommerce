@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TechCorner_ECommerce.Data;
 
@@ -11,9 +12,11 @@ using TechCorner_ECommerce.Data;
 namespace TechCorner_ECommerce.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260929135523_OrderStatusHistory")]
+    partial class OrderStatusHistory
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -191,7 +194,7 @@ namespace TechCorner_ECommerce.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Addresses", (string)null);
+                    b.ToTable("Addresses");
                 });
 
             modelBuilder.Entity("TechCorner_ECommerce.Models.ApplicationUser", b =>
@@ -289,7 +292,7 @@ namespace TechCorner_ECommerce.Migrations
 
                     b.HasIndex("ProductAttributeId");
 
-                    b.ToTable("AttributeValues", (string)null);
+                    b.ToTable("AttributeValues");
                 });
 
             modelBuilder.Entity("TechCorner_ECommerce.Models.Cart", b =>
@@ -314,7 +317,7 @@ namespace TechCorner_ECommerce.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Carts", (string)null);
+                    b.ToTable("Carts");
                 });
 
             modelBuilder.Entity("TechCorner_ECommerce.Models.CartItem", b =>
@@ -346,7 +349,7 @@ namespace TechCorner_ECommerce.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("CartItems", (string)null);
+                    b.ToTable("CartItems");
                 });
 
             modelBuilder.Entity("TechCorner_ECommerce.Models.Category", b =>
@@ -370,7 +373,7 @@ namespace TechCorner_ECommerce.Migrations
 
                     b.HasKey("CategoryId");
 
-                    b.ToTable("Categories", (string)null);
+                    b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("TechCorner_ECommerce.Models.Order", b =>
@@ -431,7 +434,7 @@ namespace TechCorner_ECommerce.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Orders", (string)null);
+                    b.ToTable("Orders");
                 });
 
             modelBuilder.Entity("TechCorner_ECommerce.Models.OrderDetail", b =>
@@ -460,7 +463,7 @@ namespace TechCorner_ECommerce.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("OrderDetails", (string)null);
+                    b.ToTable("OrderDetails");
                 });
 
             modelBuilder.Entity("TechCorner_ECommerce.Models.OrderStatusHistory", b =>
@@ -496,7 +499,7 @@ namespace TechCorner_ECommerce.Migrations
 
                     b.HasIndex("OrderId");
 
-                    b.ToTable("OrderStatusHistories", (string)null);
+                    b.ToTable("OrderStatusHistories");
                 });
 
             modelBuilder.Entity("TechCorner_ECommerce.Models.ParentProduct", b =>
@@ -547,7 +550,7 @@ namespace TechCorner_ECommerce.Migrations
                     b.HasIndex("Slug", "SubCategoryId")
                         .IsUnique();
 
-                    b.ToTable("ParentProducts", (string)null);
+                    b.ToTable("ParentProducts");
                 });
 
             modelBuilder.Entity("TechCorner_ECommerce.Models.Payment", b =>
@@ -579,7 +582,7 @@ namespace TechCorner_ECommerce.Migrations
 
                     b.HasIndex("OrderId");
 
-                    b.ToTable("Payments", (string)null);
+                    b.ToTable("Payments");
                 });
 
             modelBuilder.Entity("TechCorner_ECommerce.Models.Product", b =>
@@ -627,7 +630,7 @@ namespace TechCorner_ECommerce.Migrations
 
                     b.HasIndex("ParentProductId");
 
-                    b.ToTable("Products", (string)null);
+                    b.ToTable("Products");
                 });
 
             modelBuilder.Entity("TechCorner_ECommerce.Models.ProductAttribute", b =>
@@ -649,7 +652,7 @@ namespace TechCorner_ECommerce.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("ProductAttributes", (string)null);
+                    b.ToTable("ProductAttributes");
                 });
 
             modelBuilder.Entity("TechCorner_ECommerce.Models.ProductAttributeValue", b =>
@@ -673,7 +676,7 @@ namespace TechCorner_ECommerce.Migrations
                     b.HasIndex("ProductId", "AttributeValueId")
                         .IsUnique();
 
-                    b.ToTable("ProductAttributeValues", (string)null);
+                    b.ToTable("ProductAttributeValues");
                 });
 
             modelBuilder.Entity("TechCorner_ECommerce.Models.ProductImage", b =>
@@ -701,7 +704,7 @@ namespace TechCorner_ECommerce.Migrations
 
                     b.HasIndex("ParentProductId");
 
-                    b.ToTable("ProductImages", (string)null);
+                    b.ToTable("ProductImages");
                 });
 
             modelBuilder.Entity("TechCorner_ECommerce.Models.Review", b =>
@@ -736,7 +739,7 @@ namespace TechCorner_ECommerce.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Reviews", (string)null);
+                    b.ToTable("Reviews");
                 });
 
             modelBuilder.Entity("TechCorner_ECommerce.Models.SubCategory", b =>
@@ -765,7 +768,7 @@ namespace TechCorner_ECommerce.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("SubCategories", (string)null);
+                    b.ToTable("SubCategories");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

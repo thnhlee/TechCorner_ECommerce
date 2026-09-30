@@ -65,6 +65,9 @@ namespace TechCorner_ECommerce {
             builder.Services.AddTransient<IEmailService, SmtpEmailService>();
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddTransient<IEmailTemplateRenderer, RazorEmailTemplateRenderer>();
+            builder.Services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+            builder.Services.AddHostedService<QueuedHostedService>();
+            builder.Services.AddScoped<IOrderStatusService, OrderStatusService>();
 
             var app = builder.Build();
 
