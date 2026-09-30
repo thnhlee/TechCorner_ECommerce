@@ -5,6 +5,28 @@
     Layout = "_LayoutDashboard";
 }
 
+@functions {
+    private static string OrderStatusBadge(OrderStatus status) {
+        return status switch {
+            OrderStatus.Pending => "bg-warning text-dark",
+            OrderStatus.Confirmed => "bg-info",
+            OrderStatus.Shipping => "bg-primary",
+            OrderStatus.Delivered => "bg-success",
+            OrderStatus.Cancelled => "bg-danger",
+            _ => "bg-secondary"
+        };
+    }
+
+    private static string PaymentStatusBadge(PaymentStatus status) {
+        return status switch {
+            PaymentStatus.Paid => "bg-success",
+            PaymentStatus.Failed => "bg-danger",
+            PaymentStatus.Refunded => "bg-secondary",
+            _ => "bg-warning text-dark"
+        };
+    }
+}
+
 <main id="content" class="content py-10">
     <div class="container-fluid">
         <div class="row">
@@ -25,6 +47,10 @@
         @if (TempData["Success"] != null)
         {
             <div class="alert alert-success">@TempData["Success"]</div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger">@TempData["Error"]</div>
         }
 
         <div class="row g-4">
@@ -110,42 +136,125 @@
                 <div class="card">
                     <div class="card-header"><strong>Status</strong></div>
                     <div class="card-body">
-                        <form asp-area="Admin" asp-controller="Order" asp-action="UpdateStatus" method="post">
-                            @Html.AntiForgeryToken()
-                            <input type="hidden" name="id" value="@Model.OrderCode" />
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="text-muted">Current Order Status</span>
+                            <span class="badge @OrderStatusBadge(Model.Status)">@Model.Status</span>
+                        </div>
 
-                            <div class="mb-3">
-                                <label class="form-label fw-bold">Order Status</label>
-                                <select name="status" class="form-select">
-                                    @foreach (OrderStatus item in Model.OrderStatuses)
-                                    {
-                                        <option value="@item" selected="@(Model.Status == item)">@item</option>
-                                    }
-                                </select>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="text-muted">Current Payment Status</span>
+                            <span class="badge @PaymentStatusBadge(Model.PaymentStatus)">@Model.PaymentStatus</span>
+                        </div>
+
+                        @if (Model.IsTerminalStatus)
+                        {
+                            <div class="alert @(Model.Status == OrderStatus.Delivered ? "alert-success" : "alert-danger") mb-3">
+                                <strong>@Model.Status</strong> is a final status. This order can no longer be changed.
                             </div>
-
-                            <div class="mb-3">
-                                <label class="form-label fw-bold">Payment Status</label>
-                                <select name="paymentStatus" class="form-select">
-                                    @foreach (PaymentStatus item in Model.PaymentStatuses)
-                                    {
-                                        <option value="@item" selected="@(Model.PaymentStatus == item)">@item</option>
-                                    }
-                                </select>
+                        }
+                        else if (!Model.AvailableNextStatuses.Any())
+                        {
+                            <div class="alert alert-secondary mb-3">
+                                No status transition is available for this order.
                             </div>
+                        }
+                        else
+                        {
+                            <form asp-area="Admin" asp-controller="Order" asp-action="UpdateStatus" method="post">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@Model.OrderCode" />
 
-                            <p class="d-flex justify-content-between">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Next Order Status</label>
+                                    <select name="status" class="form-select">
+                                        @foreach (OrderStatus item in Model.AvailableNextStatuses)
+                                        {
+                                            <option value="@item">@item</option>
+                                        }
+                                    </select>
+                                    <small class="text-muted">
+                                        Allowed: @string.Join(" / ", Model.AvailableNextStatuses)
+                                    </small>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Payment Status</label>
+                                    <select name="paymentStatus" class="form-select">
+                                        @foreach (PaymentStatus item in Model.PaymentStatuses)
+                                        {
+                                            <option value="@item" selected="@(Model.PaymentStatus == item)">@item</option>
+                                        }
+                                    </select>
+                                </div>
+
+                                <p class="d-flex justify-content-between">
+                                    <span class="text-muted">Payment Method</span>
+                                    <span>@Model.PaymentMethod</span>
+                                </p>
+
+                                <p class="d-flex justify-content-between total-price">
+                                    <span class="fw-bold">Total</span>
+                                    <span class="fw-bold">$@Model.TotalPrice</span>
+                                </p>
+
+                                <button class="btn btn-success w-100" type="submit">Save Changes</button>
+                            </form>
+                        }
+
+                        @if (Model.IsTerminalStatus || !Model.AvailableNextStatuses.Any())
+                        {
+                            <p class="d-flex justify-content-between mb-2">
                                 <span class="text-muted">Payment Method</span>
                                 <span>@Model.PaymentMethod</span>
                             </p>
 
-                            <p class="d-flex justify-content-between total-price">
+                            <p class="d-flex justify-content-between total-price mb-0">
                                 <span class="fw-bold">Total</span>
                                 <span class="fw-bold">$@Model.TotalPrice</span>
                             </p>
+                        }
+                    </div>
+                </div>
 
-                            <button class="btn btn-success w-100" type="submit">Save Changes</button>
-                        </form>
+                <div class="card mt-4">
+                    <div class="card-header"><strong>Status History</strong></div>
+                    <div class="card-body">
+                        @if (!Model.StatusHistories.Any())
+                        {
+                            <p class="text-muted mb-0">No status changes have been recorded yet.</p>
+                        }
+                        else
+                        {
+                            <div class="table-responsive">
+                                <table class="table table-sm mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>From</th>
+                                            <th>To</th>
+                                            <th>By</th>
+                                            <th>At</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var history in Model.StatusHistories)
+                                        {
+                                            <tr>
+                                                <td><span class="badge @OrderStatusBadge(history.OldStatus)">@history.OldStatus</span></td>
+                                                <td><span class="badge @OrderStatusBadge(history.NewStatus)">@history.NewStatus</span></td>
+                                                <td>@history.ChangedBy</td>
+                                                <td>@history.ChangedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                                            </tr>
+                                            @if (!string.IsNullOrWhiteSpace(history.Note))
+                                            {
+                                                <tr>
+                                                    <td colspan="4" class="text-muted">@history.Note</td>
+                                                </tr>
+                                            }
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
                     </div>
                 </div>
             </div>

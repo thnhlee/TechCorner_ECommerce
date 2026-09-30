@@ -1,5 +1,3 @@
-using TechCorner_ECommerce.Models.Enums;
-
 namespace TechCorner_ECommerce.ViewModels {
     public class OrderConfirmationEmailVM {
         public string ReceiverName { get; set; } = "";
@@ -15,14 +13,5 @@ namespace TechCorner_ECommerce.ViewModels {
         public int Quantity { get; set; }
         public decimal Price { get; set; }
         public decimal LineTotal => Price * Quantity;
-    }
-
-    public class OrderStatusEmailVM {
-        public string ReceiverName { get; set; } = "";
-        public string OrderCode { get; set; } = "";
-        public OrderStatus OldStatus { get; set; }
-        public OrderStatus NewStatus { get; set; }
-        public PaymentStatus OldPaymentStatus { get; set; }
-        public PaymentStatus NewPaymentStatus { get; set; }
     }
 }

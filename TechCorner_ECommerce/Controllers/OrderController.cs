@@ -15,8 +15,7 @@ namespace TechCorner_ECommerce.Controllers {
         private readonly AppDbContext db;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IUniqueCodeService _uniqueCodeService;
-        private readonly IEmailService emailService;
-        private readonly IEmailTemplateRenderer emailTemplateRenderer;
+        private readonly IBackgroundTaskQueue backgroundTaskQueue;
         private readonly ILogger<OrderController> logger;
         private static readonly HashSet<string> AllowedPaymentMethods = new(StringComparer.OrdinalIgnoreCase) {
             "COD"
@@ -26,14 +25,12 @@ namespace TechCorner_ECommerce.Controllers {
             AppDbContext context,
             UserManager<ApplicationUser> userManager,
             IUniqueCodeService uniqueCodeService,
-            IEmailService emailService,
-            IEmailTemplateRenderer emailTemplateRenderer,
+            IBackgroundTaskQueue backgroundTaskQueue,
             ILogger<OrderController> logger) {
             db = context;
             _userManager = userManager;
             _uniqueCodeService = uniqueCodeService;
-            this.emailService = emailService;
-            this.emailTemplateRenderer = emailTemplateRenderer;
+            this.backgroundTaskQueue = backgroundTaskQueue;
             this.logger = logger;
         }
 
@@ -180,8 +177,6 @@ namespace TechCorner_ECommerce.Controllers {
                     address.UpdatedAt = DateTime.Now;
                 }
 
-                await db.SaveChangesAsync();
-
                 var order = new Order {
                     OrderCode = _uniqueCodeService.CreateOrderCode(),
                     UserId = user?.Id,
@@ -192,13 +187,12 @@ namespace TechCorner_ECommerce.Controllers {
                     OrderDate = DateTime.Now,
                     TotalPrice = orderTotal,
                     Status = OrderStatus.Pending,
-                    AddressId = address?.Id,
+                    Address = address,
                     CreatedAt = DateTime.Now,
                     UpdatedAt = DateTime.Now
                 };
 
                 db.Orders.Add(order);
-                await db.SaveChangesAsync();
 
                 foreach (var cartItem in cart) {
                     var product = products.First(x => x.Id == cartItem.ProductId);
@@ -210,7 +204,7 @@ namespace TechCorner_ECommerce.Controllers {
                     }
 
                     db.OrderDetails.Add(new OrderDetail {
-                        OrderId = order.Id,
+                        Order = order,
                         ProductId = product.Id,
                         Quantity = cartItem.Quantity,
                         Price = product.Price
@@ -225,7 +219,7 @@ namespace TechCorner_ECommerce.Controllers {
                     : PaymentStatus.Pending;
 
                 db.Payments.Add(new Payment {
-                    OrderId = order.Id,
+                    Order = order,
                     PaymentMethod = model.PaymentMethod,
                     Status = paymentStatus,
                     PaidAt = paymentStatus == PaymentStatus.Paid ? DateTime.Now : null,
@@ -235,10 +229,9 @@ namespace TechCorner_ECommerce.Controllers {
                 await db.SaveChangesAsync();
                 await transaction.CommitAsync();
 
-                await SendOrderConfirmationEmailAsync(order, cart, productLookup);
-
                 HttpContext.Session.Remove(MySetting.CART_KEY);
 
+                QueueOrderConfirmationEmail(order, cart, productLookup);
                 return RedirectToAction("Success", new { id = order.OrderCode });
             }
             catch {
@@ -297,7 +290,7 @@ namespace TechCorner_ECommerce.Controllers {
             return View(order);
         }
 
-        private async Task SendOrderConfirmationEmailAsync(
+        private void QueueOrderConfirmationEmail(
             Order order,
             IEnumerable<CartItemVM> cart,
             IReadOnlyDictionary<int, Product> products) {
@@ -306,6 +299,9 @@ namespace TechCorner_ECommerce.Controllers {
             }
 
             try {
+                var receiverEmail = order.ReceiverEmail;
+                var subject = $"TechCorner order {order.OrderCode} confirmed";
+                var orderCode = order.OrderCode;
                 var model = new OrderConfirmationEmailVM {
                     ReceiverName = order.ReceiverName,
                     OrderCode = order.OrderCode,
@@ -323,12 +319,23 @@ namespace TechCorner_ECommerce.Controllers {
                     }).ToList()
                 };
 
-                var body = await emailTemplateRenderer.RenderAsync("/Views/Emails/OrderConfirmation.cshtml", model);
+                backgroundTaskQueue.QueueBackgroundWorkItem(async (serviceProvider, cancellationToken) => {
+                    try {
+                        var renderer = serviceProvider.GetRequiredService<IEmailTemplateRenderer>();
+                        var emailService = serviceProvider.GetRequiredService<IEmailService>();
+                        var body = await renderer.RenderAsync("/Views/Emails/OrderConfirmation.cshtml", model);
 
-                await emailService.SendAsync(order.ReceiverEmail, $"TechCorner order {order.OrderCode} confirmed", body);
+                        cancellationToken.ThrowIfCancellationRequested();
+                        await emailService.SendAsync(receiverEmail, subject, body);
+                    }
+                    catch (Exception ex) {
+                        var backgroundLogger = serviceProvider.GetRequiredService<ILogger<OrderController>>();
+                        backgroundLogger.LogError(ex, "Could not send order confirmation email for order {OrderCode}.", orderCode);
+                    }
+                });
             }
             catch (Exception ex) {
-                logger.LogError(ex, "Could not send order confirmation email for order {OrderCode}.", order.OrderCode);
+                logger.LogError(ex, "Could not queue order confirmation email for order {OrderCode}.", order.OrderCode);
             }
         }
 
