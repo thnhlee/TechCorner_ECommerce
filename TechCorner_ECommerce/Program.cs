@@ -57,9 +57,19 @@ namespace TechCorner_ECommerce {
 
             builder.Services.AddAuthorization();
 
+            builder.Services.AddScoped<IAccountService, AccountService>();
+            builder.Services.AddScoped<IProfileService, ProfileService>();
             builder.Services.AddScoped<ISlugService, SlugService>();
             builder.Services.AddScoped<ICatalogLookupService, CatalogLookupService>();
             builder.Services.AddScoped<IProductImageService, ProductImageService>();
+            builder.Services.AddScoped<IProductCatalogService, ProductCatalogService>();
+            builder.Services.AddScoped<ICartService, CartService>();
+            builder.Services.AddScoped<IAdminProductService, AdminProductService>();
+            builder.Services.AddScoped<IAdminOrderQueryService, AdminOrderQueryService>();
+            builder.Services.AddScoped<IAdminCategoryService, AdminCategoryService>();
+            builder.Services.AddScoped<IAdminUserService, AdminUserService>();
+            builder.Services.AddScoped<IAdminRoleService, AdminRoleService>();
+            builder.Services.AddScoped<IInventoryService, InventoryService>();
             builder.Services.AddScoped<IUniqueCodeService, UniqueCodeService>();
             builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
             builder.Services.AddTransient<IEmailService, SmtpEmailService>();
@@ -67,6 +77,7 @@ namespace TechCorner_ECommerce {
             builder.Services.AddTransient<IEmailTemplateRenderer, RazorEmailTemplateRenderer>();
             builder.Services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
             builder.Services.AddHostedService<QueuedHostedService>();
+            builder.Services.AddScoped<IOrderService, OrderService>();
             builder.Services.AddScoped<IOrderStatusService, OrderStatusService>();
 
             var app = builder.Build();

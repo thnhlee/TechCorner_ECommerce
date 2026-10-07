@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace TechCorner_ECommerce.Models {
     public class Product {
         public int Id { get; set; }
-        public string SkuCode { get; set; }
+        public string SkuCode { get; set; } = "";
 
         [Required]
         [StringLength(200)]
@@ -14,7 +14,7 @@ namespace TechCorner_ECommerce.Models {
 
         [Required]
         public int ParentProductId { get; set; }
-        public ParentProduct ParentProduct { get; set; }
+        public ParentProduct ParentProduct { get; set; } = null!;
 
         public decimal Price { get; set; }
         public int StockQuantity { get; set; }
@@ -22,8 +22,8 @@ namespace TechCorner_ECommerce.Models {
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime UpdatedAt { get; set; } = DateTime.Now;
 
-        public ICollection<CartItem> CartItems { get; set; }
-        public ICollection<OrderDetail> OrderDetails { get; set; }
-        public ICollection<ProductAttributeValue> ProductAttributeValues { get; set; }
+        public ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
+        public ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
+        public ICollection<ProductAttributeValue> ProductAttributeValues { get; set; } = new List<ProductAttributeValue>();
     }
 }
