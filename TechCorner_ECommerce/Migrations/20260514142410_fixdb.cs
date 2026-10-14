@@ -5,7 +5,7 @@
 namespace TechCorner_ECommerce.Migrations
 {
     /// <inheritdoc />
-    public partial class fixdb : Migration
+    public partial class Fixdb : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

@@ -13,7 +13,7 @@ namespace TechCorner_ECommerce.Migrations
 {
     [DbContext(typeof(AppDbContext))]
     [Migration("20260514142410_fixdb")]
-    partial class fixdb
+    partial class Fixdb
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
