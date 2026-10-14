@@ -1,3 +1,4 @@
 <Solution>
   <Project Path="TechCorner_ECommerce/TechCorner_ECommerce.csproj" />
+  <Project Path="TechCorner_ECommerce.Tests/TechCorner_ECommerce.Tests.csproj" />
 </Solution>
