@@ -65,6 +65,7 @@ namespace TechCorner_ECommerce {
             builder.Services.AddScoped<IProductCatalogService, ProductCatalogService>();
             builder.Services.AddScoped<ICartService, CartService>();
             builder.Services.AddScoped<IAdminProductService, AdminProductService>();
+            builder.Services.AddScoped<IAdminDashboardService, AdminDashboardService>();
             builder.Services.AddScoped<IAdminOrderQueryService, AdminOrderQueryService>();
             builder.Services.AddScoped<IAdminCategoryService, AdminCategoryService>();
             builder.Services.AddScoped<IAdminUserService, AdminUserService>();
