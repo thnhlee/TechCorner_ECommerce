@@ -1,0 +1,56 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    image: techcorner-web:latest
+    container_name: techcorner-web
+    restart: unless-stopped
+
+    volumes:
+      - dataprotection-keys:/app/keys
+
+    env_file:
+      - E:/Code Work/Proj env/techcorner-secrets/web.production.env
+
+    ports:
+      - "8080:8080"
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+    networks:
+      - techcorner-network
+
+  postgres:
+    image: postgres:18
+    container_name: techcorner-postgres
+    restart: unless-stopped
+
+    env_file:
+      - E:/Code Work/Proj env/techcorner-secrets/postgres.production.env
+
+    ports:
+      - "5433:5432"
+
+    volumes:
+      - postgres-data:/var/lib/postgresql
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U techcorner_app -d techcorner"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+    networks:
+      - techcorner-network
+
+volumes:
+  postgres-data:
+  dataprotection-keys:
+
+networks:
+  techcorner-network:
+    driver: bridge

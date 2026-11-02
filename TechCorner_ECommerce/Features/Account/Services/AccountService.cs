@@ -64,7 +64,7 @@ namespace TechCorner_ECommerce.Services {
                 Email = email,
                 // When email sending is disabled, the account can log in immediately.
                 EmailConfirmed = !emailSettings.Enabled,
-                CreatedAt = DateTime.Now
+                CreatedAt = DateTime.UtcNow
             };
 
             var result = await userManager.CreateAsync(user, model.Password);

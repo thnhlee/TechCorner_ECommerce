@@ -65,7 +65,7 @@ namespace TechCorner_ECommerce.Services {
 
             return new InventoryExportResult {
                 Stream = stream,
-                FileName = $"DanhSach_{DateTime.Now:yyyyMMddHHmmss}.xlsx"
+                FileName = $"DanhSach_{DateTime.UtcNow:yyyyMMddHHmmss}.xlsx"
             };
         }
 

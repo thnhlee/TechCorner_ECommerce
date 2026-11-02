@@ -68,7 +68,7 @@ namespace TechCorner_ECommerce.Services {
                     ReceiverName = model.ReceiverName?.Trim(),
                     Phone = model.Phone?.Trim(),
                     FullAddress = model.FullAddress?.Trim(),
-                    CreatedAt = DateTime.Now
+                    CreatedAt = DateTime.UtcNow
                 };
 
                 db.Addresses.Add(address);
@@ -77,7 +77,7 @@ namespace TechCorner_ECommerce.Services {
                 address.ReceiverName = model.ReceiverName?.Trim();
                 address.Phone = model.Phone?.Trim();
                 address.FullAddress = model.FullAddress?.Trim();
-                address.UpdatedAt = DateTime.Now;
+                address.UpdatedAt = DateTime.UtcNow;
             }
 
             await db.SaveChangesAsync();

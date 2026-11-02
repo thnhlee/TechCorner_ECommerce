@@ -98,12 +98,12 @@ namespace TechCorner_ECommerce.Services {
 
             // Status and payment are changed only after transition validation succeeds.
             order.Status = newStatus;
-            order.UpdatedAt = DateTime.Now;
+            order.UpdatedAt = DateTime.UtcNow;
 
             if (payment != null) {
                 payment.Status = paymentStatus;
                 payment.PaidAt = paymentStatus == PaymentStatus.Paid
-                    ? DateTime.Now
+                    ? DateTime.UtcNow
                     : null;
             }
 
@@ -113,7 +113,7 @@ namespace TechCorner_ECommerce.Services {
                 OldStatus = oldStatus,
                 NewStatus = newStatus,
                 ChangedBy = string.IsNullOrWhiteSpace(changedBy) ? "System" : changedBy,
-                ChangedAt = DateTime.Now
+                ChangedAt = DateTime.UtcNow
             });
 
             await db.SaveChangesAsync();

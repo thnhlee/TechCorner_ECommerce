@@ -33,11 +33,32 @@ namespace TechCorner_ECommerce.Data {
             base.OnModelCreating(modelBuilder);
 
             /* ========================= QUERY FILTERS ========================= */
+
+            // ParentProduct - Soft Delete
+            modelBuilder.Entity<ParentProduct>()
+                .HasQueryFilter(x => !x.IsDeleted);
+
+            // Product - Soft Delete
             modelBuilder.Entity<Product>()
                 .HasQueryFilter(x => !x.IsDeleted);
 
-            modelBuilder.Entity<ParentProduct>()
-                .HasQueryFilter(x => !x.IsDeleted);
+            // ProductImage - Ẩn ảnh của ParentProduct đã xóa
+            modelBuilder.Entity<ProductImage>()
+                .HasQueryFilter(x => !x.ParentProduct.IsDeleted);
+
+            // Review - Ẩn review của ParentProduct đã xóa
+            modelBuilder.Entity<Review>()
+                .HasQueryFilter(x => !x.ParentProduct.IsDeleted);
+
+            // CartItem - Ẩn sản phẩm đã xóa khỏi giỏ hàng
+            modelBuilder.Entity<CartItem>()
+                .HasQueryFilter(x => !x.Product.IsDeleted);
+
+            // ProductAttributeValue - Ẩn thuộc tính của sản phẩm đã xóa
+            modelBuilder.Entity<ProductAttributeValue>()
+                .HasQueryFilter(x => !x.Product.IsDeleted);
+
+            // OrderDetail: Không thêm query filter Vì cần giữ lịch sử đơn hàng kể cả khi sản phẩm bị xóa.
 
             /* ========================= PARENT PRODUCT ========================= */
             modelBuilder.Entity<ParentProduct>()

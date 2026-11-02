@@ -5455,7 +5455,7 @@ jQuery.Event = function( src, props ) {
 	}
 
 	// Create a timestamp if incoming event doesn't have one
-	this.timeStamp = src && src.timeStamp || Date.now();
+	this.timeStamp = src && src.timeStamp || Date.Now();
 
 	// Mark it as fixed
 	this[ jQuery.expando ] = true;
@@ -8537,7 +8537,7 @@ jQuery.isWindow = isWindow;
 jQuery.camelCase = camelCase;
 jQuery.type = toType;
 
-jQuery.now = Date.now;
+jQuery.Now = Date.Now;
 
 jQuery.isNumeric = function( obj ) {
 

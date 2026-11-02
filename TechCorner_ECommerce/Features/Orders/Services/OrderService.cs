@@ -180,7 +180,7 @@ namespace TechCorner_ECommerce.Services {
                         ReceiverName = model.ReceiverName?.Trim(),
                         Phone = model.Phone?.Trim(),
                         FullAddress = model.FullAddress?.Trim(),
-                        CreatedAt = DateTime.Now
+                        CreatedAt = DateTime.UtcNow
                     };
 
                     db.Addresses.Add(address);
@@ -189,7 +189,7 @@ namespace TechCorner_ECommerce.Services {
                     address.ReceiverName = model.ReceiverName?.Trim();
                     address.Phone = model.Phone?.Trim();
                     address.FullAddress = model.FullAddress?.Trim();
-                    address.UpdatedAt = DateTime.Now;
+                    address.UpdatedAt = DateTime.UtcNow;
                 }
 
                 var order = new Order {
@@ -199,13 +199,13 @@ namespace TechCorner_ECommerce.Services {
                     ReceiverEmail = model.Email ?? user?.Email ?? string.Empty,
                     ReceiverPhone = model.Phone ?? string.Empty,
                     ShippingAddress = model.FullAddress ?? string.Empty,
-                    OrderDate = DateTime.Now,
+                    OrderDate = DateTime.UtcNow,
                     TotalPrice = orderTotal,
                     Status = OrderStatus.Pending,
                     // Address remains for autofill/account linkage; receiver fields above are the order snapshot.
                     Address = address,
-                    CreatedAt = DateTime.Now,
-                    UpdatedAt = DateTime.Now
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
                 };
 
                 db.Orders.Add(order);
@@ -230,7 +230,7 @@ namespace TechCorner_ECommerce.Services {
 
                     // Stock is reduced in the same transaction as the order.
                     product.StockQuantity -= cartItem.Quantity;
-                    product.UpdatedAt = DateTime.Now;
+                    product.UpdatedAt = DateTime.UtcNow;
                 }
 
                 var paymentStatus = model.PaymentMethod == "COD"
@@ -241,8 +241,8 @@ namespace TechCorner_ECommerce.Services {
                     Order = order,
                     PaymentMethod = model.PaymentMethod,
                     Status = paymentStatus,
-                    PaidAt = paymentStatus == PaymentStatus.Paid ? DateTime.Now : null,
-                    CreatedAt = DateTime.Now
+                    PaidAt = paymentStatus == PaymentStatus.Paid ? DateTime.UtcNow : null,
+                    CreatedAt = DateTime.UtcNow
                 });
 
                 await db.SaveChangesAsync();

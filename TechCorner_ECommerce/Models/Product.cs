@@ -19,8 +19,8 @@ namespace TechCorner_ECommerce.Models {
         public decimal Price { get; set; }
         public int StockQuantity { get; set; }
 
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
-        public DateTime UpdatedAt { get; set; } = DateTime.Now;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
         public ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
         public ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();

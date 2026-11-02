@@ -8,7 +8,7 @@ namespace TechCorner_ECommerce.Models {
         public OrderStatus OldStatus { get; set; }
         public OrderStatus NewStatus { get; set; }
         public string ChangedBy { get; set; } = "";
-        public DateTime ChangedAt { get; set; } = DateTime.Now;
+        public DateTime ChangedAt { get; set; } = DateTime.UtcNow;
         public string? Note { get; set; }
     }
 }

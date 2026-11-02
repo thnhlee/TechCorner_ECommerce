@@ -116,7 +116,7 @@ namespace TechCorner_ECommerce.Services {
                 ? user.Email
                 : model.UserName.Trim();
             user.Email = model.Email?.Trim();
-            user.UpdatedAt = DateTime.Now;
+            user.UpdatedAt = DateTime.UtcNow;
 
             var result = await userManager.UpdateAsync(user);
 
@@ -134,7 +134,7 @@ namespace TechCorner_ECommerce.Services {
                     ReceiverName = model.ReceiverName?.Trim(),
                     Phone = model.Phone?.Trim(),
                     FullAddress = model.FullAddress?.Trim(),
-                    CreatedAt = DateTime.Now
+                    CreatedAt = DateTime.UtcNow
                 };
 
                 db.Addresses.Add(address);
@@ -143,7 +143,7 @@ namespace TechCorner_ECommerce.Services {
                 address.ReceiverName = model.ReceiverName?.Trim();
                 address.Phone = model.Phone?.Trim();
                 address.FullAddress = model.FullAddress?.Trim();
-                address.UpdatedAt = DateTime.Now;
+                address.UpdatedAt = DateTime.UtcNow;
             }
 
             var currentRoles = await userManager.GetRolesAsync(user);

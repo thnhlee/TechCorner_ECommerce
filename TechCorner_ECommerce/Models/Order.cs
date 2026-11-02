@@ -38,8 +38,8 @@ namespace TechCorner_ECommerce.Models {
         public int? AddressId { get; set; }
         public Address? Address { get; set; }
 
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
-        public DateTime UpdatedAt { get; set; } = DateTime.Now;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
         public ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
         public ICollection<Payment> Payments { get; set; } = new List<Payment>();
