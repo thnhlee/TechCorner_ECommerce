@@ -5,14 +5,14 @@ namespace TechCorner_ECommerce.Models {
         public int Id { get; set; }
 
         public int CartId { get; set; }
-        public Cart Cart { get; set; }
+        public Cart Cart { get; set; } = null!;
 
         public int ProductId { get; set; }
         public Product? Product { get; set; }
 
         public int Quantity { get; set; }
 
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
-        public DateTime UpdatedAt { get; set; } = DateTime.Now;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
     }
 }

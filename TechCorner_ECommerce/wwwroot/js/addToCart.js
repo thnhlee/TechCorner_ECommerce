@@ -61,6 +61,23 @@
             .replace(/'/g, "&#039;");
     }
 
+    async function postAddToCart(productId, quantity) {
+        const res = await fetch("/Cart/AddToCart", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+                "RequestVerificationToken": getToken()
+            },
+            body: new URLSearchParams({ productId, quantity })
+        });
+
+        if (!res.ok) {
+            throw new Error("Cart request failed");
+        }
+
+        return res.json();
+    }
+
     /* ================= BUILD ATTR MAP ================= */
     function getAttrMap() {
         const map = {};
@@ -253,13 +270,14 @@
         const id = state.selectedVariant.id || state.selectedVariant.Id;
 
         try {
-            const res = await fetch(`/Cart/AddToCart?productId=${id}&quantity=${qty}`);
-            const data = await res.json();
+            const data = await postAddToCart(id, qty);
 
             if (data.success) {
                 updateCart(data.quantity);
                 close();
                 toastr.success("Đã thêm vào giỏ hàng!");
+            } else {
+                toastr.error(data.message || "Không thể thêm vào giỏ hàng!");
             }
 
         } catch (err) {

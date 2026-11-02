@@ -1,0 +1,34 @@
+@model TechCorner_ECommerce.ViewModels.OrderConfirmationEmailVM
+
+<div style="font-family:Arial,sans-serif;max-width:720px;margin:auto;color:#111827">
+    <h2>Order confirmation</h2>
+    <p>Hi @Model.ReceiverName, thanks for your order.</p>
+    <p><strong>Order code:</strong> @Model.OrderCode</p>
+    <p><strong>Shipping address:</strong> @Model.ShippingAddress</p>
+    <p><strong>Phone:</strong> @Model.ReceiverPhone</p>
+
+    <table style="width:100%;border-collapse:collapse;margin-top:16px">
+        <thead>
+            <tr style="background:#f3f4f6">
+                <th style="padding:10px;text-align:left">Product</th>
+                <th style="padding:10px;text-align:center">Qty</th>
+                <th style="padding:10px;text-align:right">Price</th>
+                <th style="padding:10px;text-align:right">Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Items)
+            {
+                <tr>
+                    <td style="padding:10px;border-bottom:1px solid #e5e7eb">@item.ProductName</td>
+                    <td style="padding:10px;border-bottom:1px solid #e5e7eb;text-align:center">@item.Quantity</td>
+                    <td style="padding:10px;border-bottom:1px solid #e5e7eb;text-align:right">$@item.Price.ToString("N2")</td>
+                    <td style="padding:10px;border-bottom:1px solid #e5e7eb;text-align:right">$@item.LineTotal.ToString("N2")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <p style="text-align:right;font-size:18px"><strong>Total: $@Model.TotalPrice.ToString("N2")</strong></p>
+    <p style="color:#6b7280">We will email you again when the order status changes.</p>
+</div>

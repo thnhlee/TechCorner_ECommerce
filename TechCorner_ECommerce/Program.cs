@@ -5,6 +5,8 @@ using TechCorner_ECommerce.Data;
 using TechCorner_ECommerce.Helpers;
 using TechCorner_ECommerce.Models;
 using TechCorner_ECommerce.Services;
+using Microsoft.AspNetCore.DataProtection;
+using System.IO;
 using static TechCorner_ECommerce.Data.SeedData;
 
 namespace TechCorner_ECommerce {
@@ -14,11 +16,12 @@ namespace TechCorner_ECommerce {
             builder.WebHost.ConfigureKestrel(options => {
                 options.Limits.MaxRequestBodySize = 104857600; // 100MB
             });
+            var emailSettings = builder.Configuration.GetSection("EmailSettings").Get<EmailSettings>() ?? new EmailSettings();
             /////// Add services to the container./////////
             builder.Services.AddControllersWithViews();
             // Add DbContext
             builder.Services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+                options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             // Add Identity services
             builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
@@ -29,6 +32,8 @@ namespace TechCorner_ECommerce {
 
             builder.Services.Configure<IdentityOptions>(options =>
             {
+                options.SignIn.RequireConfirmedEmail = emailSettings.Enabled;
+
                 // Default Password settings.
                 options.Password.RequireDigit = true;
                 options.Password.RequireLowercase = true;
@@ -54,10 +59,32 @@ namespace TechCorner_ECommerce {
 
             builder.Services.AddAuthorization();
 
+            builder.Services.AddScoped<IAccountService, AccountService>();
+            builder.Services.AddScoped<IProfileService, ProfileService>();
             builder.Services.AddScoped<ISlugService, SlugService>();
             builder.Services.AddScoped<ICatalogLookupService, CatalogLookupService>();
             builder.Services.AddScoped<IProductImageService, ProductImageService>();
+            builder.Services.AddScoped<IProductCatalogService, ProductCatalogService>();
+            builder.Services.AddScoped<ICartService, CartService>();
+            builder.Services.AddScoped<IAdminProductService, AdminProductService>();
+            builder.Services.AddScoped<IAdminDashboardService, AdminDashboardService>();
+            builder.Services.AddScoped<IAdminOrderQueryService, AdminOrderQueryService>();
+            builder.Services.AddScoped<IAdminCategoryService, AdminCategoryService>();
+            builder.Services.AddScoped<IAdminUserService, AdminUserService>();
+            builder.Services.AddScoped<IAdminRoleService, AdminRoleService>();
+            builder.Services.AddScoped<IInventoryService, InventoryService>();
             builder.Services.AddScoped<IUniqueCodeService, UniqueCodeService>();
+            builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+            builder.Services.AddTransient<IEmailService, SmtpEmailService>();
+            builder.Services.AddHttpContextAccessor();
+            builder.Services.AddTransient<IEmailTemplateRenderer, RazorEmailTemplateRenderer>();
+            builder.Services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+            builder.Services.AddHostedService<QueuedHostedService>();
+            builder.Services.AddScoped<IOrderService, OrderService>();
+            builder.Services.AddScoped<IOrderStatusService, OrderStatusService>();
+
+            builder.Services.AddDataProtection().PersistKeysToFileSystem(
+                new DirectoryInfo("/app/keys")).SetApplicationName("TechCorner");
 
             var app = builder.Build();
 

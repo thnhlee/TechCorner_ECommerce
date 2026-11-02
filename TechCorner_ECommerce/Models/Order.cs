@@ -6,7 +6,7 @@ using TechCorner_ECommerce.Models.Enums;
 namespace TechCorner_ECommerce.Models {
     public class Order {
         public int Id { get; set; }
-        public string OrderCode { get; set; }
+        public string OrderCode { get; set; } = "";
 
         public string? UserId { get; set; }
         public ApplicationUser? User { get; set; }
@@ -38,10 +38,11 @@ namespace TechCorner_ECommerce.Models {
         public int? AddressId { get; set; }
         public Address? Address { get; set; }
 
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
-        public DateTime UpdatedAt { get; set; } = DateTime.Now;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
-        public ICollection<OrderDetail> OrderDetails { get; set; }
-        public ICollection<Payment> Payments { get; set; }
+        public ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
+        public ICollection<Payment> Payments { get; set; } = new List<Payment>();
+        public ICollection<OrderStatusHistory> StatusHistories { get; set; } = new List<OrderStatusHistory>();
     }
 }

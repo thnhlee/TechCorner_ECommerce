@@ -23,6 +23,7 @@ namespace TechCorner_ECommerce.Data {
 
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderDetail> OrderDetails { get; set; }
+        public DbSet<OrderStatusHistory> OrderStatusHistories { get; set; }
 
         public DbSet<Payment> Payments { get; set; }
         public DbSet<Address> Addresses { get; set; }
@@ -32,11 +33,32 @@ namespace TechCorner_ECommerce.Data {
             base.OnModelCreating(modelBuilder);
 
             /* ========================= QUERY FILTERS ========================= */
+
+            // ParentProduct - Soft Delete
+            modelBuilder.Entity<ParentProduct>()
+                .HasQueryFilter(x => !x.IsDeleted);
+
+            // Product - Soft Delete
             modelBuilder.Entity<Product>()
                 .HasQueryFilter(x => !x.IsDeleted);
 
-            modelBuilder.Entity<ParentProduct>()
-                .HasQueryFilter(x => !x.IsDeleted);
+            // ProductImage - Ẩn ảnh của ParentProduct đã xóa
+            modelBuilder.Entity<ProductImage>()
+                .HasQueryFilter(x => !x.ParentProduct.IsDeleted);
+
+            // Review - Ẩn review của ParentProduct đã xóa
+            modelBuilder.Entity<Review>()
+                .HasQueryFilter(x => !x.ParentProduct.IsDeleted);
+
+            // CartItem - Ẩn sản phẩm đã xóa khỏi giỏ hàng
+            modelBuilder.Entity<CartItem>()
+                .HasQueryFilter(x => !x.Product.IsDeleted);
+
+            // ProductAttributeValue - Ẩn thuộc tính của sản phẩm đã xóa
+            modelBuilder.Entity<ProductAttributeValue>()
+                .HasQueryFilter(x => !x.Product.IsDeleted);
+
+            // OrderDetail: Không thêm query filter Vì cần giữ lịch sử đơn hàng kể cả khi sản phẩm bị xóa.
 
             /* ========================= PARENT PRODUCT ========================= */
             modelBuilder.Entity<ParentProduct>()
@@ -206,6 +228,23 @@ namespace TechCorner_ECommerce.Data {
 
                 entity.Property(x => x.Price)
                     .HasColumnType("decimal(18,2)");
+            });
+
+            modelBuilder.Entity<OrderStatusHistory>(entity =>
+            {
+                entity.HasKey(x => x.Id);
+
+                entity.Property(x => x.ChangedBy)
+                    .IsRequired()
+                    .HasMaxLength(256);
+
+                entity.Property(x => x.Note)
+                    .HasMaxLength(500);
+
+                entity.HasOne(x => x.Order)
+                    .WithMany(x => x.StatusHistories)
+                    .HasForeignKey(x => x.OrderId)
+                    .OnDelete(DeleteBehavior.NoAction);
             });
 
             /* ========================= PAYMENT ========================= */

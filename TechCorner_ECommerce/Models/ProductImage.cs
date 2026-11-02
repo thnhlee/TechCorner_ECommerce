@@ -7,9 +7,9 @@ namespace TechCorner_ECommerce.Models {
         public int ParentProductId { get; set; }
         public ParentProduct? ParentProduct { get; set; }
 
-        public string ImageUrl { get; set; }
+        public string ImageUrl { get; set; } = "";
         public bool IsPrimary { get; set; }
 
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 }

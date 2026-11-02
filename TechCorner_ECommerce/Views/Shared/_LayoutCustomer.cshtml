@@ -29,6 +29,9 @@
 
 </head>
 <body>
+    <div class="d-none">
+        @Html.AntiForgeryToken()
+    </div>
     <!-- START nav -->
     <div>
 	@await Html.PartialAsync("_Header")

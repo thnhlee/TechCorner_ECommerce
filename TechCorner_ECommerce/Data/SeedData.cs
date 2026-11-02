@@ -27,9 +27,10 @@ namespace TechCorner_ECommerce.Data {
 
                     Email = adminEmail,
 
-                    EmailConfirmed = false,
+                    EmailConfirmed = true,
 
-                    CreatedAt = DateTime.Now
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
                 };
 
                 var result = await userManager.CreateAsync(
@@ -44,6 +45,10 @@ namespace TechCorner_ECommerce.Data {
                         "Admin"
                     );
                 }
+            }
+            else if (!adminUser.EmailConfirmed) {
+                adminUser.EmailConfirmed = true;
+                await userManager.UpdateAsync(adminUser);
             }
 
             // tránh seed lại

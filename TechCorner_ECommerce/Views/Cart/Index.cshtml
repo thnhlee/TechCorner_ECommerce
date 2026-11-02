@@ -84,6 +84,17 @@
 
         const cartQtyEl = document.getElementById("cart-qty");
 
+        function postCartAction(url, data) {
+            return fetch(url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "RequestVerificationToken": getToken()
+                },
+                body: new URLSearchParams(data)
+            }).then(res => res.json());
+        }
+
         function updateSubtotal(data) {
             const total = data.totalPrice ?? data.subTotal;
 
@@ -101,13 +112,36 @@
             if (totalEl) totalEl.innerText = value;
         }
 
+        function updateCartQuantity(data) {
+            if (cartQtyEl) {
+                cartQtyEl.innerText = data.quantity;
+            }
+        }
+
+        function showCartError(data, input, row) {
+            toastr.error(data.message || "Cart could not be updated.");
+
+            if (data.removed) {
+                row?.remove();
+            }
+
+            if (input && data.available && Number(data.available) > 0) {
+                input.value = data.available;
+            }
+
+            updateCartQuantity(data);
+            updateSubtotal(data);
+        }
+
         function updateCart(productId, qty, input, row) {
 
-            fetch(`/Cart/UpdateQuantity?productId=${productId}&quantity=${qty}`)
-                .then(res => res.json())
+            postCartAction("/Cart/UpdateQuantity", { productId, quantity: qty })
                 .then(data => {
 
-                    if (!data.success) return;
+                    if (!data.success) {
+                        showCartError(data, input, row);
+                        return;
+                    }
 
                     if (input) {
                         input.value = qty;
@@ -115,7 +149,7 @@
 
                     if (row) {
                         const price = parseFloat(
-                            row.querySelector(".price")?.innerText.replace("$", "")
+                            row.querySelector(".price")?.innerText.replace(/[^\d.-]/g, "")
                         ) || 0;
 
                         const totalCell = row.querySelector(".total");
@@ -125,14 +159,13 @@
                         }
                     }
 
-                    if (cartQtyEl) {
-                        cartQtyEl.innerText = data.quantity;
-                    }
+                    updateCartQuantity(data);
 
                     updateSubtotal(data);
 
                     toastr.success("Cart Updated!!");
-                });
+                })
+                .catch(() => toastr.error("Cart could not be updated."));
         }
 
 
@@ -146,22 +179,23 @@
             const productId = removeBtn.dataset.id;
             const row = removeBtn.closest("tr");
 
-            fetch(`/Cart/RemoveCart?productId=${productId}`)
-                .then(res => res.json())
+            postCartAction("/Cart/RemoveCart", { productId })
                 .then(data => {
 
-                    if (!data.success) return;
+                    if (!data.success) {
+                        showCartError(data, null, row);
+                        return;
+                    }
 
                     row?.remove();
 
-                    if (cartQtyEl) {
-                        cartQtyEl.innerText = data.quantity;
-                    }
+                    updateCartQuantity(data);
 
                     updateSubtotal(data);
 
                     toastr.success("Item Deleted");
-                });
+                })
+                .catch(() => toastr.error("Item could not be deleted."));
 
             return;
         }
@@ -198,22 +232,23 @@
 
             if (qty <= 1) {
 
-                fetch(`/Cart/RemoveCart?productId=${productId}`)
-                    .then(res => res.json())
+                postCartAction("/Cart/RemoveCart", { productId })
                     .then(data => {
 
-                        if (!data.success) return;
+                        if (!data.success) {
+                            showCartError(data, input, row);
+                            return;
+                        }
 
                         row?.remove();
 
-                        if (cartQtyEl) {
-                            cartQtyEl.innerText = data.quantity;
-                        }
+                        updateCartQuantity(data);
 
                         updateSubtotal(data);
 
                         toastr.success("Item Deleted");
-                    });
+                    })
+                    .catch(() => toastr.error("Item could not be deleted."));
 
                 return;
             }

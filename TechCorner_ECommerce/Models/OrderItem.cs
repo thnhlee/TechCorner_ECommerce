@@ -12,7 +12,7 @@ namespace TechCorner_ECommerce.Models {
        
         public double Price { get; set; }
 
-        public Order Order { get; set; }
-        public Product Product { get; set; }
+        public Order Order { get; set; } = null!;
+        public Product Product { get; set; } = null!;
     }
 }

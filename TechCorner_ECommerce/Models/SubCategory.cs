@@ -7,15 +7,15 @@ namespace TechCorner_ECommerce.Models {
 
         [Required]
         [StringLength(100)]
-        public string Name { get; set; }
+        public string Name { get; set; } = "";
 
         [Required]
         public int CategoryId { get; set; }
 
-        public Category Category { get; set; }
+        public Category Category { get; set; } = null!;
 
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
-        public DateTime UpdatedAt { get; set; } = DateTime.Now;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
         public ICollection<ParentProduct> ParentProducts { get; set; } = new List<ParentProduct>();
     }

@@ -5,12 +5,12 @@ namespace TechCorner_ECommerce.Models {
         public int Id { get; set; }
 
         [Required]
-        public string UserId { get; set; }
+        public string UserId { get; set; } = "";
 
-        public ApplicationUser User { get; set; }
+        public ApplicationUser User { get; set; } = null!;
 
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
-        public DateTime UpdatedAt { get; set; } = DateTime.Now; 
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow; 
 
         public ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
     }
