@@ -16,7 +16,7 @@ namespace TechCorner_ECommerce.Services {
 
         ///////////////////////// DASHBOARD SUMMARY /////////////////////////
         public async Task<DashboardVM> GetDashboardAsync() {
-            var today = DateTime.Today;
+            var today = DateTime.UtcNow.Date;
             var currentMonthStart = new DateTime(today.Year, today.Month, 1);
             var previousMonthStart = currentMonthStart.AddMonths(-1);
             var nextMonthStart = currentMonthStart.AddMonths(1);

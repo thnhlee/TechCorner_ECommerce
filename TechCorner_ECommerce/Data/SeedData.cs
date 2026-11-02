@@ -29,7 +29,8 @@ namespace TechCorner_ECommerce.Data {
 
                     EmailConfirmed = true,
 
-                    CreatedAt = DateTime.Now
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
                 };
 
                 var result = await userManager.CreateAsync(

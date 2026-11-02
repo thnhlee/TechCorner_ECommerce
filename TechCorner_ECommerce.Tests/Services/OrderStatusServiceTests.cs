@@ -69,14 +69,14 @@ public class OrderStatusServiceTests {
             ReceiverEmail = "receiver@example.com",
             ReceiverPhone = "0900000000",
             ShippingAddress = "Address",
-            OrderDate = DateTime.Now,
+            OrderDate = DateTime.UtcNow,
             TotalPrice = 100m,
             Status = status,
             Payments = new List<Payment> {
                 new Payment {
                     PaymentMethod = "COD",
                     Status = paymentStatus,
-                    CreatedAt = DateTime.Now
+                    CreatedAt = DateTime.UtcNow
                 }
             }
         };

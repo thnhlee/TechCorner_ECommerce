@@ -26,10 +26,10 @@ namespace TechCorner_ECommerce.Services {
                 keyword = keyword.Trim();
 
                 orders = orders.Where(x =>
-                    EF.Functions.Like(EF.Functions.Collate(x.OrderCode, "SQL_Latin1_General_CP1_CI_AI"), $"%{keyword}%") ||
-                    EF.Functions.Like(EF.Functions.Collate(x.ReceiverName, "SQL_Latin1_General_CP1_CI_AI"), $"%{keyword}%") ||
-                    EF.Functions.Like(EF.Functions.Collate(x.ReceiverEmail, "SQL_Latin1_General_CP1_CI_AI"), $"%{keyword}%") ||
-                    EF.Functions.Like(EF.Functions.Collate(x.ReceiverPhone, "SQL_Latin1_General_CP1_CI_AI"), $"%{keyword}%"));
+                    EF.Functions.ILike(x.OrderCode, $"%{keyword}%") ||
+                    EF.Functions.ILike(x.ReceiverName, $"%{keyword}%") ||
+                    EF.Functions.ILike(x.ReceiverEmail, $"%{keyword}%") ||
+                    EF.Functions.ILike(x.ReceiverPhone, $"%{keyword}%"));
             }
 
             if (status.HasValue) {

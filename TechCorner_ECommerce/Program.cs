@@ -5,6 +5,8 @@ using TechCorner_ECommerce.Data;
 using TechCorner_ECommerce.Helpers;
 using TechCorner_ECommerce.Models;
 using TechCorner_ECommerce.Services;
+using Microsoft.AspNetCore.DataProtection;
+using System.IO;
 using static TechCorner_ECommerce.Data.SeedData;
 
 namespace TechCorner_ECommerce {
@@ -19,7 +21,7 @@ namespace TechCorner_ECommerce {
             builder.Services.AddControllersWithViews();
             // Add DbContext
             builder.Services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+                options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             // Add Identity services
             builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
@@ -80,6 +82,9 @@ namespace TechCorner_ECommerce {
             builder.Services.AddHostedService<QueuedHostedService>();
             builder.Services.AddScoped<IOrderService, OrderService>();
             builder.Services.AddScoped<IOrderStatusService, OrderStatusService>();
+
+            builder.Services.AddDataProtection().PersistKeysToFileSystem(
+                new DirectoryInfo("/app/keys")).SetApplicationName("TechCorner");
 
             var app = builder.Build();
 

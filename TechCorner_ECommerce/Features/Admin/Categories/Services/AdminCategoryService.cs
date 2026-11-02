@@ -53,7 +53,7 @@ namespace TechCorner_ECommerce.Services {
 
             var category = new Category {
                 Name = vm.Name,
-                CreatedAt = DateTime.Now
+                CreatedAt = DateTime.UtcNow
             };
 
             db.Categories.Add(category);
@@ -89,7 +89,7 @@ namespace TechCorner_ECommerce.Services {
             }
 
             category.Name = vm.Name;
-            category.UpdatedAt = DateTime.Now;
+            category.UpdatedAt = DateTime.UtcNow;
             db.SaveChanges();
 
             return AdminCategoryOperationResult.Success();
